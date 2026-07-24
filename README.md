@@ -1,5 +1,22 @@
 # JoyAI-Echo GGUF nodes — multishot fixes + automation patch
 
+## Start here - which download do I need?
+
+**Download the zip from [Releases](../../releases/latest).** That is the whole
+thing: every patch file, the workflow, an example prompt file, and step-by-step
+instructions. You do not need to clone this repo.
+
+The files in this repo are the same files, unpacked, for browsing and diffing.
+
+**This is a patch, not a standalone node pack.** Install RealRebelAI's
+`ComfyUI_JoyAI_Echo_GGUF_Nodes` first, then MERGE these files over it (replace
+when prompted) - do not delete or replace the whole folder. The pack prints a
+clear startup error if it detects a replace-instead-of-merge install.
+
+Models are not here; they are on Hugging Face: https://huggingface.co/joeygambino
+
+---
+
 
 > **This is a patch, not a one-click ComfyUI Manager install.**
 > It layers on top of an existing `ComfyUI_JoyAI_Echo_GGUF_Nodes` install
