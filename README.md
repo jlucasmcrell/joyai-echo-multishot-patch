@@ -11,6 +11,24 @@
 > - I answer, I troubleshoot, and most of the fixes in this pack exist because
 > someone reported something.** You will not be left hanging.
 
+## Also here: Multishot Lite (core nodes only)
+
+A second, much simpler workflow for chained talking shots **with nothing to
+install** — full docs in [MULTISHOT_LITE.md](MULTISHOT_LITE.md), download from
+[Releases (lite-v1.0)](../../releases/tag/lite-v1.0).
+
+* **100% stock ComfyUI nodes.** No custom packs.
+* Shot 2 opens on shot 1's exact last frame, so the two cut together.
+* **Mode 1 (default):** character speaks in a **reference voice you supply**.
+  **Mode 2:** bypass one node per shot; the model invents a voice.
+* Both shots joined and refined into one `FINAL` file.
+
+**Not a replacement for the patch below.** Lite has *no memory bank* —
+continuity comes only from the handed-over frame, so identity drifts over many
+shots. That is exactly why the node pack exists.
+
+---
+
 ## Start here - which download do I need?
 
 **Download the zip from [Releases](../../releases/latest).** That is the whole
