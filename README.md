@@ -14,8 +14,12 @@
 ## Also here: Multishot Lite (core nodes only)
 
 A second, much simpler workflow for chained talking shots **with nothing to
-install** — full docs in [MULTISHOT_LITE.md](MULTISHOT_LITE.md), download from
-[Releases (lite-v1.0)](../../releases/tag/lite-v1.0).
+install**.
+
+**Its own repo:** https://github.com/jlucasmcrell/ltx23-multishot-lite
+(standalone docs + issues) · HF: https://huggingface.co/joeygambino/ltx23-multishot-lite
+
+Mirrored here: [MULTISHOT_LITE.md](MULTISHOT_LITE.md) · [Releases (lite-v1.0)](../../releases/tag/lite-v1.0).
 
 * **100% stock ComfyUI nodes.** No custom packs.
 * Shot 2 opens on shot 1's exact last frame, so the two cut together.
