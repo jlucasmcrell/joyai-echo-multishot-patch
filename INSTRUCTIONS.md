@@ -86,6 +86,34 @@ There is no catchable Python error for this - the process is killed by the OS.
 Recent versions print a system-memory estimate before loading and warn when it
 looks too tight, instead of letting Windows fall over silently.
 
+
+### Access violation while loading VAEs, with RAM to spare
+
+If the stack ends in `sft_loader.py` / `create_vae_wrappers` but system RAM was
+NOT near 100%, this is a failed memory-mapped read of the checkpoint - the
+process dies instantly with no Python error.
+
+One confirmed case (HF discussion, 2026-07-24) crashed on **every** model and
+config with:
+
+    Python 3.13.12 + torch 2.13+cu130 + transformers 5.3.0
+
+and was fixed by installing **transformers 4.57** in that same environment.
+Note what is NOT established: transformers 5.3.0 was never re-tested on torch
+2.13 after the fix, and it runs fine on the reference rig with torch 2.11 - so
+the trigger may be torch 2.13, transformers 5.3.0, or the pair together.
+
+If you hit this with RAM to spare, in order:
+
+1. Install transformers 4.57:
+   `python_embeded\python.exe -m pip install "transformers==4.57"`
+2. Or repair the mmap layer:
+   `python_embeded\python.exe -m pip install --force-reinstall safetensors`
+
+Known-good reference: Python 3.13.11, torch 2.11.0+cu130, transformers 5.3.0,
+safetensors 0.7.0, numpy 2.2.6. Python 3.10 also works. **torch 2.13 is
+currently untested here** - torch 2.11 is the version this pack is verified on.
+
 ## 3. Install
 
 1. Install the base pack (RealRebelAI's) into `ComfyUI/custom_nodes/` if you
