@@ -1,0 +1,10 @@
+__pycache__/
+*.py[cod]
+*.bak
+*.bak_*
+.DS_Store
+Thumbs.db
+*.safetensors
+*.gguf
+*.pt
+*.ckpt
