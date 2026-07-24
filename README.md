@@ -1,5 +1,16 @@
 # JoyAI-Echo GGUF nodes — multishot fixes + automation patch
 
+
+> **Before you dive in - a word on expectations.** This is a community-built,
+> bleeding-edge pipeline: a 22B audio+video model with cross-shot memory,
+> running on consumer hardware. It is powerful, but it is not one-click - your
+> first clean render will likely take some tuning to YOUR machine (VRAM, system
+> RAM and pagefile, and which model build: bf16 / fp8 / GGUF / INT8). No two
+> rigs behave identically. `INSTRUCTIONS.md` covers install, per-VRAM settings,
+> and every failure mode reported so far. **If you get stuck, [open an issue](../../issues)
+> - I answer, I troubleshoot, and most of the fixes in this pack exist because
+> someone reported something.** You will not be left hanging.
+
 ## Start here - which download do I need?
 
 **Download the zip from [Releases](../../releases/latest).** That is the whole
