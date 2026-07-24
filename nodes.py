@@ -489,37 +489,46 @@ class JoyEcho_ModelLoader:
                     "denoise pipeline). Pick the matching bf16 file in "
                     "model_file - or turn the fp8 toggle off to run this fp8 "
                     "file the normal way (it upcasts to bf16 at load).")
+            _cq_int8 = False
             if _has_comfy_quant:
-                # Two users (HF discussion 4, Civitai) hit this with the INT8
-                # ConvRot surgical build. The old message only suggested the
-                # generic base distilled model, which reads as "your download
-                # is useless" - so name the builds of THE SAME MODEL that do
-                # work here, and say what the INT8 file is actually for.
-                _n = Path(checkpoint_path).name
-                _surg = "surgical" in _n.lower() or "int8" in _n.lower() \
-                    or "convrot" in _n.lower()
-                raise ValueError(
-                    f"{_n} is a ComfyUI-quantized checkpoint (.comfy_quant marker "
-                    "tensors - an INT8 ConvRot or 'fp8mixed learned' build). Those "
-                    "are packaged for ComfyUI's OWN loader nodes, which apply their "
-                    "weight scales. THIS pack's loader cannot: the model would load "
-                    "mis-scaled, and LoRA fusion onto it fails with shape errors.\n"
-                    "\nWhat to do instead:\n"
-                    + ("  * Same model, different build: use the surgical merge's "
-                       "bf16 .safetensors here, or pick one of its GGUFs (Q8_0 / "
-                       "Q5_0 / Q4_0) in model_file - a GGUF is DiT-only, so "
-                       "checkpoint_path still needs a full bf16 checkpoint for the "
-                       "VAEs and vocoder.\n"
-                       if _surg else
-                       "  * Use a bf16 .safetensors checkpoint here, or a GGUF in "
-                       "model_file (a GGUF is DiT-only, so checkpoint_path still "
-                       "needs a full bf16 checkpoint for the VAEs and vocoder).\n")
-                    + "  * Or keep this INT8/ConvRot file and load it with ComfyUI's "
-                      "native LTX loader nodes instead of this pack - it is built "
-                      "for those. You lose the multishot memory bank that way.\n"
-                    "  * Any bf16 LTX-2.x checkpoint also works here (e.g. "
-                    "ltx-2.3-22b-distilled-1.1.safetensors), with flavor added via "
-                    "lora_file.")
+                # INT8 ConvRot builds (int8_tensorwise markers) are SUPPORTED:
+                # sft_loader reconstructs bf16 weights at load (dequant +
+                # Hadamard un-rotation), so the file behaves exactly like the
+                # bf16 checkpoint from here on - LoRA fusion, fp8 toggles and
+                # the memory bank all work. Other comfy_quant formats
+                # ("fp8mixed learned" etc.) are still refused: their scales
+                # use a different contract this loader does not implement.
+                try:
+                    from safetensors import safe_open as _so
+                    with _so(checkpoint_path, framework="pt") as _f:
+                        _mk = next(k for k in _f.keys()
+                                   if k.endswith(".comfy_quant"))
+                        _fmt = _json.loads(bytes(
+                            _f.get_tensor(_mk).numpy().tobytes()).decode("utf-8")
+                            ).get("format")
+                except Exception:
+                    _fmt = None
+                if _fmt == "int8_tensorwise":
+                    _cq_int8 = True
+                    print("[JoyEcho] INT8 ConvRot checkpoint detected: weights "
+                          "will be reconstructed to bf16 at load (adds a minute "
+                          "or two). NOTE: the INT8 file saves DOWNLOAD size, not "
+                          "memory - loading needs the same system RAM as the "
+                          "bf16 build.", flush=True)
+                else:
+                    _n = Path(checkpoint_path).name
+                    raise ValueError(
+                        f"{_n} is a ComfyUI-quantized checkpoint with "
+                        f"comfy_quant format '{_fmt}', which this loader does "
+                        "not support (INT8 ConvRot / int8_tensorwise builds ARE "
+                        "supported and load automatically).\n"
+                        "\nWhat to do instead:\n"
+                        "  * Use a bf16 .safetensors checkpoint here, or a GGUF "
+                        "in model_file (a GGUF is DiT-only, so checkpoint_path "
+                        "still needs a full bf16 checkpoint for the VAEs and "
+                        "vocoder).\n"
+                        "  * Or load this file with ComfyUI's native loader "
+                        "nodes - you lose the multishot memory bank that way.")
 
         # gemma_path: either the HF gemma-3-12b-it DIRECTORY (model*.safetensors +
         # tokenizer.model) or a SINGLE .safetensors/.gguf gemma file (e.g. an
@@ -583,6 +592,11 @@ class JoyEcho_ModelLoader:
             _mult = 1.4 if gguf_dit_path is not None else 1.6
             if _src_is_fp8 and not (fp8_scaled_mm or fp8_transformer):
                 _mult *= 2.0
+            # INT8 ConvRot: weights are reconstructed to bf16 at load, so the
+            # peak matches the bf16 build (~1.7x its size) even though the
+            # file on disk is ~60% of it.
+            if '_cq_int8' in dir() and _cq_int8:
+                _mult = 2.7
             _need = _ckpt_gb * _mult
             if _avail < _need:
                 print(
