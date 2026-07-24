@@ -319,6 +319,21 @@ binaries, `.bak` snapshots, and `__pycache__`.
 
 ---
 
+## Where the models live
+
+Nothing in this repo is a model. Weights are on Hugging Face:
+
+| what | where |
+|---|---|
+| Surgical merge (bf16 / fp8) | https://huggingface.co/joeygambino/joyai-echo-ltx23-echoVid-ltxAud-surgical |
+| Surgical merge GGUF (Q8_0 / Q5_0 / Q4_0) | https://huggingface.co/joeygambino/joyai-echo-ltx23-echoVid-ltxAud-surgical-gguf |
+| Surgical merge INT8 ConvRot (stock ComfyUI loaders, **not** this pack) | https://huggingface.co/joeygambino/joyai-echo-ltx23-echoVid-ltxAud-surgical-int8 |
+| Gemma-3-12B text encoder GGUF (Q8_0 / Q4_0) | https://huggingface.co/joeygambino/joyai-echo-gemma3-12b-encoder-Q8_0-gguf |
+| This pack, mirrored | https://huggingface.co/joeygambino/joyai-echo-multishot-workflow |
+| Everything | https://huggingface.co/joeygambino |
+
+Civitai mirrors: [GGUF builds](https://civitai.com/models/2796109) - [workflow](https://civitai.com/models/2780640)
+
 ## License and scope
 
 This repository contains **only my patch files** - it is not a redistribution
