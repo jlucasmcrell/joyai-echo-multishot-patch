@@ -31,6 +31,29 @@ Nothing to install beyond ComfyUI and the models. No custom node packs.
 
 ---
 
+## Changes in v1.2
+
+Mouth motion, voice consistency, and the dials to trade them off.
+
+* **`LTXVPreprocess` motion dial (new, per shot).** LTX is trained on VIDEO
+  frames, which always carry codec artifacts. A pristine photo is
+  out-of-distribution as a "video frame", so the model treats it as a perfect
+  anchor and barely animates. The guide is now round-tripped through an H.264
+  encode/decode. `img_compression` 35 by default; raise for more motion, lower
+  (20-25) if the result looks soft or stylized.
+* **The voice chain (new).** Shot 2's voice reference is now **shot 1's own
+  generated audio**, not the external clip. Two shots referencing the same clip
+  still sample independently, so the voice drifted between them; feeding shot
+  1's output forward is the core-node equivalent of a memory bank.
+* **Identity guidance is now gated to the early steps** (`end_percent` 0.5).
+  Guidance amplifies its effect on the WHOLE denoised tensor - audio AND video -
+  so at full range it restyles the face while it fixes the voice. Identity is
+  decided early; detail forms late. Gating keeps the voice lock without
+  touching the detail passes.
+
+All still 100% core ComfyUI nodes. A **MOTION DIALS** note block in the graph
+documents every knob and which way to turn it.
+
 ## Changes in v1.1
 
 **v1.0 had a broken reference-image path — please re-download.** `LoadImage`
@@ -73,14 +96,14 @@ SETUP → SHOT 1 → [last frame] → SHOT 2 → FINISH (join + refine) → FINA
 
 ## Quick start
 
-1. Download **[`LTX23_Multishot_Lite_v1.1.zip`](./LTX23_Multishot_Lite_v1.1.zip)**
+1. Download **[`LTX23_Multishot_Lite_v1.2.zip`](https://github.com/jlucasmcrell/ltx23-multishot-lite/releases/latest)**
    (or just the workflow JSON) and open it in ComfyUI.
 2. Set the six loaders in the **SETUP** group — see the table in
-   [INSTRUCTIONS.md](./INSTRUCTIONS.md). Each reads a *different* models folder.
+   [INSTRUCTIONS_LITE.md](./INSTRUCTIONS_LITE.md). Each reads a *different* models folder.
 3. Put a 3–5 second voice clip and a first-frame image in `ComfyUI/input/`.
 4. Queue. Judge `multishot_lite/FINAL`.
 
-Full walkthrough, per-VRAM settings and troubleshooting: **[INSTRUCTIONS.md](./INSTRUCTIONS.md)**
+Full walkthrough, per-VRAM settings and troubleshooting: **[INSTRUCTIONS_LITE.md](./INSTRUCTIONS_LITE.md)**
 
 ## What you need
 

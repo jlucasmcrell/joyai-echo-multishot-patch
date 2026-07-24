@@ -19,7 +19,7 @@ install**.
 **Its own repo:** https://github.com/jlucasmcrell/ltx23-multishot-lite
 (standalone docs + issues) · HF: https://huggingface.co/joeygambino/ltx23-multishot-lite
 
-Mirrored here: [MULTISHOT_LITE.md](MULTISHOT_LITE.md) · [Releases (lite-v1.0)](../../releases/tag/lite-v1.0).
+Mirrored here: [MULTISHOT_LITE.md](MULTISHOT_LITE.md) · [Releases (lite-v1.0)](../../releases/tag/lite-v1.2).
 
 * **100% stock ComfyUI nodes.** No custom packs.
 * Shot 2 opens on shot 1's exact last frame, so the two cut together.

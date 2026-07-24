@@ -1,8 +1,8 @@
 {
   "id": "multishot-lite-native",
   "revision": 0,
-  "last_node_id": 67,
-  "last_link_id": 96,
+  "last_node_id": 72,
+  "last_link_id": 99,
   "nodes": [
     {
       "id": 1,
@@ -88,8 +88,8 @@
           "name": "MODEL",
           "type": "MODEL",
           "links": [
-            13,
-            55
+            14,
+            58
           ],
           "slot_index": 0
         }
@@ -123,10 +123,10 @@
           "name": "VAE",
           "type": "VAE",
           "links": [
-            20,
-            38,
-            62,
-            80
+            21,
+            39,
+            65,
+            83
           ],
           "slot_index": 0
         }
@@ -161,8 +161,8 @@
           "links": [
             5,
             6,
-            47,
-            48
+            49,
+            50
           ],
           "slot_index": 0
         }
@@ -197,12 +197,12 @@
           "name": "Audio VAE",
           "type": "VAE",
           "links": [
-            12,
-            17,
-            40,
-            54,
-            59,
-            82
+            13,
+            18,
+            41,
+            57,
+            62,
+            85
           ],
           "slot_index": 0
         }
@@ -293,7 +293,7 @@
           "type": "INT",
           "links": [
             9,
-            51
+            53
           ],
           "slot_index": 0
         }
@@ -328,7 +328,7 @@
           "type": "INT",
           "links": [
             10,
-            52
+            54
           ],
           "slot_index": 0
         }
@@ -363,7 +363,7 @@
           "type": "INT",
           "links": [
             11,
-            53
+            55
           ],
           "slot_index": 0
         }
@@ -397,8 +397,8 @@
           "name": "SIGMAS",
           "type": "SIGMAS",
           "links": [
-            31,
-            73
+            32,
+            76
           ],
           "slot_index": 0
         }
@@ -431,8 +431,8 @@
           "name": "SAMPLER",
           "type": "SAMPLER",
           "links": [
-            30,
-            72
+            31,
+            75
           ],
           "slot_index": 0
         }
@@ -470,8 +470,7 @@
           "name": "AUDIO",
           "type": "AUDIO",
           "links": [
-            16,
-            58
+            17
           ],
           "slot_index": 0
         }
@@ -592,7 +591,7 @@
           "name": "IMAGE",
           "type": "IMAGE",
           "links": [
-            22
+            12
           ],
           "slot_index": 0
         }
@@ -741,7 +740,7 @@
           "name": "positive",
           "type": "CONDITIONING",
           "links": [
-            14
+            15
           ],
           "slot_index": 0
         },
@@ -749,7 +748,7 @@
           "name": "negative",
           "type": "CONDITIONING",
           "links": [
-            15
+            16
           ],
           "slot_index": 1
         }
@@ -831,7 +830,7 @@
           "name": "LATENT",
           "type": "LATENT",
           "links": [
-            21
+            22
           ],
           "slot_index": 0
         }
@@ -848,43 +847,82 @@
     },
     {
       "id": 24,
-      "type": "LTXVAddGuide",
+      "type": "LTXVPreprocess",
       "pos": [
         2300,
         730
       ],
       "size": [
         330,
-        240
+        94
       ],
       "flags": {},
       "order": 23,
       "mode": 0,
       "inputs": [
         {
-          "name": "positive",
-          "type": "CONDITIONING",
-          "link": 18
-        },
+          "name": "image",
+          "type": "IMAGE",
+          "link": 12
+        }
+      ],
+      "outputs": [
         {
-          "name": "negative",
+          "name": "output_image",
+          "type": "IMAGE",
+          "links": [
+            23
+          ],
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "LTXVPreprocess"
+      },
+      "widgets_values": [
+        35
+      ],
+      "title": "MOTION DIAL (img_compression)"
+    },
+    {
+      "id": 25,
+      "type": "LTXVAddGuide",
+      "pos": [
+        2300,
+        868
+      ],
+      "size": [
+        330,
+        240
+      ],
+      "flags": {},
+      "order": 24,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "positive",
           "type": "CONDITIONING",
           "link": 19
         },
         {
+          "name": "negative",
+          "type": "CONDITIONING",
+          "link": 20
+        },
+        {
           "name": "vae",
           "type": "VAE",
-          "link": 20
+          "link": 21
         },
         {
           "name": "latent",
           "type": "LATENT",
-          "link": 21
+          "link": 22
         },
         {
           "name": "image",
           "type": "IMAGE",
-          "link": 22
+          "link": 23
         },
         {
           "name": "attention_mask",
@@ -902,8 +940,8 @@
           "name": "positive",
           "type": "CONDITIONING",
           "links": [
-            26,
-            34
+            27,
+            35
           ],
           "slot_index": 0
         },
@@ -911,8 +949,8 @@
           "name": "negative",
           "type": "CONDITIONING",
           "links": [
-            27,
-            35
+            28,
+            36
           ],
           "slot_index": 1
         },
@@ -920,7 +958,7 @@
           "name": "latent",
           "type": "LATENT",
           "links": [
-            23
+            24
           ],
           "slot_index": 2
         }
@@ -935,10 +973,34 @@
       "title": "Shot 1 guide <- your image"
     },
     {
-      "id": 25,
+      "id": 26,
+      "type": "MarkdownNote",
+      "pos": [
+        2840,
+        0
+      ],
+      "size": [
+        470,
+        560
+      ],
+      "flags": {},
+      "order": 25,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "title": "2b. MOTION DIALS",
+      "properties": {},
+      "widgets_values": [
+        "## Not enough mouth movement? Two dials.\n\n**1. `MOTION DIAL (img_compression)` \u2014 try this first.** LTX is trained on\nVIDEO frames, which always carry codec artifacts. A pristine photo is\nout-of-distribution as a \"video frame\", so the model treats it as a perfect\nanchor and barely animates. `LTXVPreprocess` round-trips the guide through an\nH.264 encode/decode to make it look like real footage.\n\n* **35** = default, the value Lightricks' own I2V workflows use.\n* **50-70** = noticeably more motion, slightly softer first frame.\n* **0** = off; expect a near-frozen opening.\n\nCost: compression degrades the guide, so a high value also makes YOU look\nsofter and less detailed. If the render is smoothed/stylized, drop this to\n20-25 before touching anything else - it is the most likely culprit.\n\nThere is one per shot. Shot 1 usually needs MORE than shot 2, because shot 2's\nguide is already a decoded video frame while shot 1's is a still photo.\n\n**2. `identity_guidance_scale` + `end_percent` on the reference node.**\nGuidance amplifies the reference's effect on the WHOLE denoised tensor - audio\nAND video - so at full range it restyles your face while it fixes the voice\n(smoothed, less photoreal). Ships at scale **3.0** with `end_percent` **0.5**,\ni.e. guidance runs only through the early steps where identity is decided, and\nswitches off for the late steps where detail forms.\n\n* Face still too stylized -> lower `end_percent` (0.3-0.4), NOT the scale.\n* Voice not holding -> raise the scale (4-5) and leave `end_percent` alone.\n* `scale = 0` disables it entirely (and skips the extra forward pass).\n\n**3. `strength` on the guide node.** At 1.0 the first frame's noise mask is\n0.0 \u2014 frame 0 is *completely locked* to the guide and the model has to fight\nit. Ships at **0.9**. Drop toward 0.85 for more freedom, raise toward 0.95 if\nthe face drifts too far from your reference.\n\nAlso already applied: the reference is zoomed 1.2x and centre-cropped (a guide\nat exactly the canvas size is pixel-continuable, and the model just sits on\nit), and the first 28 frames of shot 1 / 14 of shot 2 are trimmed, because the\nopening frames morph out of the guide and are where lip sync is worst."
+      ],
+      "color": "#432",
+      "bgcolor": "#653"
+    },
+    {
+      "id": 27,
       "type": "LTXVEmptyLatentAudio",
       "pos": [
-        2910,
+        3450,
         0
       ],
       "size": [
@@ -946,13 +1008,13 @@
         146
       ],
       "flags": {},
-      "order": 24,
+      "order": 26,
       "mode": 0,
       "inputs": [
         {
           "name": "audio_vae",
           "type": "VAE",
-          "link": 12
+          "link": 13
         }
       ],
       "outputs": [
@@ -960,7 +1022,7 @@
           "name": "Latent",
           "type": "LATENT",
           "links": [
-            24
+            25
           ],
           "slot_index": 0
         }
@@ -975,10 +1037,10 @@
       ]
     },
     {
-      "id": 26,
+      "id": 28,
       "type": "LTXVReferenceAudio",
       "pos": [
-        2910,
+        3450,
         190
       ],
       "size": [
@@ -986,33 +1048,33 @@
         226
       ],
       "flags": {},
-      "order": 25,
+      "order": 27,
       "mode": 0,
       "inputs": [
         {
           "name": "model",
           "type": "MODEL",
-          "link": 13
+          "link": 14
         },
         {
           "name": "positive",
           "type": "CONDITIONING",
-          "link": 14
+          "link": 15
         },
         {
           "name": "negative",
           "type": "CONDITIONING",
-          "link": 15
+          "link": 16
         },
         {
           "name": "reference_audio",
           "type": "AUDIO",
-          "link": 16
+          "link": 17
         },
         {
           "name": "audio_vae",
           "type": "VAE",
-          "link": 17
+          "link": 18
         }
       ],
       "outputs": [
@@ -1020,7 +1082,7 @@
           "name": "MODEL",
           "type": "MODEL",
           "links": [
-            25
+            26
           ],
           "slot_index": 0
         },
@@ -1028,7 +1090,7 @@
           "name": "positive",
           "type": "CONDITIONING",
           "links": [
-            18
+            19
           ],
           "slot_index": 1
         },
@@ -1036,7 +1098,7 @@
           "name": "negative",
           "type": "CONDITIONING",
           "links": [
-            19
+            20
           ],
           "slot_index": 2
         }
@@ -1047,15 +1109,15 @@
       "widgets_values": [
         3.0,
         0.0,
-        1.0
+        0.5
       ],
       "title": "LTXV Reference Audio (Ctrl+B)"
     },
     {
-      "id": 27,
+      "id": 29,
       "type": "LTXVConcatAVLatent",
       "pos": [
-        2910,
+        3450,
         460
       ],
       "size": [
@@ -1063,18 +1125,18 @@
         88
       ],
       "flags": {},
-      "order": 26,
+      "order": 28,
       "mode": 0,
       "inputs": [
         {
           "name": "video_latent",
           "type": "LATENT",
-          "link": 23
+          "link": 24
         },
         {
           "name": "audio_latent",
           "type": "LATENT",
-          "link": 24
+          "link": 25
         }
       ],
       "outputs": [
@@ -1082,7 +1144,7 @@
           "name": "latent",
           "type": "LATENT",
           "links": [
-            32
+            33
           ],
           "slot_index": 0
         }
@@ -1093,10 +1155,10 @@
       "widgets_values": []
     },
     {
-      "id": 28,
+      "id": 30,
       "type": "RandomNoise",
       "pos": [
-        3520,
+        4060,
         0
       ],
       "size": [
@@ -1104,7 +1166,7 @@
         100
       ],
       "flags": {},
-      "order": 27,
+      "order": 29,
       "mode": 0,
       "inputs": [],
       "outputs": [
@@ -1112,7 +1174,7 @@
           "name": "NOISE",
           "type": "NOISE",
           "links": [
-            28
+            29
           ],
           "slot_index": 0
         }
@@ -1126,10 +1188,10 @@
       ]
     },
     {
-      "id": 29,
+      "id": 31,
       "type": "CFGGuider",
       "pos": [
-        3520,
+        4060,
         144
       ],
       "size": [
@@ -1137,23 +1199,23 @@
         134
       ],
       "flags": {},
-      "order": 28,
+      "order": 30,
       "mode": 0,
       "inputs": [
         {
           "name": "model",
           "type": "MODEL",
-          "link": 25
+          "link": 26
         },
         {
           "name": "positive",
           "type": "CONDITIONING",
-          "link": 26
+          "link": 27
         },
         {
           "name": "negative",
           "type": "CONDITIONING",
-          "link": 27
+          "link": 28
         }
       ],
       "outputs": [
@@ -1161,7 +1223,7 @@
           "name": "GUIDER",
           "type": "GUIDER",
           "links": [
-            29
+            30
           ],
           "slot_index": 0
         }
@@ -1175,10 +1237,10 @@
       "title": "cfg 1 - negatives inert"
     },
     {
-      "id": 30,
+      "id": 32,
       "type": "SamplerCustomAdvanced",
       "pos": [
-        3520,
+        4060,
         322
       ],
       "size": [
@@ -1186,33 +1248,33 @@
         148
       ],
       "flags": {},
-      "order": 29,
+      "order": 31,
       "mode": 0,
       "inputs": [
         {
           "name": "noise",
           "type": "NOISE",
-          "link": 28
+          "link": 29
         },
         {
           "name": "guider",
           "type": "GUIDER",
-          "link": 29
+          "link": 30
         },
         {
           "name": "sampler",
           "type": "SAMPLER",
-          "link": 30
+          "link": 31
         },
         {
           "name": "sigmas",
           "type": "SIGMAS",
-          "link": 31
+          "link": 32
         },
         {
           "name": "latent_image",
           "type": "LATENT",
-          "link": 32
+          "link": 33
         }
       ],
       "outputs": [
@@ -1220,7 +1282,7 @@
           "name": "output",
           "type": "LATENT",
           "links": [
-            33
+            34
           ],
           "slot_index": 0
         },
@@ -1237,10 +1299,10 @@
       "widgets_values": []
     },
     {
-      "id": 31,
+      "id": 33,
       "type": "LTXVSeparateAVLatent",
       "pos": [
-        3520,
+        4060,
         514
       ],
       "size": [
@@ -1248,13 +1310,13 @@
         68
       ],
       "flags": {},
-      "order": 30,
+      "order": 32,
       "mode": 0,
       "inputs": [
         {
           "name": "av_latent",
           "type": "LATENT",
-          "link": 33
+          "link": 34
         }
       ],
       "outputs": [
@@ -1262,7 +1324,7 @@
           "name": "video_latent",
           "type": "LATENT",
           "links": [
-            36
+            37
           ],
           "slot_index": 0
         },
@@ -1270,7 +1332,7 @@
           "name": "audio_latent",
           "type": "LATENT",
           "links": [
-            39
+            40
           ],
           "slot_index": 1
         }
@@ -1281,10 +1343,10 @@
       "widgets_values": []
     },
     {
-      "id": 32,
+      "id": 34,
       "type": "LTXVCropGuides",
       "pos": [
-        3520,
+        4060,
         626
       ],
       "size": [
@@ -1292,23 +1354,23 @@
         108
       ],
       "flags": {},
-      "order": 31,
+      "order": 33,
       "mode": 0,
       "inputs": [
         {
           "name": "positive",
           "type": "CONDITIONING",
-          "link": 34
+          "link": 35
         },
         {
           "name": "negative",
           "type": "CONDITIONING",
-          "link": 35
+          "link": 36
         },
         {
           "name": "latent",
           "type": "LATENT",
-          "link": 36
+          "link": 37
         }
       ],
       "outputs": [
@@ -1328,7 +1390,7 @@
           "name": "latent",
           "type": "LATENT",
           "links": [
-            37
+            38
           ],
           "slot_index": 2
         }
@@ -1339,10 +1401,10 @@
       "widgets_values": []
     },
     {
-      "id": 33,
+      "id": 35,
       "type": "VAEDecode",
       "pos": [
-        3520,
+        4060,
         778
       ],
       "size": [
@@ -1350,18 +1412,18 @@
         88
       ],
       "flags": {},
-      "order": 32,
+      "order": 34,
       "mode": 0,
       "inputs": [
         {
           "name": "samples",
           "type": "LATENT",
-          "link": 37
+          "link": 38
         },
         {
           "name": "vae",
           "type": "VAE",
-          "link": 38
+          "link": 39
         }
       ],
       "outputs": [
@@ -1369,8 +1431,8 @@
           "name": "IMAGE",
           "type": "IMAGE",
           "links": [
-            41,
-            46
+            42,
+            47
           ],
           "slot_index": 0
         }
@@ -1381,10 +1443,10 @@
       "widgets_values": []
     },
     {
-      "id": 34,
+      "id": 36,
       "type": "LTXVAudioVAEDecode",
       "pos": [
-        3520,
+        4060,
         910
       ],
       "size": [
@@ -1392,18 +1454,18 @@
         88
       ],
       "flags": {},
-      "order": 33,
+      "order": 35,
       "mode": 0,
       "inputs": [
         {
           "name": "samples",
           "type": "LATENT",
-          "link": 39
+          "link": 40
         },
         {
           "name": "audio_vae",
           "type": "VAE",
-          "link": 40
+          "link": 41
         }
       ],
       "outputs": [
@@ -1411,7 +1473,7 @@
           "name": "Audio",
           "type": "AUDIO",
           "links": [
-            42
+            43
           ],
           "slot_index": 0
         }
@@ -1422,10 +1484,10 @@
       "widgets_values": []
     },
     {
-      "id": 35,
+      "id": 37,
       "type": "MarkdownNote",
       "pos": [
-        2910,
+        3450,
         592
       ],
       "size": [
@@ -1433,7 +1495,7 @@
         620
       ],
       "flags": {},
-      "order": 34,
+      "order": 36,
       "mode": 0,
       "inputs": [],
       "outputs": [],
@@ -1446,10 +1508,10 @@
       "bgcolor": "#653"
     },
     {
-      "id": 36,
+      "id": 38,
       "type": "ImageFromBatch",
       "pos": [
-        3520,
+        4060,
         1042
       ],
       "size": [
@@ -1457,13 +1519,13 @@
         120
       ],
       "flags": {},
-      "order": 35,
+      "order": 37,
       "mode": 0,
       "inputs": [
         {
           "name": "image",
           "type": "IMAGE",
-          "link": 41
+          "link": 42
         }
       ],
       "outputs": [
@@ -1471,8 +1533,8 @@
           "name": "IMAGE",
           "type": "IMAGE",
           "links": [
-            43,
-            88
+            44,
+            91
           ],
           "slot_index": 0
         }
@@ -1487,10 +1549,10 @@
       "title": "head trim: drop first 28f"
     },
     {
-      "id": 37,
+      "id": 39,
       "type": "TrimAudioDuration",
       "pos": [
-        3520,
+        4060,
         1206
       ],
       "size": [
@@ -1498,13 +1560,13 @@
         120
       ],
       "flags": {},
-      "order": 36,
+      "order": 38,
       "mode": 0,
       "inputs": [
         {
           "name": "audio",
           "type": "AUDIO",
-          "link": 42
+          "link": 43
         }
       ],
       "outputs": [
@@ -1512,8 +1574,9 @@
           "name": "AUDIO",
           "type": "AUDIO",
           "links": [
-            44,
-            90
+            45,
+            48,
+            93
           ],
           "slot_index": 0
         }
@@ -1528,10 +1591,10 @@
       "title": "head trim: audio -1.12s"
     },
     {
-      "id": 38,
+      "id": 40,
       "type": "CreateVideo",
       "pos": [
-        3920,
+        4460,
         0
       ],
       "size": [
@@ -1539,18 +1602,18 @@
         140
       ],
       "flags": {},
-      "order": 37,
+      "order": 39,
       "mode": 0,
       "inputs": [
         {
           "name": "images",
           "type": "IMAGE",
-          "link": 43
+          "link": 44
         },
         {
           "name": "audio",
           "type": "AUDIO",
-          "link": 44
+          "link": 45
         }
       ],
       "outputs": [
@@ -1558,7 +1621,7 @@
           "name": "VIDEO",
           "type": "VIDEO",
           "links": [
-            45
+            46
           ],
           "slot_index": 0
         }
@@ -1572,10 +1635,10 @@
       ]
     },
     {
-      "id": 39,
+      "id": 41,
       "type": "SaveVideo",
       "pos": [
-        3920,
+        4460,
         184
       ],
       "size": [
@@ -1583,13 +1646,13 @@
         310
       ],
       "flags": {},
-      "order": 38,
+      "order": 40,
       "mode": 0,
       "inputs": [
         {
           "name": "video",
           "type": "VIDEO",
-          "link": 45
+          "link": 46
         }
       ],
       "outputs": [
@@ -1610,10 +1673,10 @@
       ]
     },
     {
-      "id": 40,
+      "id": 42,
       "type": "MarkdownNote",
       "pos": [
-        4420,
+        4960,
         0
       ],
       "size": [
@@ -1621,7 +1684,7 @@
         380
       ],
       "flags": {},
-      "order": 39,
+      "order": 41,
       "mode": 0,
       "inputs": [],
       "outputs": [],
@@ -1634,10 +1697,10 @@
       "bgcolor": "#653"
     },
     {
-      "id": 41,
+      "id": 43,
       "type": "ImageFromBatch",
       "pos": [
-        4420,
+        4960,
         424
       ],
       "size": [
@@ -1645,13 +1708,13 @@
         120
       ],
       "flags": {},
-      "order": 40,
+      "order": 42,
       "mode": 0,
       "inputs": [
         {
           "name": "image",
           "type": "IMAGE",
-          "link": 46
+          "link": 47
         }
       ],
       "outputs": [
@@ -1659,7 +1722,7 @@
           "name": "IMAGE",
           "type": "IMAGE",
           "links": [
-            64
+            56
           ],
           "slot_index": 0
         }
@@ -1674,10 +1737,74 @@
       "title": "LAST FRAME of shot 1 (index 240)"
     },
     {
-      "id": 42,
+      "id": 44,
+      "type": "MarkdownNote",
+      "pos": [
+        5570,
+        0
+      ],
+      "size": [
+        470,
+        300
+      ],
+      "flags": {},
+      "order": 43,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "title": "4b. VOICE CHAIN",
+      "properties": {},
+      "widgets_values": [
+        "## The voice chain\n\nShot 1 references YOUR voice clip. Shot 2 references **shot 1's own generated\naudio**, sliced to the first 4 seconds.\n\nTwo shots pointing at the same external clip still sample independently, so the\nvoice drifts between them. Feeding shot 1's output forward is the core-node\nequivalent of the full pack's memory bank: shot 2 is conditioned on the voice\nthat actually came out of shot 1, so they match.\n\nIf shot 1's voice is wrong, shot 2 inherits it - fix shot 1 first."
+      ],
+      "color": "#432",
+      "bgcolor": "#653"
+    },
+    {
+      "id": 45,
+      "type": "TrimAudioDuration",
+      "pos": [
+        5570,
+        344
+      ],
+      "size": [
+        330,
+        120
+      ],
+      "flags": {},
+      "order": 44,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "audio",
+          "type": "AUDIO",
+          "link": 48
+        }
+      ],
+      "outputs": [
+        {
+          "name": "AUDIO",
+          "type": "AUDIO",
+          "links": [
+            61
+          ],
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "TrimAudioDuration"
+      },
+      "widgets_values": [
+        0.0,
+        4.0
+      ],
+      "title": "shot 1 voice -> shot 2 reference"
+    },
+    {
+      "id": 46,
       "type": "CLIPTextEncode",
       "pos": [
-        5030,
+        6180,
         0
       ],
       "size": [
@@ -1685,13 +1812,13 @@
         200
       ],
       "flags": {},
-      "order": 41,
+      "order": 45,
       "mode": 0,
       "inputs": [
         {
           "name": "clip",
           "type": "CLIP",
-          "link": 47
+          "link": 49
         }
       ],
       "outputs": [
@@ -1699,7 +1826,7 @@
           "name": "CONDITIONING",
           "type": "CONDITIONING",
           "links": [
-            49
+            51
           ],
           "slot_index": 0
         }
@@ -1713,10 +1840,10 @@
       "title": "Shot 2 prompt"
     },
     {
-      "id": 43,
+      "id": 47,
       "type": "CLIPTextEncode",
       "pos": [
-        5030,
+        6180,
         244
       ],
       "size": [
@@ -1724,13 +1851,13 @@
         200
       ],
       "flags": {},
-      "order": 42,
+      "order": 46,
       "mode": 0,
       "inputs": [
         {
           "name": "clip",
           "type": "CLIP",
-          "link": 48
+          "link": 50
         }
       ],
       "outputs": [
@@ -1738,7 +1865,7 @@
           "name": "CONDITIONING",
           "type": "CONDITIONING",
           "links": [
-            50
+            52
           ],
           "slot_index": 0
         }
@@ -1752,10 +1879,10 @@
       "title": "Shot 2 negative (inert)"
     },
     {
-      "id": 44,
+      "id": 48,
       "type": "LTXVConditioning",
       "pos": [
-        5030,
+        6180,
         488
       ],
       "size": [
@@ -1763,18 +1890,18 @@
         114
       ],
       "flags": {},
-      "order": 43,
+      "order": 47,
       "mode": 0,
       "inputs": [
         {
           "name": "positive",
           "type": "CONDITIONING",
-          "link": 49
+          "link": 51
         },
         {
           "name": "negative",
           "type": "CONDITIONING",
-          "link": 50
+          "link": 52
         }
       ],
       "outputs": [
@@ -1782,7 +1909,7 @@
           "name": "positive",
           "type": "CONDITIONING",
           "links": [
-            56
+            59
           ],
           "slot_index": 0
         },
@@ -1790,7 +1917,7 @@
           "name": "negative",
           "type": "CONDITIONING",
           "links": [
-            57
+            60
           ],
           "slot_index": 1
         }
@@ -1804,10 +1931,10 @@
       "title": "frame rate (match output)"
     },
     {
-      "id": 45,
+      "id": 49,
       "type": "EmptyLTXVLatentVideo",
       "pos": [
-        5590,
+        6740,
         0
       ],
       "size": [
@@ -1815,13 +1942,13 @@
         212
       ],
       "flags": {},
-      "order": 44,
+      "order": 48,
       "mode": 0,
       "inputs": [
         {
           "name": "width",
           "type": "INT",
-          "link": 51,
+          "link": 53,
           "widget": {
             "name": "width"
           }
@@ -1829,7 +1956,7 @@
         {
           "name": "height",
           "type": "INT",
-          "link": 52,
+          "link": 54,
           "widget": {
             "name": "height"
           }
@@ -1837,7 +1964,7 @@
         {
           "name": "length",
           "type": "INT",
-          "link": 53,
+          "link": 55,
           "widget": {
             "name": "length"
           }
@@ -1848,7 +1975,7 @@
           "name": "LATENT",
           "type": "LATENT",
           "links": [
-            63
+            66
           ],
           "slot_index": 0
         }
@@ -1864,44 +1991,83 @@
       ]
     },
     {
-      "id": 46,
+      "id": 50,
+      "type": "LTXVPreprocess",
+      "pos": [
+        6740,
+        256
+      ],
+      "size": [
+        330,
+        94
+      ],
+      "flags": {},
+      "order": 49,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 56
+        }
+      ],
+      "outputs": [
+        {
+          "name": "output_image",
+          "type": "IMAGE",
+          "links": [
+            67
+          ],
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "LTXVPreprocess"
+      },
+      "widgets_values": [
+        35
+      ],
+      "title": "MOTION DIAL (img_compression)"
+    },
+    {
+      "id": 51,
       "type": "LTXVAddGuide",
       "pos": [
-        5590,
-        256
+        6740,
+        394
       ],
       "size": [
         330,
         240
       ],
       "flags": {},
-      "order": 45,
+      "order": 50,
       "mode": 0,
       "inputs": [
         {
           "name": "positive",
           "type": "CONDITIONING",
-          "link": 60
+          "link": 63
         },
         {
           "name": "negative",
           "type": "CONDITIONING",
-          "link": 61
+          "link": 64
         },
         {
           "name": "vae",
           "type": "VAE",
-          "link": 62
+          "link": 65
         },
         {
           "name": "latent",
           "type": "LATENT",
-          "link": 63
+          "link": 66
         },
         {
           "name": "image",
           "type": "IMAGE",
-          "link": 64
+          "link": 67
         },
         {
           "name": "attention_mask",
@@ -1919,8 +2085,8 @@
           "name": "positive",
           "type": "CONDITIONING",
           "links": [
-            68,
-            76
+            71,
+            79
           ],
           "slot_index": 0
         },
@@ -1928,8 +2094,8 @@
           "name": "negative",
           "type": "CONDITIONING",
           "links": [
-            69,
-            77
+            72,
+            80
           ],
           "slot_index": 1
         },
@@ -1937,7 +2103,7 @@
           "name": "latent",
           "type": "LATENT",
           "links": [
-            65
+            68
           ],
           "slot_index": 2
         }
@@ -1952,10 +2118,10 @@
       "title": "Shot 2 guide <- last frame"
     },
     {
-      "id": 47,
+      "id": 52,
       "type": "LTXVEmptyLatentAudio",
       "pos": [
-        6060,
+        7210,
         0
       ],
       "size": [
@@ -1963,13 +2129,13 @@
         146
       ],
       "flags": {},
-      "order": 46,
+      "order": 51,
       "mode": 0,
       "inputs": [
         {
           "name": "audio_vae",
           "type": "VAE",
-          "link": 54
+          "link": 57
         }
       ],
       "outputs": [
@@ -1977,7 +2143,7 @@
           "name": "Latent",
           "type": "LATENT",
           "links": [
-            66
+            69
           ],
           "slot_index": 0
         }
@@ -1992,10 +2158,10 @@
       ]
     },
     {
-      "id": 48,
+      "id": 53,
       "type": "LTXVReferenceAudio",
       "pos": [
-        6060,
+        7210,
         190
       ],
       "size": [
@@ -2003,33 +2169,33 @@
         226
       ],
       "flags": {},
-      "order": 47,
+      "order": 52,
       "mode": 0,
       "inputs": [
         {
           "name": "model",
           "type": "MODEL",
-          "link": 55
+          "link": 58
         },
         {
           "name": "positive",
           "type": "CONDITIONING",
-          "link": 56
+          "link": 59
         },
         {
           "name": "negative",
           "type": "CONDITIONING",
-          "link": 57
+          "link": 60
         },
         {
           "name": "reference_audio",
           "type": "AUDIO",
-          "link": 58
+          "link": 61
         },
         {
           "name": "audio_vae",
           "type": "VAE",
-          "link": 59
+          "link": 62
         }
       ],
       "outputs": [
@@ -2037,7 +2203,7 @@
           "name": "MODEL",
           "type": "MODEL",
           "links": [
-            67
+            70
           ],
           "slot_index": 0
         },
@@ -2045,7 +2211,7 @@
           "name": "positive",
           "type": "CONDITIONING",
           "links": [
-            60
+            63
           ],
           "slot_index": 1
         },
@@ -2053,7 +2219,7 @@
           "name": "negative",
           "type": "CONDITIONING",
           "links": [
-            61
+            64
           ],
           "slot_index": 2
         }
@@ -2064,15 +2230,15 @@
       "widgets_values": [
         3.0,
         0.0,
-        1.0
+        0.5
       ],
       "title": "LTXV Reference Audio (Ctrl+B)"
     },
     {
-      "id": 49,
+      "id": 54,
       "type": "LTXVConcatAVLatent",
       "pos": [
-        6060,
+        7210,
         460
       ],
       "size": [
@@ -2080,18 +2246,18 @@
         88
       ],
       "flags": {},
-      "order": 48,
+      "order": 53,
       "mode": 0,
       "inputs": [
         {
           "name": "video_latent",
           "type": "LATENT",
-          "link": 65
+          "link": 68
         },
         {
           "name": "audio_latent",
           "type": "LATENT",
-          "link": 66
+          "link": 69
         }
       ],
       "outputs": [
@@ -2099,7 +2265,7 @@
           "name": "latent",
           "type": "LATENT",
           "links": [
-            74
+            77
           ],
           "slot_index": 0
         }
@@ -2110,10 +2276,10 @@
       "widgets_values": []
     },
     {
-      "id": 50,
+      "id": 55,
       "type": "RandomNoise",
       "pos": [
-        6530,
+        7680,
         0
       ],
       "size": [
@@ -2121,7 +2287,7 @@
         100
       ],
       "flags": {},
-      "order": 49,
+      "order": 54,
       "mode": 0,
       "inputs": [],
       "outputs": [
@@ -2129,7 +2295,7 @@
           "name": "NOISE",
           "type": "NOISE",
           "links": [
-            70
+            73
           ],
           "slot_index": 0
         }
@@ -2143,10 +2309,10 @@
       ]
     },
     {
-      "id": 51,
+      "id": 56,
       "type": "CFGGuider",
       "pos": [
-        6530,
+        7680,
         144
       ],
       "size": [
@@ -2154,23 +2320,23 @@
         134
       ],
       "flags": {},
-      "order": 50,
+      "order": 55,
       "mode": 0,
       "inputs": [
         {
           "name": "model",
           "type": "MODEL",
-          "link": 67
+          "link": 70
         },
         {
           "name": "positive",
           "type": "CONDITIONING",
-          "link": 68
+          "link": 71
         },
         {
           "name": "negative",
           "type": "CONDITIONING",
-          "link": 69
+          "link": 72
         }
       ],
       "outputs": [
@@ -2178,7 +2344,7 @@
           "name": "GUIDER",
           "type": "GUIDER",
           "links": [
-            71
+            74
           ],
           "slot_index": 0
         }
@@ -2192,10 +2358,10 @@
       "title": "cfg 1 - negatives inert"
     },
     {
-      "id": 52,
+      "id": 57,
       "type": "SamplerCustomAdvanced",
       "pos": [
-        6530,
+        7680,
         322
       ],
       "size": [
@@ -2203,33 +2369,33 @@
         148
       ],
       "flags": {},
-      "order": 51,
+      "order": 56,
       "mode": 0,
       "inputs": [
         {
           "name": "noise",
           "type": "NOISE",
-          "link": 70
+          "link": 73
         },
         {
           "name": "guider",
           "type": "GUIDER",
-          "link": 71
+          "link": 74
         },
         {
           "name": "sampler",
           "type": "SAMPLER",
-          "link": 72
+          "link": 75
         },
         {
           "name": "sigmas",
           "type": "SIGMAS",
-          "link": 73
+          "link": 76
         },
         {
           "name": "latent_image",
           "type": "LATENT",
-          "link": 74
+          "link": 77
         }
       ],
       "outputs": [
@@ -2237,7 +2403,7 @@
           "name": "output",
           "type": "LATENT",
           "links": [
-            75
+            78
           ],
           "slot_index": 0
         },
@@ -2254,10 +2420,10 @@
       "widgets_values": []
     },
     {
-      "id": 53,
+      "id": 58,
       "type": "LTXVSeparateAVLatent",
       "pos": [
-        6530,
+        7680,
         514
       ],
       "size": [
@@ -2265,13 +2431,13 @@
         68
       ],
       "flags": {},
-      "order": 52,
+      "order": 57,
       "mode": 0,
       "inputs": [
         {
           "name": "av_latent",
           "type": "LATENT",
-          "link": 75
+          "link": 78
         }
       ],
       "outputs": [
@@ -2279,7 +2445,7 @@
           "name": "video_latent",
           "type": "LATENT",
           "links": [
-            78
+            81
           ],
           "slot_index": 0
         },
@@ -2287,7 +2453,7 @@
           "name": "audio_latent",
           "type": "LATENT",
           "links": [
-            81
+            84
           ],
           "slot_index": 1
         }
@@ -2298,10 +2464,10 @@
       "widgets_values": []
     },
     {
-      "id": 54,
+      "id": 59,
       "type": "LTXVCropGuides",
       "pos": [
-        6530,
+        7680,
         626
       ],
       "size": [
@@ -2309,23 +2475,23 @@
         108
       ],
       "flags": {},
-      "order": 53,
+      "order": 58,
       "mode": 0,
       "inputs": [
         {
           "name": "positive",
           "type": "CONDITIONING",
-          "link": 76
+          "link": 79
         },
         {
           "name": "negative",
           "type": "CONDITIONING",
-          "link": 77
+          "link": 80
         },
         {
           "name": "latent",
           "type": "LATENT",
-          "link": 78
+          "link": 81
         }
       ],
       "outputs": [
@@ -2345,7 +2511,7 @@
           "name": "latent",
           "type": "LATENT",
           "links": [
-            79
+            82
           ],
           "slot_index": 2
         }
@@ -2356,10 +2522,10 @@
       "widgets_values": []
     },
     {
-      "id": 55,
+      "id": 60,
       "type": "VAEDecode",
       "pos": [
-        6530,
+        7680,
         778
       ],
       "size": [
@@ -2367,18 +2533,18 @@
         88
       ],
       "flags": {},
-      "order": 54,
+      "order": 59,
       "mode": 0,
       "inputs": [
         {
           "name": "samples",
           "type": "LATENT",
-          "link": 79
+          "link": 82
         },
         {
           "name": "vae",
           "type": "VAE",
-          "link": 80
+          "link": 83
         }
       ],
       "outputs": [
@@ -2386,7 +2552,7 @@
           "name": "IMAGE",
           "type": "IMAGE",
           "links": [
-            83
+            86
           ],
           "slot_index": 0
         }
@@ -2397,10 +2563,10 @@
       "widgets_values": []
     },
     {
-      "id": 56,
+      "id": 61,
       "type": "LTXVAudioVAEDecode",
       "pos": [
-        6530,
+        7680,
         910
       ],
       "size": [
@@ -2408,18 +2574,18 @@
         88
       ],
       "flags": {},
-      "order": 55,
+      "order": 60,
       "mode": 0,
       "inputs": [
         {
           "name": "samples",
           "type": "LATENT",
-          "link": 81
+          "link": 84
         },
         {
           "name": "audio_vae",
           "type": "VAE",
-          "link": 82
+          "link": 85
         }
       ],
       "outputs": [
@@ -2427,7 +2593,7 @@
           "name": "Audio",
           "type": "AUDIO",
           "links": [
-            84
+            87
           ],
           "slot_index": 0
         }
@@ -2438,10 +2604,10 @@
       "widgets_values": []
     },
     {
-      "id": 57,
+      "id": 62,
       "type": "ImageFromBatch",
       "pos": [
-        6530,
+        7680,
         1042
       ],
       "size": [
@@ -2449,13 +2615,13 @@
         120
       ],
       "flags": {},
-      "order": 56,
+      "order": 61,
       "mode": 0,
       "inputs": [
         {
           "name": "image",
           "type": "IMAGE",
-          "link": 83
+          "link": 86
         }
       ],
       "outputs": [
@@ -2463,8 +2629,8 @@
           "name": "IMAGE",
           "type": "IMAGE",
           "links": [
-            85,
-            89
+            88,
+            92
           ],
           "slot_index": 0
         }
@@ -2479,10 +2645,10 @@
       "title": "head trim: drop first 14f"
     },
     {
-      "id": 58,
+      "id": 63,
       "type": "TrimAudioDuration",
       "pos": [
-        6530,
+        7680,
         1206
       ],
       "size": [
@@ -2490,13 +2656,13 @@
         120
       ],
       "flags": {},
-      "order": 57,
+      "order": 62,
       "mode": 0,
       "inputs": [
         {
           "name": "audio",
           "type": "AUDIO",
-          "link": 84
+          "link": 87
         }
       ],
       "outputs": [
@@ -2504,8 +2670,8 @@
           "name": "AUDIO",
           "type": "AUDIO",
           "links": [
-            86,
-            91
+            89,
+            94
           ],
           "slot_index": 0
         }
@@ -2520,10 +2686,10 @@
       "title": "head trim: audio -0.56s"
     },
     {
-      "id": 59,
+      "id": 64,
       "type": "CreateVideo",
       "pos": [
-        6930,
+        8080,
         0
       ],
       "size": [
@@ -2531,18 +2697,18 @@
         140
       ],
       "flags": {},
-      "order": 58,
+      "order": 63,
       "mode": 0,
       "inputs": [
         {
           "name": "images",
           "type": "IMAGE",
-          "link": 85
+          "link": 88
         },
         {
           "name": "audio",
           "type": "AUDIO",
-          "link": 86
+          "link": 89
         }
       ],
       "outputs": [
@@ -2550,7 +2716,7 @@
           "name": "VIDEO",
           "type": "VIDEO",
           "links": [
-            87
+            90
           ],
           "slot_index": 0
         }
@@ -2564,10 +2730,10 @@
       ]
     },
     {
-      "id": 60,
+      "id": 65,
       "type": "SaveVideo",
       "pos": [
-        6930,
+        8080,
         184
       ],
       "size": [
@@ -2575,13 +2741,13 @@
         310
       ],
       "flags": {},
-      "order": 59,
+      "order": 64,
       "mode": 0,
       "inputs": [
         {
           "name": "video",
           "type": "VIDEO",
-          "link": 87
+          "link": 90
         }
       ],
       "outputs": [
@@ -2602,10 +2768,10 @@
       ]
     },
     {
-      "id": 61,
+      "id": 66,
       "type": "MarkdownNote",
       "pos": [
-        7430,
+        8580,
         0
       ],
       "size": [
@@ -2613,7 +2779,7 @@
         430
       ],
       "flags": {},
-      "order": 60,
+      "order": 65,
       "mode": 0,
       "inputs": [],
       "outputs": [],
@@ -2626,10 +2792,10 @@
       "bgcolor": "#653"
     },
     {
-      "id": 62,
+      "id": 67,
       "type": "ImageBatch",
       "pos": [
-        7430,
+        8580,
         474
       ],
       "size": [
@@ -2637,18 +2803,18 @@
         88
       ],
       "flags": {},
-      "order": 61,
+      "order": 66,
       "mode": 0,
       "inputs": [
         {
           "name": "image1",
           "type": "IMAGE",
-          "link": 88
+          "link": 91
         },
         {
           "name": "image2",
           "type": "IMAGE",
-          "link": 89
+          "link": 92
         }
       ],
       "outputs": [
@@ -2656,7 +2822,7 @@
           "name": "IMAGE",
           "type": "IMAGE",
           "links": [
-            92
+            95
           ],
           "slot_index": 0
         }
@@ -2668,10 +2834,10 @@
       "title": "join shots (video)"
     },
     {
-      "id": 63,
+      "id": 68,
       "type": "AudioConcat",
       "pos": [
-        7430,
+        8580,
         606
       ],
       "size": [
@@ -2679,18 +2845,18 @@
         114
       ],
       "flags": {},
-      "order": 62,
+      "order": 67,
       "mode": 0,
       "inputs": [
         {
           "name": "audio1",
           "type": "AUDIO",
-          "link": 90
+          "link": 93
         },
         {
           "name": "audio2",
           "type": "AUDIO",
-          "link": 91
+          "link": 94
         }
       ],
       "outputs": [
@@ -2698,7 +2864,7 @@
           "name": "AUDIO",
           "type": "AUDIO",
           "links": [
-            95
+            98
           ],
           "slot_index": 0
         }
@@ -2712,10 +2878,10 @@
       "title": "join shots (audio)"
     },
     {
-      "id": 64,
+      "id": 69,
       "type": "ImageSharpen",
       "pos": [
-        7430,
+        8580,
         764
       ],
       "size": [
@@ -2723,13 +2889,13 @@
         146
       ],
       "flags": {},
-      "order": 63,
+      "order": 68,
       "mode": 4,
       "inputs": [
         {
           "name": "image",
           "type": "IMAGE",
-          "link": 92
+          "link": 95
         }
       ],
       "outputs": [
@@ -2737,7 +2903,7 @@
           "name": "IMAGE",
           "type": "IMAGE",
           "links": [
-            93
+            96
           ],
           "slot_index": 0
         }
@@ -2753,10 +2919,10 @@
       "title": "sharpen - BYPASSED (short runs only)"
     },
     {
-      "id": 65,
+      "id": 70,
       "type": "ImageScaleBy",
       "pos": [
-        7430,
+        8580,
         954
       ],
       "size": [
@@ -2764,13 +2930,13 @@
         120
       ],
       "flags": {},
-      "order": 64,
+      "order": 69,
       "mode": 0,
       "inputs": [
         {
           "name": "image",
           "type": "IMAGE",
-          "link": 93
+          "link": 96
         }
       ],
       "outputs": [
@@ -2778,7 +2944,7 @@
           "name": "IMAGE",
           "type": "IMAGE",
           "links": [
-            94
+            97
           ],
           "slot_index": 0
         }
@@ -2793,10 +2959,10 @@
       "title": "refine: bicubic 1.5x"
     },
     {
-      "id": 66,
+      "id": 71,
       "type": "CreateVideo",
       "pos": [
-        7430,
+        8580,
         1118
       ],
       "size": [
@@ -2804,18 +2970,18 @@
         140
       ],
       "flags": {},
-      "order": 65,
+      "order": 70,
       "mode": 0,
       "inputs": [
         {
           "name": "images",
           "type": "IMAGE",
-          "link": 94
+          "link": 97
         },
         {
           "name": "audio",
           "type": "AUDIO",
-          "link": 95
+          "link": 98
         }
       ],
       "outputs": [
@@ -2823,7 +2989,7 @@
           "name": "VIDEO",
           "type": "VIDEO",
           "links": [
-            96
+            99
           ],
           "slot_index": 0
         }
@@ -2837,10 +3003,10 @@
       ]
     },
     {
-      "id": 67,
+      "id": 72,
       "type": "SaveVideo",
       "pos": [
-        7970,
+        9120,
         0
       ],
       "size": [
@@ -2848,13 +3014,13 @@
         310
       ],
       "flags": {},
-      "order": 66,
+      "order": 71,
       "mode": 0,
       "inputs": [
         {
           "name": "video",
           "type": "VIDEO",
-          "link": 96
+          "link": 99
         }
       ],
       "outputs": [
@@ -2967,681 +3133,705 @@
     ],
     [
       12,
+      17,
+      0,
+      24,
+      0,
+      "IMAGE"
+    ],
+    [
+      13,
       6,
       0,
-      25,
+      27,
       0,
       "VAE"
     ],
     [
-      13,
+      14,
       3,
       0,
-      26,
+      28,
       0,
       "MODEL"
-    ],
-    [
-      14,
-      21,
-      0,
-      26,
-      1,
-      "CONDITIONING"
     ],
     [
       15,
       21,
+      0,
+      28,
       1,
-      26,
-      2,
       "CONDITIONING"
     ],
     [
       16,
+      21,
+      1,
+      28,
+      2,
+      "CONDITIONING"
+    ],
+    [
+      17,
       14,
       0,
-      26,
+      28,
       3,
       "AUDIO"
     ],
     [
-      17,
+      18,
       6,
       0,
-      26,
+      28,
       4,
       "VAE"
     ],
     [
-      18,
-      26,
-      1,
-      24,
-      0,
-      "CONDITIONING"
-    ],
-    [
       19,
-      26,
-      2,
-      24,
+      28,
       1,
+      25,
+      0,
       "CONDITIONING"
     ],
     [
       20,
+      28,
+      2,
+      25,
+      1,
+      "CONDITIONING"
+    ],
+    [
+      21,
       4,
       0,
-      24,
+      25,
       2,
       "VAE"
     ],
     [
-      21,
+      22,
       23,
       0,
-      24,
+      25,
       3,
       "LATENT"
     ],
     [
-      22,
-      17,
-      0,
+      23,
       24,
+      0,
+      25,
       4,
       "IMAGE"
     ],
     [
-      23,
       24,
+      25,
       2,
-      27,
+      29,
       0,
       "LATENT"
     ],
     [
-      24,
       25,
-      0,
       27,
+      0,
+      29,
       1,
       "LATENT"
     ],
     [
-      25,
       26,
+      28,
       0,
-      29,
+      31,
       0,
       "MODEL"
     ],
     [
-      26,
-      24,
+      27,
+      25,
       0,
-      29,
+      31,
       1,
       "CONDITIONING"
     ],
     [
-      27,
-      24,
+      28,
+      25,
       1,
-      29,
+      31,
       2,
       "CONDITIONING"
     ],
     [
-      28,
-      28,
-      0,
+      29,
       30,
+      0,
+      32,
       0,
       "NOISE"
     ],
     [
-      29,
-      29,
-      0,
       30,
+      31,
+      0,
+      32,
       1,
       "GUIDER"
     ],
     [
-      30,
+      31,
       13,
       0,
-      30,
+      32,
       2,
       "SAMPLER"
     ],
     [
-      31,
+      32,
       12,
       0,
-      30,
+      32,
       3,
       "SIGMAS"
     ],
     [
-      32,
-      27,
+      33,
+      29,
       0,
-      30,
+      32,
       4,
       "LATENT"
     ],
     [
-      33,
-      30,
+      34,
+      32,
       0,
-      31,
+      33,
       0,
       "LATENT"
     ],
     [
-      34,
-      24,
-      0,
-      32,
-      0,
-      "CONDITIONING"
-    ],
-    [
       35,
-      24,
-      1,
-      32,
-      1,
+      25,
+      0,
+      34,
+      0,
       "CONDITIONING"
     ],
     [
       36,
-      31,
-      0,
-      32,
-      2,
-      "LATENT"
+      25,
+      1,
+      34,
+      1,
+      "CONDITIONING"
     ],
     [
       37,
-      32,
-      2,
       33,
       0,
+      34,
+      2,
       "LATENT"
     ],
     [
       38,
-      4,
-      0,
-      33,
-      1,
-      "VAE"
-    ],
-    [
-      39,
-      31,
-      1,
       34,
+      2,
+      35,
       0,
       "LATENT"
     ],
     [
-      40,
-      6,
+      39,
+      4,
       0,
-      34,
+      35,
       1,
       "VAE"
     ],
     [
-      41,
+      40,
       33,
-      0,
+      1,
       36,
       0,
-      "IMAGE"
+      "LATENT"
+    ],
+    [
+      41,
+      6,
+      0,
+      36,
+      1,
+      "VAE"
     ],
     [
       42,
-      34,
+      35,
       0,
-      37,
+      38,
       0,
-      "AUDIO"
+      "IMAGE"
     ],
     [
       43,
       36,
       0,
+      39,
+      0,
+      "AUDIO"
+    ],
+    [
+      44,
       38,
+      0,
+      40,
       0,
       "IMAGE"
     ],
     [
-      44,
-      37,
+      45,
+      39,
       0,
-      38,
+      40,
       1,
       "AUDIO"
     ],
     [
-      45,
-      38,
+      46,
+      40,
       0,
-      39,
+      41,
       0,
       "VIDEO"
     ],
     [
-      46,
-      33,
+      47,
+      35,
       0,
-      41,
+      43,
       0,
       "IMAGE"
     ],
     [
-      47,
-      5,
-      0,
-      42,
-      0,
-      "CLIP"
-    ],
-    [
       48,
-      5,
+      39,
       0,
-      43,
+      45,
       0,
-      "CLIP"
+      "AUDIO"
     ],
     [
       49,
-      42,
+      5,
       0,
-      44,
+      46,
       0,
-      "CONDITIONING"
+      "CLIP"
     ],
     [
       50,
-      43,
+      5,
       0,
-      44,
+      47,
+      0,
+      "CLIP"
+    ],
+    [
+      51,
+      46,
+      0,
+      48,
+      0,
+      "CONDITIONING"
+    ],
+    [
+      52,
+      47,
+      0,
+      48,
       1,
       "CONDITIONING"
     ],
     [
-      51,
+      53,
       9,
       0,
-      45,
+      49,
       0,
-      "INT"
-    ],
-    [
-      52,
-      10,
-      0,
-      45,
-      1,
-      "INT"
-    ],
-    [
-      53,
-      11,
-      0,
-      45,
-      2,
       "INT"
     ],
     [
       54,
+      10,
+      0,
+      49,
+      1,
+      "INT"
+    ],
+    [
+      55,
+      11,
+      0,
+      49,
+      2,
+      "INT"
+    ],
+    [
+      56,
+      43,
+      0,
+      50,
+      0,
+      "IMAGE"
+    ],
+    [
+      57,
       6,
       0,
-      47,
+      52,
       0,
       "VAE"
     ],
     [
-      55,
+      58,
       3,
       0,
-      48,
+      53,
       0,
       "MODEL"
     ],
     [
-      56,
-      44,
-      0,
-      48,
-      1,
-      "CONDITIONING"
-    ],
-    [
-      57,
-      44,
-      1,
-      48,
-      2,
-      "CONDITIONING"
-    ],
-    [
-      58,
-      14,
-      0,
-      48,
-      3,
-      "AUDIO"
-    ],
-    [
       59,
-      6,
-      0,
       48,
-      4,
-      "VAE"
+      0,
+      53,
+      1,
+      "CONDITIONING"
     ],
     [
       60,
       48,
       1,
-      46,
-      0,
+      53,
+      2,
       "CONDITIONING"
     ],
     [
       61,
-      48,
-      2,
-      46,
-      1,
-      "CONDITIONING"
+      45,
+      0,
+      53,
+      3,
+      "AUDIO"
     ],
     [
       62,
-      4,
+      6,
       0,
-      46,
-      2,
+      53,
+      4,
       "VAE"
     ],
     [
       63,
-      45,
+      53,
+      1,
+      51,
       0,
-      46,
+      "CONDITIONING"
+    ],
+    [
+      64,
+      53,
+      2,
+      51,
+      1,
+      "CONDITIONING"
+    ],
+    [
+      65,
+      4,
+      0,
+      51,
+      2,
+      "VAE"
+    ],
+    [
+      66,
+      49,
+      0,
+      51,
       3,
       "LATENT"
     ],
     [
-      64,
-      41,
+      67,
+      50,
       0,
-      46,
+      51,
       4,
       "IMAGE"
     ],
     [
-      65,
-      46,
-      2,
-      49,
-      0,
-      "LATENT"
-    ],
-    [
-      66,
-      47,
-      0,
-      49,
-      1,
-      "LATENT"
-    ],
-    [
-      67,
-      48,
-      0,
-      51,
-      0,
-      "MODEL"
-    ],
-    [
       68,
-      46,
-      0,
       51,
-      1,
-      "CONDITIONING"
+      2,
+      54,
+      0,
+      "LATENT"
     ],
     [
       69,
-      46,
+      52,
+      0,
+      54,
       1,
-      51,
-      2,
-      "CONDITIONING"
+      "LATENT"
     ],
     [
       70,
-      50,
+      53,
       0,
-      52,
+      56,
       0,
-      "NOISE"
+      "MODEL"
     ],
     [
       71,
       51,
       0,
-      52,
+      56,
+      1,
+      "CONDITIONING"
+    ],
+    [
+      72,
+      51,
+      1,
+      56,
+      2,
+      "CONDITIONING"
+    ],
+    [
+      73,
+      55,
+      0,
+      57,
+      0,
+      "NOISE"
+    ],
+    [
+      74,
+      56,
+      0,
+      57,
       1,
       "GUIDER"
     ],
     [
-      72,
+      75,
       13,
       0,
-      52,
+      57,
       2,
       "SAMPLER"
     ],
     [
-      73,
+      76,
       12,
       0,
-      52,
+      57,
       3,
       "SIGMAS"
     ],
     [
-      74,
-      49,
+      77,
+      54,
       0,
-      52,
+      57,
       4,
       "LATENT"
     ],
     [
-      75,
-      52,
-      0,
-      53,
-      0,
-      "LATENT"
-    ],
-    [
-      76,
-      46,
-      0,
-      54,
-      0,
-      "CONDITIONING"
-    ],
-    [
-      77,
-      46,
-      1,
-      54,
-      1,
-      "CONDITIONING"
-    ],
-    [
       78,
-      53,
+      57,
       0,
-      54,
-      2,
+      58,
+      0,
       "LATENT"
     ],
     [
       79,
-      54,
-      2,
-      55,
+      51,
       0,
-      "LATENT"
+      59,
+      0,
+      "CONDITIONING"
     ],
     [
       80,
-      4,
-      0,
-      55,
+      51,
       1,
-      "VAE"
+      59,
+      1,
+      "CONDITIONING"
     ],
     [
       81,
-      53,
-      1,
-      56,
+      58,
       0,
+      59,
+      2,
       "LATENT"
     ],
     [
       82,
-      6,
+      59,
+      2,
+      60,
       0,
-      56,
+      "LATENT"
+    ],
+    [
+      83,
+      4,
+      0,
+      60,
       1,
       "VAE"
     ],
     [
-      83,
-      55,
-      0,
-      57,
-      0,
-      "IMAGE"
-    ],
-    [
       84,
-      56,
-      0,
       58,
+      1,
+      61,
       0,
-      "AUDIO"
+      "LATENT"
     ],
     [
       85,
-      57,
+      6,
       0,
-      59,
+      61,
+      1,
+      "VAE"
+    ],
+    [
+      86,
+      60,
+      0,
+      62,
       0,
       "IMAGE"
     ],
     [
-      86,
-      58,
+      87,
+      61,
       0,
-      59,
-      1,
+      63,
+      0,
       "AUDIO"
     ],
     [
-      87,
-      59,
-      0,
-      60,
-      0,
-      "VIDEO"
-    ],
-    [
       88,
-      36,
-      0,
       62,
+      0,
+      64,
       0,
       "IMAGE"
     ],
     [
       89,
-      57,
+      63,
       0,
-      62,
+      64,
       1,
-      "IMAGE"
+      "AUDIO"
     ],
     [
       90,
-      37,
+      64,
       0,
-      63,
+      65,
       0,
-      "AUDIO"
+      "VIDEO"
     ],
     [
       91,
-      58,
+      38,
       0,
-      63,
-      1,
-      "AUDIO"
+      67,
+      0,
+      "IMAGE"
     ],
     [
       92,
       62,
       0,
-      64,
-      0,
+      67,
+      1,
       "IMAGE"
     ],
     [
       93,
-      64,
+      39,
       0,
-      65,
+      68,
       0,
-      "IMAGE"
+      "AUDIO"
     ],
     [
       94,
-      65,
-      0,
-      66,
-      0,
-      "IMAGE"
-    ],
-    [
-      95,
       63,
       0,
-      66,
+      68,
       1,
       "AUDIO"
     ],
     [
-      96,
-      66,
-      0,
+      95,
       67,
+      0,
+      69,
+      0,
+      "IMAGE"
+    ],
+    [
+      96,
+      69,
+      0,
+      70,
+      0,
+      "IMAGE"
+    ],
+    [
+      97,
+      70,
+      0,
+      71,
+      0,
+      "IMAGE"
+    ],
+    [
+      98,
+      68,
+      0,
+      71,
+      1,
+      "AUDIO"
+    ],
+    [
+      99,
+      71,
+      0,
+      72,
       0,
       "VIDEO"
     ]
@@ -3705,8 +3895,8 @@
       "bounding": [
         2270,
         -58,
-        530,
-        1058
+        1070,
+        1196
       ],
       "color": "#35505a",
       "font_size": 24,
@@ -3716,7 +3906,7 @@
       "id": 6,
       "title": "SHOT 1  -  AUDIO settings",
       "bounding": [
-        2880,
+        3420,
         -58,
         530,
         1300
@@ -3729,7 +3919,7 @@
       "id": 7,
       "title": "SHOT 1  -  sampling + output (rarely changed)",
       "bounding": [
-        3490,
+        4030,
         -58,
         820,
         1414
@@ -3742,7 +3932,7 @@
       "id": 8,
       "title": "THE CHAIN - shot 1's last frame becomes shot 2's first",
       "bounding": [
-        4390,
+        4930,
         -58,
         530,
         632
@@ -3753,9 +3943,22 @@
     },
     {
       "id": 9,
+      "title": "THE VOICE CHAIN - shot 1's audio becomes shot 2's reference",
+      "bounding": [
+        5540,
+        -58,
+        530,
+        552
+      ],
+      "color": "#5a3a3a",
+      "font_size": 24,
+      "flags": {}
+    },
+    {
+      "id": 10,
       "title": "SHOT 2  -  PROMPT (what happens + the spoken line)",
       "bounding": [
-        5000,
+        6150,
         -58,
         480,
         690
@@ -3765,23 +3968,23 @@
       "flags": {}
     },
     {
-      "id": 10,
+      "id": 11,
       "title": "SHOT 2  -  VIDEO settings",
       "bounding": [
-        5560,
+        6710,
         -58,
         390,
-        584
+        722
       ],
       "color": "#35505a",
       "font_size": 24,
       "flags": {}
     },
     {
-      "id": 11,
+      "id": 12,
       "title": "SHOT 2  -  AUDIO settings",
       "bounding": [
-        6030,
+        7180,
         -58,
         390,
         636
@@ -3791,10 +3994,10 @@
       "flags": {}
     },
     {
-      "id": 12,
+      "id": 13,
       "title": "SHOT 2  -  sampling + output (rarely changed)",
       "bounding": [
-        6500,
+        7650,
         -58,
         820,
         1414
@@ -3804,10 +4007,10 @@
       "flags": {}
     },
     {
-      "id": 13,
+      "id": 14,
       "title": "FINISH - both shots joined + deterministic 1.5x refine",
       "bounding": [
-        7400,
+        8550,
         -58,
         960,
         1346
