@@ -45,6 +45,47 @@ Which model build:
 | 16 GB card | Q5_0 GGUF |
 | 32 GB+ and patience | bf16 |
 
+
+### System RAM and the Windows pagefile - READ THIS IF COMFYUI DIES WHILE LOADING
+
+**A 24-32 GB GPU is not the binding constraint. System RAM is.** Loading a model
+here materializes the whole checkpoint in system RAM as owned copies (not
+memory-mapped), and the quantize / LoRA-fuse pass stacks more on top. The bf16
+build is 46 GB on disk, so peak system usage runs well past what 64 GB of RAM
+alone can provide.
+
+**Symptoms** (all the same root cause):
+- RAM climbs to ~100% while **VRAM stays almost idle**, then ComfyUI exits
+- `Windows fatal exception: access violation` with a stack ending in
+  `sft_loader.py` / `create_vae_wrappers`
+- the whole machine hangs or reboots during the first load
+
+There is no catchable Python error for this - the process is killed by the OS.
+
+**Fixes, cheapest first:**
+
+1. **Raise the Windows pagefile. This is the usual fix and costs only disk.**
+   Settings > System > About > Advanced system settings > Performance Settings >
+   Advanced > Virtual memory > Change. Untick "Automatically manage", select an
+   SSD, choose Custom size, and set **65536-131072 MB (64-128 GB)**. Reboot.
+   The peak is brief; with a large pagefile it spills to disk instead of dying.
+   Machines with 64 GB RAM and a default pagefile are the ones that crash.
+2. **Raise `resident_blocks` on the Generate node.** With `sequential_offload`
+   on, blocks that are NOT resident live in system RAM. `resident_blocks=1`
+   means 47 of 48 blocks sit in RAM while your VRAM goes unused. Push it up
+   until VRAM is nearly full - roughly **24-30 on a 32 GB card, 12 on 24 GB**.
+   This moves load off RAM and onto the card you bought.
+3. **Use a GGUF** in `model_file` - GGUF weights stay packed and memory-mapped
+   rather than copied into RAM.
+4. **Avoid the fp8 FILE unless you are also using an fp8 toggle.** Loaded on its
+   own it is upcast to bf16 at load, so a 25 GB file becomes ~50 GB in RAM. It
+   saves disk, not memory.
+5. Close other applications, and load no LoRAs on the first successful run
+   (fusion allocates extra at the peak).
+
+Recent versions print a system-memory estimate before loading and warn when it
+looks too tight, instead of letting Windows fall over silently.
+
 ## 3. Install
 
 1. Install the base pack (RealRebelAI's) into `ComfyUI/custom_nodes/` if you
