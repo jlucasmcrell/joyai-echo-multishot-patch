@@ -104,6 +104,35 @@ The files are interdependent - apply the whole set together, never cherry-pick
 
 ## Bug fixes
 
+### 0. RoPE clock hardcoded to 24 fps — the ~10 s lip-sync cliff (CRITICAL)
+Lip sync held for the first several seconds of a shot then progressively fell
+apart, the mouth running steadily **ahead** of the audio, with the break
+crossing visibility around **9.6 s into every shot** regardless of prompt,
+model, or reference. This is the reason the pack's practical dialogue limit was
+believed to be ~241 frames.
+
+Root cause: `LTX2DiffusionWrapper.VIDEO_FPS` was a hardcoded class constant of
+`24.0`, used to convert the video RoPE temporal coordinate from frames into
+seconds. The **audio** RoPE is built in true seconds. Rendering at 25 fps
+therefore ran the video positional clock 25/24 ≈ **4 % fast** against audio —
+a linear divergence of ~0.04 s per second of runtime, i.e. roughly half a frame
+of drift per second, accumulating without bound. At ~9–10 s it passes the
+threshold where a viewer reads it as "not lip syncing".
+
+Fix: the generate nodes now stamp the actual render fps onto the generator
+before sampling — `JoyEcho_Generate` (main pass and the hires refine pass) and
+`JoyEcho_SingleShotGenerate`. Any render at a consistent fps is now
+rope-coherent end to end.
+
+**Consequence: there is no ~241-frame shot limit.** Verified with 69 s and
+105 s multishot masters. This was a pipeline bug, not a model property — no
+LTX-2.3 or JoyAI-Echo checkpoint carries a short training-length cap here; the
+temporal RoPE range is `positional_embedding_max_pos[0] = 20` (seconds),
+identical in JoyAI-Echo, `ltx-2.3-22b-dev`, and `ltx-2.3-22b-distilled-1.1`.
+Because the fix is in coordinate math rather than weights, it applies to every
+checkpoint loaded through these nodes, merges included.
+(`nodes.py` + `libs/ltx_distillation/models/ltx_wrapper.py`)
+
 ### 1. `enable_audio_memory=False` silently disabled ALL cross-shot memory
 The pack computed `audio_memory_latent=None` when audio memory was off, and the
 video **memory-bank save was gated on that latent being non-None** — so with
