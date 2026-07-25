@@ -22,7 +22,7 @@ model in the wrong one simply will not appear in its dropdown.
 
 | # | node | file | folder |
 |---|---|---|---|
-| 1 | Diffusion model | any LTX-2.x checkpoint | `models/diffusion_models/` |
+| 1 | Diffusion model | `ltx-2.3-22b-distilled-1.1` or another **distilled** build | `models/diffusion_models/` |
 | 1b | ID-LoRA | `LTX-2.3-ID-LoRA-TalkVid-3K.safetensors` | `models/loras/` |
 | 2 | Video VAE | LTX-2.3 video VAE | `models/vae/` |
 | 3 | Gemma + text projection | Gemma-3-12B **and** the LTX text projection | `models/text_encoders/` + `models/checkpoints/` |
@@ -77,37 +77,56 @@ Symptom: your line comes out *plus* extra garbled words.
    test — it only skips the guidance pass; the reference tokens stay attached.
    Only Ctrl+B removes them.
 
-## 5b. Tuning motion vs. fidelity
+## 5b. Tuning: checkpoint first, then widgets
 
-Two dials trade against each other. Both ship at sane defaults; touch them only
-if the symptom below matches.
+**Start with your checkpoint, not a slider.** Lip sync lives in the *video*
+branch's cross-attention to the audio conditioning - not in the audio branch.
+Video-side merges and finetunes routinely rewrite exactly those layers, so a
+checkpoint can be excellent at scenery and markedly worse at mouths while its
+audio weights sit untouched. Measured on one merge vs stock
+`ltx-2.3-22b-distilled-1.1`: audio branch **bit-identical**, only 2 of 24
+sampled video cross-attention tensors unchanged.
 
-**`img_compression` (on `LTXVPreprocess`, one per shot) — ships at 35.**
-LTX is trained on *video* frames, which always carry codec artifacts. A pristine
-photo is out-of-distribution as a "video frame", so the model reads it as a
-perfect anchor and barely animates — that is the real cause of a frozen, barely
-moving mouth on shot 1. This node round-trips the guide through an H.264
-encode/decode so it looks like a frame the model recognises.
+If mouths are poor, A/B a stock checkpoint first. Change only the `UNETLoader`,
+keep the seed, change nothing else. **Match the schedule:** the sigmas here are
+the 8-step distilled ladder at cfg 1, so compare against a *distilled* build -
+never `-dev`, which needs a many-step cfg>1 schedule and will produce garbage on
+this ladder and have you blaming the wrong thing.
 
-* Mouth still too static -> raise toward 50-70.
-* You look soft, smoothed or "stylized" -> lower to 20-25. Compression degrades
-  the guide, so a high value costs real facial detail.
-* 0 disables it; expect a near-frozen opening.
+**`strength` (guide node) - ships at 1.0.** Sets frame 0's noise mask to
+`1.0 - strength`, i.e. how free the model is to move that frame. 1.0 pins it to
+your guide and gives the tightest identity hold; on a healthy checkpoint it
+still animates.
 
-**`identity_guidance_scale` + `end_percent` (on `LTXVReferenceAudio`) — ship at
-3.0 / 0.5.** Guidance amplifies the reference's pull on the WHOLE denoised
-tensor — audio *and* video — so run across every step it restyles your face
-while it is fixing your voice. Identity is decided in the early, high-noise
-steps; fine detail forms in the late ones. `end_percent 0.5` switches guidance
-off halfway, keeping the voice lock away from the detail passes.
+* Mouth frozen -> 0.8, then 0.7.
+* Needing below ~0.6 for any movement -> checkpoint problem, see above.
+* Face drifting off your reference / looks like T2V -> back toward 1.0.
 
-* Face still stylized -> lower `end_percent` (0.3-0.4), **not** the scale.
+**`img_compression` (LTXVPreprocess) - ships at 25. Not a motion dial.** LTX is
+trained on *video* frames, which carry codec artifacts; a pristine photo is
+out-of-distribution as a "frame", so a light H.264 round-trip helps the model
+read it as one. But the value is passed **straight to x264 as CRF**, so it is a
+quality-destruction knob:
+
+* **x264 clamps CRF at 51 - every value from 51 to 100 is byte-identical.**
+  Running it at 100 is not "maximum motion", it is CRF 51.
+* At CRF 51 fine detail drops to ~83% of source. Patterned fabric, curtains,
+  hair and skin texture turn to mush and the model invents replacements - it
+  restyles the whole frame, not just the face.
+
+Leave it at 25. If you are tempted past 40, the problem is elsewhere.
+
+**`identity_guidance_scale` + `end_percent` - ship at 3.0 / 0.5.** Guidance
+amplifies the reference across the WHOLE denoised tensor - audio *and* video -
+so run across every step it restyles the face while fixing the voice. Identity
+is decided in the early high-noise steps; detail forms late. `end_percent 0.5`
+switches guidance off halfway.
+
+* Face stylized -> lower `end_percent` (0.3-0.4), **not** the scale.
 * Voice not holding -> raise the scale (4-5), leave `end_percent`.
 
-**If you change both at once you will not know which one did it.** To isolate:
-set `img_compression` to 0 on both shots and change nothing else. A sharp face
-with a frozen mouth confirms compression is your softness, and you tune up from
-there.
+**Change one thing at a time.** Every wrong turn in this workflow's history came
+from moving two dials at once and crediting the wrong one.
 
 ## 6. Length and resolution
 
@@ -193,7 +212,7 @@ ffmpeg -i FINAL.mp4 -vf "cas=0.55" -c:v libx264 -crf 16 -preset medium \
 | A loader dropdown is empty / red | model is in the wrong folder — see §2 |
 | Line spoken *plus* garbled words | voice reference too long, or ID-LoRA missing — §5 |
 | The model reads your description aloud | exclusivity block removed from the prompt — §7 |
-| Mouth barely moves | raise `img_compression` — see §5b |
+| Mouth barely moves | A/B a stock distilled checkpoint first — see §5b |
 | Face soft / stylized / "smoothed" | lower `img_compression`, then `end_percent` — §5b |
 | Shot 2 looks unrelated to shot 1 | `ImageFromBatch → batch_index` ≠ `length − 1` |
 | ComfyUI dies during load, RAM at 100%, VRAM idle | system RAM — raise the Windows pagefile to 64–128 GB |

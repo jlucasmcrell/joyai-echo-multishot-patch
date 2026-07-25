@@ -57,7 +57,7 @@
         "Node name for S&R": "UNETLoader"
       },
       "widgets_values": [
-        "ltx23_echoVid-ltxAud_surgical_bf16.safetensors",
+        "ltx-2.3-22b-distilled-1.1.safetensors",
         "default"
       ],
       "title": "1. Diffusion model"
@@ -880,9 +880,9 @@
         "Node name for S&R": "LTXVPreprocess"
       },
       "widgets_values": [
-        35
+        25
       ],
-      "title": "MOTION DIAL (img_compression)"
+      "title": "guide compression (see 2b)"
     },
     {
       "id": 25,
@@ -968,7 +968,7 @@
       },
       "widgets_values": [
         0,
-        0.9
+        1.0
       ],
       "title": "Shot 1 guide <- your image"
     },
@@ -988,10 +988,10 @@
       "mode": 0,
       "inputs": [],
       "outputs": [],
-      "title": "2b. MOTION DIALS",
+      "title": "2b. MOTION DIALS - read before tuning",
       "properties": {},
       "widgets_values": [
-        "## Not enough mouth movement? Two dials.\n\n**1. `MOTION DIAL (img_compression)` \u2014 try this first.** LTX is trained on\nVIDEO frames, which always carry codec artifacts. A pristine photo is\nout-of-distribution as a \"video frame\", so the model treats it as a perfect\nanchor and barely animates. `LTXVPreprocess` round-trips the guide through an\nH.264 encode/decode to make it look like real footage.\n\n* **35** = default, the value Lightricks' own I2V workflows use.\n* **50-70** = noticeably more motion, slightly softer first frame.\n* **0** = off; expect a near-frozen opening.\n\nCost: compression degrades the guide, so a high value also makes YOU look\nsofter and less detailed. If the render is smoothed/stylized, drop this to\n20-25 before touching anything else - it is the most likely culprit.\n\nThere is one per shot. Shot 1 usually needs MORE than shot 2, because shot 2's\nguide is already a decoded video frame while shot 1's is a still photo.\n\n**2. `identity_guidance_scale` + `end_percent` on the reference node.**\nGuidance amplifies the reference's effect on the WHOLE denoised tensor - audio\nAND video - so at full range it restyles your face while it fixes the voice\n(smoothed, less photoreal). Ships at scale **3.0** with `end_percent` **0.5**,\ni.e. guidance runs only through the early steps where identity is decided, and\nswitches off for the late steps where detail forms.\n\n* Face still too stylized -> lower `end_percent` (0.3-0.4), NOT the scale.\n* Voice not holding -> raise the scale (4-5) and leave `end_percent` alone.\n* `scale = 0` disables it entirely (and skips the extra forward pass).\n\n**3. `strength` on the guide node.** At 1.0 the first frame's noise mask is\n0.0 \u2014 frame 0 is *completely locked* to the guide and the model has to fight\nit. Ships at **0.9**. Drop toward 0.85 for more freedom, raise toward 0.95 if\nthe face drifts too far from your reference.\n\nAlso already applied: the reference is zoomed 1.2x and centre-cropped (a guide\nat exactly the canvas size is pixel-continuable, and the model just sits on\nit), and the first 28 frames of shot 1 / 14 of shot 2 are trimmed, because the\nopening frames morph out of the guide and are where lip sync is worst."
+        "## Not enough mouth movement? Two dials.\n\n**1. Your CHECKPOINT, before any widget.** Lip sync does not live in the audio\nbranch - it lives in the video branch's cross-attention to the audio\nconditioning. Video-side merges and finetunes routinely rewrite exactly those\nlayers, so a checkpoint that is excellent at scenery can be markedly worse at\nmouths while its audio weights sit untouched. We measured one such merge against\nstock `ltx-2.3-22b-distilled-1.1`: audio branch bit-identical, but only 2 of 24\nsampled video cross-attention tensors unchanged.\n\nIf your mouths are poor, A/B a stock checkpoint before you touch anything else.\nChange only the `UNETLoader` and keep the seed. **Match the schedule**: these\nsigmas are the 8-step distilled ladder at cfg 1, so compare against a\n*distilled* build, never `-dev` (which needs a many-step, cfg>1 schedule and\nwill produce garbage on this ladder).\n\n**2. `strength` on the guide node.** LTXVAddGuide sets frame 0's noise mask to\n`1.0 - strength` - how free the model is to move that frame. Ships at **1.0**\n(frame 0 pinned to your guide), which is correct on a healthy checkpoint and\ngives the tightest identity hold.\n\n* Mouth frozen -> try 0.8, then 0.7. If you need to go below ~0.6 to get any\n  movement, that is a checkpoint problem, not a strength problem - see 1.\n* Face drifting off your reference / looks like T2V -> raise back toward 1.0.\n\n**3. `img_compression` - guide degradation. Use sparingly.** LTX is trained on\nVIDEO frames, which always carry codec artifacts. A pristine photo is\nout-of-distribution as a \"video frame\", so the model treats it as a perfect\nanchor and barely animates. `LTXVPreprocess` round-trips the guide through an\nH.264 encode/decode to make it look like real footage.\n\n* **25** = ships here. Visually near-lossless; enough to read as a frame.\n* **40+** = do not. Lower `strength` instead.\n* **0** = off (no round-trip at all).\n\nThis value is passed **straight to x264 as CRF**, so it is a quality-destruction\nknob, not a motion knob - motion is just a side effect of the model no longer\nrecognising a pristine photo. Two hard facts, both measured:\n\n* **x264 clamps CRF at 51. Anything from 51 to 100 is the SAME setting.** If you\n  are running 100 you are not at \"maximum motion\", you are at CRF 51 and every\n  value above it does nothing.\n* At CRF 51 fine high-frequency detail drops to ~83% of source. That is where\n  patterned fabric, curtains, hair and skin texture go: the model receives mush\n  where the pattern was and invents a replacement. It restyles the WHOLE FRAME,\n  not just the face.\n\nShips at **25** (visually near-lossless). If you find yourself pushing this past\n40, lower `strength` instead - that is the dial you actually want.\n\nThere is one per shot. Shot 1 usually needs MORE than shot 2, because shot 2's\nguide is already a decoded video frame while shot 1's is a still photo.\n\n**4. `identity_guidance_scale` + `end_percent` on the reference node.**\nGuidance amplifies the reference's effect on the WHOLE denoised tensor - audio\nAND video - so at full range it restyles your face while it fixes the voice\n(smoothed, less photoreal). Ships at scale **3.0** with `end_percent` **0.5**,\ni.e. guidance runs only through the early steps where identity is decided, and\nswitches off for the late steps where detail forms.\n\n* Face still too stylized -> lower `end_percent` (0.3-0.4), NOT the scale.\n* Voice not holding -> raise the scale (4-5) and leave `end_percent` alone.\n* `scale = 0` disables it entirely (and skips the extra forward pass).\n\n**5. `strength` recap.** At 1.0 the first frame's noise mask is\n0.0 \u2014 frame 0 is *completely locked* to the guide and the model has to fight\nit. Ships at **0.9**. Drop toward 0.85 for more freedom, raise toward 0.95 if\nthe face drifts too far from your reference.\n\nAlso already applied: the reference is zoomed 1.2x and centre-cropped (a guide\nat exactly the canvas size is pixel-continuable, and the model just sits on\nit), and the first 28 frames of shot 1 / 14 of shot 2 are trimmed, because the\nopening frames morph out of the guide and are where lip sync is worst."
       ],
       "color": "#432",
       "bgcolor": "#653"
@@ -2025,9 +2025,9 @@
         "Node name for S&R": "LTXVPreprocess"
       },
       "widgets_values": [
-        35
+        25
       ],
-      "title": "MOTION DIAL (img_compression)"
+      "title": "guide compression (see 2b)"
     },
     {
       "id": 51,
@@ -2113,7 +2113,7 @@
       },
       "widgets_values": [
         0,
-        0.9
+        1.0
       ],
       "title": "Shot 2 guide <- last frame"
     },

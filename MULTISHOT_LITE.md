@@ -31,6 +31,42 @@ Nothing to install beyond ComfyUI and the models. No custom node packs.
 
 ---
 
+## Changes in v1.3
+
+**v1.2 gave bad tuning advice. This corrects it.**
+
+v1.2 called `img_compression` "the motion dial" and told you to raise it to
+50-70 for more movement. Both halves were wrong, and here is the measurement:
+
+* That widget is passed **straight to x264 as CRF**. x264 clamps CRF at 51, so
+  every value from **51 to 100 is byte-identical** - if you ran it at 100 you
+  were not at maximum motion, you were at CRF 51 and the rest of the slider did
+  nothing.
+* At CRF 51, fine high-frequency detail drops to ~83% of source. That is where
+  patterned fabric, curtains, hair and skin texture go: the model receives mush
+  where the pattern was and **invents a replacement**. It restyles the whole
+  frame, not just the face.
+
+It now ships at **25** (visually near-lossless) and is documented as guide
+degradation, not a motion dial.
+
+**The real first question is your checkpoint.** Lip sync does not live in the
+audio branch - it lives in the video branch's cross-attention to the audio
+conditioning, and video-side merges rewrite exactly those layers. Comparing one
+such merge against stock `ltx-2.3-22b-distilled-1.1`: the audio branch was
+**bit-identical**, but only 2 of 24 sampled video cross-attention tensors were
+unchanged. A checkpoint can be excellent at scenery and markedly worse at mouths
+with its audio weights untouched.
+
+The workflow now defaults to stock **`ltx-2.3-22b-distilled-1.1`**. If your
+mouths are poor, A/B a stock checkpoint before touching any widget - and compare
+against a *distilled* build, never `-dev`, or the 8-step ladder here will
+produce garbage and wrongly indict it.
+
+**`strength` returns to 1.0.** On a healthy checkpoint a fully pinned frame 0
+animates fine and gives the tightest identity hold. Needing to drop below ~0.6
+to get any movement is a checkpoint symptom, not a strength setting.
+
 ## Changes in v1.2
 
 Mouth motion, voice consistency, and the dials to trade them off.
@@ -96,7 +132,7 @@ SETUP → SHOT 1 → [last frame] → SHOT 2 → FINISH (join + refine) → FINA
 
 ## Quick start
 
-1. Download **[`LTX23_Multishot_Lite_v1.2.zip`](https://github.com/jlucasmcrell/ltx23-multishot-lite/releases/latest)**
+1. Download **[`LTX23_Multishot_Lite_v1.3.zip`](https://github.com/jlucasmcrell/ltx23-multishot-lite/releases/latest)**
    (or just the workflow JSON) and open it in ComfyUI.
 2. Set the six loaders in the **SETUP** group — see the table in
    [INSTRUCTIONS_LITE.md](./INSTRUCTIONS_LITE.md). Each reads a *different* models folder.
@@ -109,7 +145,7 @@ Full walkthrough, per-VRAM settings and troubleshooting: **[INSTRUCTIONS_LITE.md
 
 | thing | where |
 |---|---|
-| Any LTX-2.x checkpoint | `models/diffusion_models/` |
+| `ltx-2.3-22b-distilled-1.1` (or another **distilled** LTX-2.x build) | `models/diffusion_models/` |
 | LTX-2.3 video VAE | `models/vae/` |
 | LTX-2.3 audio VAE + text projection | `models/checkpoints/` |
 | Gemma-3-12B text encoder | `models/text_encoders/` |
