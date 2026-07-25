@@ -130,24 +130,14 @@ from moving two dials at once and crediting the wrong one.
 
 ## 6. Length and resolution
 
-Both are set **once**, in the GLOBAL group, and feed both shots. They must
-match across shots or the chain breaks — shot 2 starts from shot 1's last
-frame, and the model cannot bridge a resolution change.
+Both are set **once** in the GLOBAL group. `length` must be **8n+1** (97, 145,
+241, 265, 329...), duration = `length / 25`, dimensions divisible by 32.
 
-- **`length` must be 8n+1**: 97, 145, 241, 329, 497, 1001…
-  Duration = `length ÷ 25`. So 241 ≈ 9.6 s, 497 ≈ 19.9 s, 1001 ≈ 40 s.
-- **Width and height must be divisible by 32.** Landscape: 960×544, 1280×704,
-  1344×768. Portrait: 544×960, 768×1344.
-
-Three things stay per-shot because core ComfyUI has no math nodes — if you
-change `length`, change these too:
-
-1. `LTXV Empty Latent Audio → frames_number` = the same number
-2. `ImageFromBatch → batch_index` = `length − 1`
-3. each shot's seed (only if you want them to differ)
-
-Cost scales with width × height × length. Get a shot right at the defaults
-before scaling up.
+Everything downstream of `length` now follows it automatically (the last-frame
+picker uses negative indexing, the trims clamp). **The one manual value:** the
+AV-extend node's `video_end_time`/`audio_end_time` = `(length + 72) / 25`.
+At the shipped 241 that is 12.52; for a ~20 s shot set length 265 and end times
+13.48.
 
 ## 7. Prompting
 
@@ -172,17 +162,19 @@ Keep that when you rewrite. Other rules that carry over:
   fixed person or place. A prompt that contradicts the image makes the model
   fight the guide, which reads as the image being ignored.
 
-## 8. The chain
+## 8. The chain (v2: a true extension)
 
-`ImageFromBatch` takes the last frame of shot 1 and hands it to shot 2's
-`LTXVAddGuide` at `frame_idx 0`. That is the whole trick.
+Shot 2 does not restart — it **extends** shot 1. The last 73 frames (2.92 s) of
+shot 1's video and audio are encoded as latent context on the AV-extend node
+(`LTXVAudioVideoMask`, `pad` mode), the model generates forward from an ongoing
+utterance, and the context region is dropped from the output before the join.
 
-**To add a shot 3:** copy the SHOT 2 group, add another `ImageFromBatch` fed
-from shot 2's `VAEDecode`, and wire it into the new shot's `LTXVAddGuide.image`.
-Then extend the FINISH group's `ImageBatch` / `AudioConcat` chain.
+Because the audio never restarts, the voice carries over automatically — the
+chained shot has **no reference-audio node** and needs none.
 
-Remember: no memory bank. Identity drifts the further you get from the first
-frame.
+**To add a shot 3:** copy the whole SHOT 2 group and feed its two context nodes
+from shot 2's decodes instead of shot 1's. Identity drifts slowly over many
+extensions; for long chains use the full JoyAI-Echo pack (memory bank).
 
 ## 9. The FINISH group
 

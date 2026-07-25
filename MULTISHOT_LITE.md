@@ -20,7 +20,7 @@ Shot 2 opens on shot 1's exact last frame so they cut together, the character
 speaks in a reference voice you supply, and both shots are joined and refined
 into a single final file.
 
-Nothing to install beyond ComfyUI and the models. No custom node packs.
+Needs ComfyUI, the models, and ComfyUI-KJNodes (one node powers the extension). Everything else is core.
 
 > **A word on expectations.** This is a bleeding-edge pipeline — a 22B
 > audio+video model running on consumer hardware. It works, but your first
@@ -30,6 +30,46 @@ Nothing to install beyond ComfyUI and the models. No custom node packs.
 > stuck, open a discussion — I answer.**
 
 ---
+
+## v2.0 — the chained shot is now a TRUE extension (fixes chained lip sync)
+
+**If you use two shots, this release matters more than everything before it
+combined. v1.x's second shot was structurally broken and no setting could fix
+it.** What we found, in code:
+
+* `LTXVAddGuide` does not "set frame 0" — it **appends the guide as a competing
+  token at the same timestamp** and, at `strength 1.0`, skips its attention
+  mask entirely. The official Lightricks workflows use 0.7 for exactly this
+  reason.
+* v1 guided shot 2 with shot 1's own decoded last frame — VAE-round-tripped, at
+  exactly the render size, **pixel-continuable**. Reproducing it verbatim is a
+  cheaper solution for the sampler than lip-syncing. That is why chained shots
+  came out as "voiceover over a barely-moving face", and why it was WORSE on
+  strongly distilled checkpoints.
+* Shot 2's audio restarted from pure noise mid-sentence while its video was
+  pinned — two contradictory anchors every render.
+
+**v2 replaces the handover with a real audio+video extension** (the pattern
+community extend workflows and Lightricks' own hosted `/extend` use): the last
+~3 s of shot 1 — video AND audio — are encoded as latent context, and the model
+generates forward from an ongoing utterance. The voice carries over by
+construction (the chained shot no longer needs a reference-audio node at all),
+identity holds through the join, and the join is a continuous take instead of
+a cut.
+
+Measured on the shipped demo config: chained-shot audio/mouth correlation went
+from ~0.1–0.4 (v1, wildly unstable) to **0.64** — and for the first time the
+second shot syncs *better* than the first.
+
+**One dependency change:** the extension node (`LTXVAudioVideoMask`) ships in
+**ComfyUI-KJNodes**. Everything else is still core. If you work with LTX you
+almost certainly have KJNodes already; "no custom nodes at all" is now
+"core + one node from KJNodes", and it buys working multishot.
+
+Also in v2.0: `strength` 0.7 everywhere (official value — 1.0 disables the
+guide's attention mask), and every length-dependent value now follows the one
+`length` primitive automatically (negative indexing + clamped trims), so a
+20-second render is a one-widget change.
 
 ## Changes in v1.3
 
@@ -132,7 +172,7 @@ SETUP → SHOT 1 → [last frame] → SHOT 2 → FINISH (join + refine) → FINA
 
 ## Quick start
 
-1. Download **[`LTX23_Multishot_Lite_v1.3.zip`](https://github.com/jlucasmcrell/ltx23-multishot-lite/releases/latest)**
+1. Download **[`LTX23_Multishot_Lite_v2.0.zip`](https://github.com/jlucasmcrell/ltx23-multishot-lite/releases/latest)**
    (or just the workflow JSON) and open it in ComfyUI.
 2. Set the six loaders in the **SETUP** group — see the table in
    [INSTRUCTIONS_LITE.md](./INSTRUCTIONS_LITE.md). Each reads a *different* models folder.
