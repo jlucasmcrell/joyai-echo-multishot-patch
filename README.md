@@ -455,5 +455,6 @@ This patch stands on other people's work:
 ## Support
 
 Everything here is free and stays free. If it saved you time, you can
-[buy me a coffee](https://ko-fi.com/joeygambino) or
+[sponsor me on GitHub](https://github.com/sponsors/jlucasmcrell),
+[buy me a coffee](https://ko-fi.com/joeygambino), or
 [support me on Liberapay](https://liberapay.com/joeygambino).
