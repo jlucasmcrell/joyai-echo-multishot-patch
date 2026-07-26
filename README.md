@@ -11,25 +11,52 @@
 > - I answer, I troubleshoot, and most of the fixes in this pack exist because
 > someone reported something.** You will not be left hanging.
 
-## Also here: Multishot Lite (core nodes only)
 
-A second, much simpler workflow for chained talking shots **with nothing to
-install**.
+## Quick fixes — read this first
+
+Nearly every problem reported with this pack is one of these.
+
+| symptom | what's actually wrong | fix |
+|---|---|---|
+| **Renders crawl; VRAM pinned at 100%** | A bf16 checkpoint stages ~40 GB. On a 32 GB card that streams over PCIe every step. | Use the **fp8** checkpoint with **`fp8_scaled_mm` ON** and **`sequential_offload` OFF** — ~22 GB resident, native fp8 matmul on RTX 40/50-series. `fp8_scaled_mm` is **off by default** and is the single biggest speed setting in this pack. |
+| **The INT8 file is *slower* than bf16** | This pack has **no INT8 compute path** — it reconstructs INT8 to bf16 at load, so you pay full bf16 memory *plus* the reconstruction. | Use **fp8** here. INT8 only pays off under stock ComfyUI's native loader. |
+| **Lip sync drifts apart ~10 s into every shot** | The wrapper's video RoPE clock was hardcoded to 24 fps while audio RoPE runs in true seconds — a 25 fps render drifts ~4 %/s. Looks like a model limit; it is not. | Apply this patch (**Bug fix #0**). No checkpoint can fix it. With the patch, 60–105 s multishot masters hold sync. |
+| **`memory_size=0` every shot; a new face each shot** | With `enable_audio_memory` off, the video memory-bank save was gated on the audio latent, so the bank never filled. | Fixed in this patch (**Bug fix #1**). Console `memory_size=` should climb 0,1,2,… up to your cap. |
+| **Quality degrades over a long run** — waxy skin, smearing by the late shots | The memory-bank trim was a no-op when `memory_max_size <= num_fix_frames`, so the bank grew unbounded. | Fixed in this patch (**Bug fix #1b**). `memory_size=` now freezes at your cap. |
+| **A GGUF errors about VAEs** | A GGUF is **DiT-only**. | Keep a full bf16 checkpoint in `checkpoint_path` — it supplies the VAEs, vocoder and connectors. |
+| **Burned-in subtitles or captions** | The DMD pipeline has no CFG, so a plain negative does nothing. | Use `negative_prompt_video` / `negative_scale_video` (~0.5). Above ~0.8 it locks every shot to shot 1's composition. |
+| **The voice comes out British** | LTX drifts British unless told otherwise. | Name it in the *positive*: "in a casual American accent". |
+| **Occasional robotic voice on long runs** | JoyAI-Echo's finetune is what suppresses it; the e50 merge keeps half of it. | For long multishot runs prefer the full-Echo surgical merge; use e50 for talking heads. |
+| **Second shot won't lip-sync in a hand-built chain** | Guiding shot 2 with shot 1's decoded last frame is broken on *any* checkpoint — the guide is pixel-continuable, so the sampler reproduces it. | Extend with real audio+video latent context. See [Multishot Lite v2](https://huggingface.co/joeygambino/ltx23-multishot-lite). |
+
+## Also here: Multishot Lite (core ComfyUI + one KJNodes node)
+
+A second, much simpler workflow for chained talking shots, with **no node pack
+to install**.
 
 **Its own repo:** https://github.com/jlucasmcrell/ltx23-multishot-lite
 (standalone docs + issues) · HF: https://huggingface.co/joeygambino/ltx23-multishot-lite
 
-Mirrored here: [MULTISHOT_LITE.md](MULTISHOT_LITE.md) · [Releases (lite-v1.0)](../../releases/tag/lite-v1.2).
+Mirrored here: [MULTISHOT_LITE.md](MULTISHOT_LITE.md) · [Releases](../../releases/latest).
 
-* **100% stock ComfyUI nodes.** No custom packs.
-* Shot 2 opens on shot 1's exact last frame, so the two cut together.
+* **Core ComfyUI nodes plus one from ComfyUI-KJNodes** (`LTXVAudioVideoMask`,
+  which powers the extension). Nothing else to install.
+* **Shot 2 is a true audio+video extension of shot 1**, not a cut: the last ~3 s
+  of shot 1's video *and audio* become latent context, so the model generates
+  forward from an ongoing utterance and the voice carries over by construction.
 * **Mode 1 (default):** character speaks in a **reference voice you supply**.
   **Mode 2:** bypass one node per shot; the model invents a voice.
 * Both shots joined and refined into one `FINAL` file.
 
-**Not a replacement for the patch below.** Lite has *no memory bank* —
-continuity comes only from the handed-over frame, so identity drifts over many
-shots. That is exactly why the node pack exists.
+> **v1.x is superseded.** It chained shots on shot 1's decoded last frame. That
+> guide is pixel-continuable, so the sampler reproduced it instead of
+> lip-syncing — chained shots came out as voiceover over a barely-moving face,
+> and it got *worse* on more strongly distilled checkpoints. No setting fixed
+> it. If you are on v1.x, update.
+
+**Not a replacement for the patch below.** Lite has *no memory bank* — identity
+continuity comes only from the extension context, so it drifts over many shots.
+That is exactly why the node pack exists.
 
 ---
 
