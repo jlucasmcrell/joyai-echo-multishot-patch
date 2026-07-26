@@ -451,3 +451,9 @@ This patch stands on other people's work:
 - **RealRebelAI** - the Rebels GGUF loader stack this patches, and the [Q6_K_RM GGUF](https://huggingface.co/realrebelai/JoyAI-Echo_GGUF) whose tensor canon the self-built GGUFs mirror.
 - **Comfy-Org** - the comfy-quants `int8_tensorwise` + ConvRot export recipe behind the INT8 checkpoint.
 - **Google** - Gemma 3 12B, the text encoder (Gemma license).
+
+## Support
+
+Everything here is free and stays free. If it saved you time, you can
+[buy me a coffee](https://ko-fi.com/joeygambino) or
+[support me on Liberapay](https://liberapay.com/joeygambino).
