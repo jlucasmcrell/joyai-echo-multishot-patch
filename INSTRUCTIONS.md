@@ -98,21 +98,48 @@ config with:
 
     Python 3.13.12 + torch 2.13+cu130 + transformers 5.3.0
 
-and was fixed by installing **transformers 4.57** in that same environment.
-Note what is NOT established: transformers 5.3.0 was never re-tested on torch
-2.13 after the fix, and it runs fine on the reference rig with torch 2.11 - so
-the trigger may be torch 2.13, transformers 5.3.0, or the pair together.
+**Resolved 2026-07-26 in the same thread.** The reporter ended on transformers
+**5.3.0 on torch 2.13** with everything working, after reinstalling the node
+pack's `requirements.txt` into the *embedded* Python and then moving back up to
+5.3.0. So torch 2.13 + transformers 5.3.0 is now a confirmed-good pair, and the
+original crash was a broken or partial install rather than a version conflict.
 
-If you hit this with RAM to spare, in order:
+### The transformers version trap
 
-1. Install transformers 4.57:
-   `python_embeded\python.exe -m pip install "transformers==4.57"`
-2. Or repair the mmap layer:
+The node pack's `requirements.txt` pins `transformers>=4.50,<4.58`. That pin is
+**out of date with the code** - this patch ships compatibility shims for both of
+the things 5.x changed:
+
+* `_patch_gemma3_rope_compat()` in `rebels_loaders.py`, for the per-layer RoPE
+  attributes that moved into a `rope_parameters` dict around 4.56
+* the flattened `SiglipVisionModel` layout in transformers >= 5.x
+
+The practical consequence: running `pip install -r requirements.txt` on a
+working 5.x environment will **downgrade you to 4.57**. That is fine - 4.57
+works - but it is why people end up doing an install dance and concluding the
+order mattered. It did not; the pin did.
+
+Version status, as reported and verified:
+
+| transformers | status |
+|---|---|
+| 4.57 | works (what the requirements pin lands you on) |
+| **5.3.0** | **works - reference rig and reporter's rig both** |
+| 5.4.0 | reported working after a clean reinstall |
+| 5.13.1 | **broken** - `AttributeError` on `SiglipVisionModel` |
+
+If you hit an access violation with RAM to spare, in order:
+
+1. Reinstall the pack requirements into the EMBEDDED python (not system python):
+   `python_embeded\python.exe -m pip install -r custom_nodes\ComfyUI_JoyAI_Echo_GGUF_Nodes\requirements.txt`
+2. Then, if you want 5.x back:
+   `python_embeded\python.exe -m pip install "transformers==5.3.0"`
+3. Or repair the mmap layer:
    `python_embeded\python.exe -m pip install --force-reinstall safetensors`
 
 Known-good reference: Python 3.13.11, torch 2.11.0+cu130, transformers 5.3.0,
-safetensors 0.7.0, numpy 2.2.6. Python 3.10 also works. **torch 2.13 is
-currently untested here** - torch 2.11 is the version this pack is verified on.
+safetensors 0.7.0, numpy 2.2.6. Python 3.10 also works. torch 2.13 + 5.3.0 is
+also confirmed working as of 2026-07-26.
 
 ## 3. Install
 
