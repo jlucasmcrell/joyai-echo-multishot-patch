@@ -60,8 +60,11 @@ def _list_files() -> list[str]:
         for p in sorted(root.rglob("*.txt")):
             out.append(_TXT_PREFIX + str(p.relative_to(root)))
     jroot = _json_root()
-    for p in sorted(jroot.glob("*.json")):
-        out.append(_JSON_PREFIX + p.name)
+    # rglob, matching the .txt branch above: a flat glob hides scripts filed in
+    # subfolders, which is how anyone organises more than a handful of them.
+    # _resolve() already joins the relative path, so nested names round-trip.
+    for p in sorted(jroot.rglob("*.json")):
+        out.append(_JSON_PREFIX + str(p.relative_to(jroot)).replace("\\", "/"))
     return out or [_EMPTY]
 
 
@@ -134,10 +137,39 @@ class JoyEcho_PromptSource:
             arr = data.get("prompts") or data.get("shots")
             if not isinstance(arr, list) or not arr:
                 raise ValueError(f"{p.name} must contain a non-empty 'prompts' (or 'shots') array.")
-            print(f"[JoyEcho] PromptSource: {p.name} (json, {len(arr)} shots, 1 item).", flush=True)
+            # Per-character audio memory: derive the speaker order from the
+            # script (an explicit "speakers" array, else the "<ID> is talking"
+            # attribution in each shot) and stash it for JoyEcho_Generate. The
+            # derivation lives in joyecho_script_picker; both loaders feed the
+            # same stash so it works regardless of which node the graph uses -
+            # the first wiring of this feature went ONLY into ScriptPicker and
+            # the live workflow loads through THIS node, so the 11:23 render
+            # silently ran with per-character memory off.
+            try:
+                from .joyecho_script_picker import (derive_speakers, set_last_speakers,
+                                                    set_last_voice_refs)
+            except ImportError:
+                from joyecho_script_picker import (derive_speakers, set_last_speakers,
+                                                   set_last_voice_refs)
+            speakers = derive_speakers(data, arr)
+            set_last_speakers(speakers)
+            vrefs = data.get("voice_refs") or {}
+            set_last_voice_refs(vrefs)
+            print(f"[JoyEcho] PromptSource: {p.name} (json, {len(arr)} shots, 1 item)"
+                  + (f", speakers: {' '.join(speakers)}" if speakers else ", no speaker tags")
+                  + (f", voice anchors: {', '.join(vrefs)}" if vrefs else "")
+                  + ".", flush=True)
             return ([text], [override], 1)
 
-        # TXT: LPFF-style blocks
+        # TXT: LPFF-style blocks. Clear the speaker stash - it holds whatever the
+        # LAST json load derived, and stale speakers applied to an unrelated
+        # script would filter the audio bank to the wrong characters.
+        try:
+            from .joyecho_script_picker import set_last_speakers, set_last_voice_refs
+        except ImportError:
+            from joyecho_script_picker import set_last_speakers, set_last_voice_refs
+        set_last_speakers([])
+        set_last_voice_refs({})
         items, names = [], []
         for blk in _BLOCK_SPLIT.split(text):
             m = _BLOCK_PATTERN.search(blk)

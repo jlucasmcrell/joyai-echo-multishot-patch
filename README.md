@@ -365,6 +365,54 @@ frames. Audio is untouched.
 - fp8 gemma swap accepts both `.scale_weight` and `.weight_scale` layouts
   and warns loudly on zero matches instead of silently staying bf16.
 
+### 20. Voice casting - per-character voices from files (NEW, 2026-07-29)
+
+The memory bank guarantees voice CONSISTENCY, not correctness: shot 1 rolls
+its voice from text conditioning alone, and whatever it rolls, the bank then
+carries faithfully. This release makes the voice a CASTING decision instead
+of a roll, with zero per-run typing:
+
+- **Folder casting.** Put a clip of the character speaking (>=4 s, mp4 or
+  wav) in `ComfyUI/input/joyecho_voices/<speaker-tag-lowercase>/`. Any script
+  whose speaker tag matches the folder gets that voice seeded into the memory
+  bank as a character-tagged anchor slot BEFORE shot 1 - the first shot
+  *continues* the cast voice instead of auditioning a new one, and the same
+  file re-casts the same voice in every future render. The pick is
+  deterministic (alphabetically first file). Replace the file to recast.
+- **Script-carried casting.** A `"voice_refs": {"Alice": "path/clip.mp4"}`
+  key in the script JSON overrides the folder scan per character.
+- **Audio-only anchors.** A bare wav/flac anchor pairs its voice with the
+  character's ref image from `joyecho_refs/<tag>/` so the slot keeps its
+  face+voice contract.
+- **Speaker order is derived from the script** - an explicit
+  `"speakers": [...]` array, or the `"<Name> is talking"` attribution in each
+  shot. It now travels INSIDE the conditioning (and its disk cache), so it
+  can never go stale or leak between graphs. The `speaker_order` widget
+  remains as a manual override only.
+- **Anchor + latest policy.** A speaker's audio context is their anchor
+  slot(s) plus their most recent shot only - one drifted shot can no longer
+  accumulate a majority and take over the rest of the video.
+- **Cold-start fix.** A speaker's first line falls back to the unfiltered
+  bank instead of a zeroed (silent) one - the regression that previously
+  made per-character filtering unusable.
+
+Two-character staging note that saves you a night: a2v cross-attention has
+no spatial addressing - audio at time t drives EVERY face in frame, however
+small or distant. Stage ONE face per shot (shot-reverse-shot) and put only
+the visible character's description in that shot's prompt.
+
+### 21. Correctness fixes from a full sampler-path audit (2026-07-29)
+
+- **Hires refine now respects your seed.** Its re-noise fields were seeded
+  from a hardcoded constant - every render's refine detail layer was
+  identical regardless of the seed widget, for months.
+- **Chained SingleShot graphs no longer condition on the PREVIOUS queue
+  run's output.** The memory bank object was mutated in place through
+  ComfyUI's output cache; incoming banks are now cloned.
+- **The conditioning disk cache key includes the checkpoint** - a model swap
+  can no longer be served the previous model's conditioning tensors.
+  (Existing cache files are invalidated once; they rebuild on first render.)
+
 ### 19. Finishing: who builds your master (READ THIS before touching hires)
 `hires_factor` is a ROUTING switch, not a quality slider - it decides which
 pipeline builds your final video:

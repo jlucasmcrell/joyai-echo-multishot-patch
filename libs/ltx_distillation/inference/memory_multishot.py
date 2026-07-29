@@ -109,11 +109,12 @@ def build_paired_audio_memory_kwargs(
     enable_audio_memory: bool,
     v2a_grad_scale: float = 1.0,
     memory_position_mode: str = "reference",
+    speaker: Optional[str] = None,
 ) -> dict[str, Any]:
     if not enable_audio_memory:
         return {}
 
-    memory_audio = memory_bank.get_memory_audio()
+    memory_audio = memory_bank.get_memory_audio(speaker=speaker)
     if memory_audio is None:
         raise RuntimeError("audio memory was requested but the memory bank contains entries without audio latents")
 
@@ -305,7 +306,47 @@ class PairedAudioVideoMemoryBank:
         fixed = self.memory[:n_fixed]
         tail = self.memory[self.num_fix_frames :]
         keep_tail = self.max_size - len(fixed)
-        self.memory = fixed + (tail[-keep_tail:] if keep_tail > 0 else [])
+        if keep_tail <= 0:
+            self.memory = fixed
+            return
+
+        # Per-character reservation. The plain recency window lets a talkative
+        # character's slots evict a quieter one's ONLY voice exemplar, after
+        # which that character has nothing to be continued from and re-renders
+        # with a new voice. Guarantee every character seen in the tail keeps
+        # their most recent slot, and only evict from characters that still
+        # have another slot left.
+        #
+        # Indices are used throughout rather than entry objects: MemoryEntry is
+        # an eq=True dataclass holding tensors, so `entry in list` would run a
+        # tensor comparison and raise.
+        kept = list(range(len(tail)))[-keep_tail:]
+        last_by_char: dict[str, int] = {}
+        for i, entry in enumerate(tail):
+            owner = entry.metadata.get("character")
+            if owner:
+                last_by_char[owner] = i          # later shot wins = most recent
+
+        for reserved in sorted(last_by_char.values()):
+            if reserved in kept:
+                continue
+            counts: dict[Any, int] = {}
+            for i in kept:
+                owner = tail[i].metadata.get("character")
+                counts[owner] = counts.get(owner, 0) + 1
+            victim = next(
+                (i for i in kept
+                 if tail[i].metadata.get("character") is not None
+                 and counts[tail[i].metadata.get("character")] > 1),
+                None,
+            )
+            if victim is None:
+                break                            # nothing safe to drop; leave as-is
+            kept.remove(victim)
+            kept.append(reserved)
+            kept.sort()
+
+        self.memory = fixed + [tail[i] for i in kept]
 
     def save_memory_slot(
         self,
@@ -324,6 +365,7 @@ class PairedAudioVideoMemoryBank:
         audio_memory_n_fft: int = 1024,
         audio_memory_downsample_factor: int = 4,
         audio_memory_is_causal: bool = True,
+        character: Optional[str] = None,
     ) -> dict[str, Any]:
         audio_latent = self._prepare_audio_latent(audio_latent)
         if audio_latent is None:
@@ -379,7 +421,33 @@ class PairedAudioVideoMemoryBank:
                 video_clip_num_frames=video_clip_num_frames,
             )
 
+        # "last": take the video half of the slot from the END of the shot
+        # instead of from wherever the loudest speech happened.
+        #
+        # The audio window is still chosen by max_response - that is the right
+        # exemplar for the VOICE. But pairing it with a mid-shot video clip
+        # makes the next shot resume from mid-shot, which reads on screen as the
+        # take rewinding a second or two before continuing. Decoupling the two
+        # keeps the best voice reference AND gives the next shot a genuine
+        # continuation point.
+        if str(video_frame_selection_mode).lower() == "last" and frames:
+            n = max(1, int(video_clip_num_frames))
+            clip_start = max(0, len(frames) - n)
+            video_clip = list(frames[clip_start:])
+            if len(video_clip) < n:
+                video_clip.extend([video_clip[-1]] * (n - len(video_clip)))
+            video_metadata = {
+                "video_clip_start": int(clip_start),
+                "video_clip_end": int(len(frames)),
+                "video_clip_length": int(len(video_clip)),
+                "video_clip_center_frame": int(len(frames) - 1),
+                "video_total_frames": int(len(frames)),
+                "video_frame_selection_mode": "last",
+            }
+
         metadata = {"selection_mode": "paired_audio_window", **audio_metadata, **video_metadata}
+        if character:
+            metadata["character"] = str(character)
         entry = MemoryEntry(frame=video_clip, audio_latent=window_latent, metadata=metadata)
         fixed = self.memory[: self.num_fix_frames]
         free = self.memory[self.num_fix_frames :]
@@ -394,8 +462,72 @@ class PairedAudioVideoMemoryBank:
     def get_memory_metadata(self) -> list[dict[str, Any]]:
         return [dict(entry.metadata) for entry in self.memory]
 
-    def get_memory_audio(self) -> Optional[torch.Tensor]:
-        audio_latents = [entry.audio_latent for entry in self.memory]
+    def get_memory_audio(self, speaker: Optional[str] = None) -> Optional[torch.Tensor]:
+        """Concatenated memory audio, optionally scoped to ONE speaker.
+
+        Slots are written one per shot and the bank is character-blind, so with
+        two characters alternating shots the audio lane carries BOTH voices into
+        every shot. The model then has two equally valid voices to continue and
+        picks either - the same-gender voice merge.
+
+        When `speaker` is given, slots belonging to a DIFFERENT named character
+        are zeroed instead of dropped. Zeroing (not dropping) is deliberate: the
+        slot count, the per-slot lengths and therefore
+        `_build_paired_memory_cross_mask`'s positional pairing all stay exactly
+        as they were, so this cannot re-introduce the even-split desync that
+        shredded stored voices. The video half is untouched, so the non-speaker
+        keeps full face continuity - their slot simply pairs their face with
+        silence, which is what was true in that shot anyway.
+
+        Untagged slots (character is None) are always kept: a script that does
+        not declare speakers behaves exactly as before.
+        """
+        # COLD START. If this speaker owns no slot yet, filtering would zero
+        # EVERY slot and hand them a bank of pure silence to continue from -
+        # strictly worse than no filtering at all. Measured on the first attempt
+        # at this feature: Glyph's first line generated against an all-silent
+        # bank and her pitch wandered 219 -> 276 -> 258Hz across three lines,
+        # where with filtering off she was identical on all three. That single
+        # regression is what got per-character memory shelved.
+        #
+        # So: a character's FIRST line falls back to the unfiltered bank, which
+        # is exactly the pre-per-character behaviour for that one shot. From
+        # their second line on they have an exemplar of their own and get full
+        # isolation. The failure mode this removes (silence) is worse than the
+        # one it briefly tolerates (one shot of shared bank).
+        owns_a_slot = speaker is not None and any(
+            entry.metadata.get("character") == speaker for entry in self.memory)
+        effective_speaker = speaker if owns_a_slot else None
+
+        # ANCHOR + LATEST (2026-07-28). A speaker's audio context is their
+        # anchor slot(s) plus their MOST RECENT generated slot - older generated
+        # slots are zeroed like other characters'. Measured motivation: shot 5's
+        # line flipped Zara's accent against a context of three American
+        # exemplars (text pull beat the whole bank), and then shots 6-7 stayed
+        # flipped because the drifted slot outnumbered nothing - consistency
+        # machinery faithfully propagated the poison. With this policy a drifted
+        # shot contributes exactly one slot against the permanent anchor instead
+        # of accumulating a majority, so a single bad roll cannot own the rest
+        # of the video. Untagged slots and no-speaker calls are untouched.
+        latest_gen_idx = -1
+        if effective_speaker is not None:
+            for _i, entry in enumerate(self.memory):
+                if (entry.metadata.get("character") == effective_speaker
+                        and not entry.metadata.get("voice_anchor")):
+                    latest_gen_idx = _i
+
+        audio_latents = []
+        for _i, entry in enumerate(self.memory):
+            audio_latent = entry.audio_latent
+            if audio_latent is not None and effective_speaker is not None:
+                owner = entry.metadata.get("character")
+                if owner is not None and owner != effective_speaker:
+                    audio_latent = torch.zeros_like(audio_latent)
+                elif (owner == effective_speaker
+                        and not entry.metadata.get("voice_anchor")
+                        and _i != latest_gen_idx):
+                    audio_latent = torch.zeros_like(audio_latent)
+            audio_latents.append(audio_latent)
         if not audio_latents or any(audio_latent is None for audio_latent in audio_latents):
             return None
         first = audio_latents[0]
@@ -409,7 +541,13 @@ class PairedAudioVideoMemoryBank:
                     "All memory audio latents must share batch and channel dimensions, "
                     f"got first={tuple(first.shape)} current={tuple(audio_latent.shape)}"
                 )
-        return torch.cat(audio_latents, dim=1).contiguous()
+        # Harmonize dtypes before the cat: a pre-seeded voice-anchor slot may
+        # carry a different dtype than the pipeline's generated latents, and
+        # torch.cat requires one dtype. The LAST slot is the most recently
+        # generated one, so its dtype is the pipeline's - cast everything to it.
+        target_dtype = audio_latents[-1].dtype
+        return torch.cat([al.to(target_dtype) for al in audio_latents],
+                         dim=1).contiguous()
 
     def get_memory_audio_segment_lengths(self) -> tuple[tuple[int, ...], ...]:
         audio_latents = [entry.audio_latent for entry in self.memory]

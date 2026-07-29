@@ -967,6 +967,30 @@ class JoyEcho_TextEncode:
         if not prompt_list:
             raise ValueError("No prompts provided. Enter text, JSON, or a .json file path.")
 
+        # Speakers + voice anchors ride INSIDE the conditioning from here on.
+        # They are properties of THIS text, so they belong on the data path, not
+        # in module globals: the old stash pattern leaked a previous script's
+        # speakers/anchors into any graph without a picker node (audit finding
+        # 2026-07-29). Derived here, attached to conds[0] as "joyecho_meta",
+        # cached WITH the conditioning (correct: same text = same speakers),
+        # consumed by Generate, and stripped before the transformer sees it.
+        _je_meta = None
+        try:
+            import json as _json_meta
+            _md = _json_meta.loads(prompts) if str(prompts).lstrip().startswith("{") else None
+            if isinstance(_md, dict):
+                try:
+                    from .joyecho_script_picker import derive_speakers as _derive_spk
+                except ImportError:
+                    from joyecho_script_picker import derive_speakers as _derive_spk
+                _arr = _md.get("prompts") or _md.get("shots") or []
+                _je_meta = {
+                    "speakers": _derive_spk(_md, _arr),
+                    "voice_refs": dict(_md.get("voice_refs") or {}),
+                }
+        except Exception:
+            _je_meta = None
+
         device = model["device"]
 
         # --- Conditioning disk cache: the same script + negatives + encoder
@@ -981,6 +1005,11 @@ class JoyEcho_TextEncode:
             str(negative_prompt_video), str(negative_scale_video),
             str(negative_prompt_audio), str(negative_scale_audio),
             str(model.get("gemma_path")), bool(model.get("encoder_fp8")),
+            # checkpoint identity: the text-embedding connectors come from the
+            # checkpoint and co-shape conditioning, so a model swap with the
+            # same text must MISS, not serve the previous model's tensors
+            # (audit finding 2026-07-29; invalidates all earlier cache files).
+            str(model.get("checkpoint_path")),
         ]).encode()).hexdigest()[:16]
         _cc_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "cond_cache")
         _cc_path = os.path.join(_cc_dir, f"conds_{_cc_key}.pt")
@@ -1152,6 +1181,11 @@ class JoyEcho_TextEncode:
             _empty_cache()
             print("[JoyEcho] Text encoder -> CPU (encode pass done).", flush=True)
 
+        # Attach the script-derived speakers/anchors so they persist in the
+        # cache and reach Generate on the data path (see comment at derivation).
+        if _je_meta and cached_conds:
+            cached_conds[0]["joyecho_meta"] = _je_meta
+
         # Persist the conditioning for instant re-runs of the same script.
         try:
             _cc_bytes = sum(v.nbytes for c in cached_conds for v in c.values()
@@ -1214,6 +1248,27 @@ class JoyEcho_Generate:
                                "a strong voice description repeated in every shot.",
                 }),
                 "audio_memory_window_size": ("INT", {"default": 96, "min": 16, "max": 256}),
+                "memory_video_anchor": (["last", "loudest"], {
+                    "default": "last",
+                    "tooltip": "Which part of a shot becomes the VIDEO half of its memory "
+                               "slot. last = the final frames, so the next shot continues "
+                               "from where this one ended. loudest = the original behaviour: "
+                               "the frames around the shot's most articulated speech, which "
+                               "is usually mid-shot and makes the next shot look like it "
+                               "rewound a second or two. The AUDIO half is chosen by "
+                               "max_response either way - that is the right voice exemplar.",
+                }),
+                "speaker_order": ("STRING", {
+                    "default": "",
+                    "tooltip": "Who SPEAKS in each shot, comma or space separated "
+                               "(e.g. 'A,B'). Tags each memory slot with its speaker so a "
+                               "shot only inherits audio memory from the character talking "
+                               "in it - the other character's slots are silenced for that "
+                               "shot while their face memory is kept. This is the fix for "
+                               "two same-gender voices merging across shots. The list CYCLES, "
+                               "so 'A,B' covers any number of alternating shots. Leave EMPTY "
+                               "for the previous behaviour (every voice in every shot).",
+                }),
                 "sequential_offload": ("BOOLEAN", {
                     "default": False,
                     "tooltip": "Enable layer-by-layer GPU offloading for DiT. "
@@ -1378,6 +1433,8 @@ class JoyEcho_Generate:
         num_fix_frames: int = 3,
         enable_audio_memory: bool = True,
         audio_memory_window_size: int = 96,
+        memory_video_anchor: str = "last",
+        speaker_order: str = "",
         sequential_offload: bool = False,
         output_prefix: str = "joyecho/shot",
         reference_image=None,
@@ -1610,11 +1667,234 @@ class JoyEcho_Generate:
               f"{num_frames} frames{' [sequential offload]' if sequential_offload else ''}...",
               flush=True)
 
+        # PER-CHARACTER AUDIO MEMORY. The bank stores one slot per SHOT and is
+        # otherwise character-blind, so with two characters alternating shots the
+        # audio lane hands BOTH voices to every shot and the model may continue
+        # either one - which is what makes two same-gender voices converge.
+        # Tagging each slot with its speaker lets a shot inherit audio memory
+        # only from the character actually talking in it. Empty = old behaviour.
+        # The speaker_order WIDGET is an override. Left empty (the normal case in
+        # a queue-driven workflow, where nobody retypes it per script), the order
+        # comes from the script itself - either an explicit "speakers" array or
+        # the "<ID> is talking" attribution already present in every shot. The
+        # widget only exists for the rare case of overriding a script by hand.
+        import re as _re_spk
+        # Conditioning-carried metadata is the AUTHORITATIVE script-derived
+        # source: it was computed from the exact text that produced these
+        # embeddings and travels with them through the cache. The module-global
+        # stash is retained only as a last-resort legacy fallback (it can be
+        # stale when a loader node is ComfyUI-cached - audit finding 2026-07-29).
+        _je_meta = {}
+        try:
+            _m0 = conditioning[0].get("joyecho_meta") if conditioning else None
+            if isinstance(_m0, dict):
+                _je_meta = _m0
+        except (AttributeError, IndexError, TypeError):
+            _je_meta = {}
+        _speakers = [t for t in _re_spk.split(r"[,\s]+", str(speaker_order).strip()) if t]
+        _spk_src = "speaker_order widget"
+        if not _speakers and _je_meta.get("speakers"):
+            _speakers = [str(x) for x in _je_meta["speakers"]]
+            _spk_src = "script (via conditioning)"
+        if not _speakers:
+            try:
+                from .joyecho_script_picker import LAST_SPEAKERS as _auto
+            except Exception:
+                try:
+                    from joyecho_script_picker import LAST_SPEAKERS as _auto
+                except Exception:
+                    _auto = []
+            if _auto:
+                _speakers = list(_auto)
+                _spk_src = "script (legacy stash - may be stale)"
+        if _speakers:
+            _speakers = [_speakers[i % len(_speakers)] for i in range(num_shots)]
+            print(f"[JoyEcho] per-character audio memory ON (from {_spk_src}): "
+                  f"{' '.join(_speakers)}", flush=True)
+        else:
+            print("[JoyEcho] per-character audio memory OFF - no speakers declared "
+                  "and no '<ID> is talking' attribution found in the script.",
+                  flush=True)
+
+        # VOICE ANCHORS (2026-07-28). The memory bank guarantees CONSISTENCY, not
+        # CORRECTNESS: shot 1 rolls its voice from text conditioning alone (empty
+        # bank), and whatever region/timbre that roll lands on, the bank then
+        # carries faithfully - measured twice today: two renders on different
+        # seeds AND different DiT files produced the same wrong voices at the
+        # same shots, because both merges share audio branches and the roll is
+        # text-deterministic. No prompt wording pins it.
+        #
+        # So pin it with DATA: the script may carry
+        #     "voice_refs": {"Zara": "path/to/clip.mp4", ...}
+        # and each clip's audio is encoded (the pack's audio-VAE encoder, loaded
+        # but never previously called) and stored as a bank slot TAGGED with the
+        # character BEFORE the shot loop. Shot 1 then CONTINUES an approved voice
+        # instead of auditioning a new one, and the same file re-casts the same
+        # voice in every future render. Keys must exactly match the script's
+        # speaker tags or per-character filtering will zero the anchor once the
+        # speaker owns a generated slot.
+        _voice_refs = {}
+        if isinstance(_je_meta.get("voice_refs"), dict) and _je_meta["voice_refs"]:
+            _voice_refs = dict(_je_meta["voice_refs"])    # authoritative: rode
+        else:                                             # with the conditioning
+            try:
+                from .joyecho_script_picker import LAST_VOICE_REFS as _lvr
+            except ImportError:
+                try:
+                    from joyecho_script_picker import LAST_VOICE_REFS as _lvr
+                except ImportError:
+                    _lvr = {}
+            if isinstance(_lvr, dict):
+                _voice_refs = dict(_lvr)
+        # TIER-1 AUTO-CAST (2026-07-28): a speaker whose tag matches a folder
+        # under input/joyecho_voices/ is cast automatically - no voice_refs key
+        # needed. Explicit voice_refs entries WIN over the folder scan. The pick
+        # is DETERMINISTIC (alphabetically first file): same character, same
+        # file, same voice, every render. Dropping a file into the folder IS
+        # casting the character; a random per-render pick would reintroduce the
+        # per-video voice roulette this whole system exists to kill.
+        try:
+            import folder_paths as _fp
+            _vroot = os.path.join(_fp.get_input_directory(), "joyecho_voices")
+        except Exception:
+            _fp, _vroot = None, ""
+        if _vroot and os.path.isdir(_vroot) and _speakers:
+            _vexts = (".mp4", ".wav", ".mp3", ".flac", ".mov", ".m4a", ".webm")
+            for _sp in dict.fromkeys(_speakers):
+                if _sp in _voice_refs:
+                    continue
+                _vd = os.path.join(_vroot, str(_sp).lower())
+                if not os.path.isdir(_vd):
+                    continue
+                _vfiles = sorted(f for f in os.listdir(_vd)
+                                 if f.lower().endswith(_vexts))
+                if _vfiles:
+                    _voice_refs[_sp] = os.path.join(_vd, _vfiles[0])
+                    print(f"[JoyEcho] voice anchor {_sp!r}: auto-cast from folder "
+                          f"({_vfiles[0]}).", flush=True)
+        if _voice_refs and not enable_audio_memory:
+            print("[JoyEcho] voice anchors present but enable_audio_memory is off - "
+                  "anchors SKIPPED (the bank is the injection path).", flush=True)
+        elif _voice_refs and memory_max_size > 0:
+            from ltx_pipelines.utils.media_io import decode_audio_from_file
+            from PIL import Image as _PILImage
+            import av as _av
+            for _vchar, _vpath in _voice_refs.items():
+                try:
+                    _aud = decode_audio_from_file(str(_vpath), torch.device("cpu"),
+                                                  0.0, 6.0)
+                    if _aud is None:
+                        print(f"[JoyEcho] voice anchor {_vchar!r}: no audio stream "
+                              f"in {_vpath}; skipped.", flush=True)
+                        continue
+                    # conv_in expects 2 channels; the bank's own normalizer is the
+                    # canonical mono->stereo/downmix path.
+                    _wav = type(memory_bank)._normalize_waveform_channels(
+                        _aud.waveform, target_channels=2)
+                    _lat = audio_vae.encode(_wav, int(_aud.sampling_rate))
+                    # Generated slots store the pipeline's bf16 latents; a
+                    # float32 seed would crash torch.cat at the next shot's
+                    # kwargs build (belt: get_memory_audio also harmonizes).
+                    _lat = _lat.to(torch.bfloat16).detach().cpu().contiguous()
+
+                    # Video half: 9 frames from the SAME clip, cover-fit to the
+                    # render size - the slot pairs the voice with the face that
+                    # was producing it, same contract as generated slots.
+                    _frames = []
+                    _cont = _av.open(str(_vpath))
+                    try:
+                        _vs = next((s for s in _cont.streams if s.type == "video"),
+                                   None)
+                        if _vs is not None:
+                            _all = [f.to_image() for _i, f in
+                                    zip(range(150), _cont.decode(_vs))]
+                            if _all:
+                                _step = max(1, len(_all) // 9)
+                                _frames = _all[::_step][:9]
+                    finally:
+                        _cont.close()
+                    if not _frames and _fp is not None:
+                        # Audio-only file (library wav/flac): pair the voice with
+                        # the character's REF IMAGE - the same face the video
+                        # lane is conditioned with - so the slot keeps its
+                        # face+voice contract instead of being skipped.
+                        try:
+                            _rr = os.path.join(_fp.get_input_directory(),
+                                               "joyecho_refs", str(_vchar).lower())
+                            _imgs = sorted(
+                                f for f in os.listdir(_rr)
+                                if f.lower().endswith((".png", ".jpg", ".jpeg",
+                                                       ".webp")))
+                            if _imgs:
+                                _frames = [_PILImage.open(
+                                    os.path.join(_rr, _imgs[0])).convert("RGB")]
+                                print(f"[JoyEcho] voice anchor {_vchar!r}: audio-"
+                                      f"only file; video half from ref image "
+                                      f"{_imgs[0]}.", flush=True)
+                        except OSError:
+                            pass
+                    if not _frames:
+                        print(f"[JoyEcho] voice anchor {_vchar!r}: no video frames "
+                              f"and no ref image under joyecho_refs/"
+                              f"{str(_vchar).lower()}/; skipped.", flush=True)
+                        continue
+                    _tw, _th = int(video_width), int(video_height)
+                    _fitted = []
+                    # loop var must NOT be _fp - that's the folder_paths alias,
+                    # and shadowing it silently killed the SECOND character's
+                    # audio-only ref-image fallback (audit finding, 2026-07-29)
+                    for _frm in _frames:
+                        _scale = max(_tw / _frm.width, _th / _frm.height)
+                        _rw = max(_tw, int(round(_frm.width * _scale)))
+                        _rh = max(_th, int(round(_frm.height * _scale)))
+                        if (_rw, _rh) != _frm.size:
+                            _frm = _frm.resize((_rw, _rh), _PILImage.LANCZOS)
+                        if (_rw, _rh) != (_tw, _th):
+                            _left = (_rw - _tw) // 2
+                            _top = int((_rh - _th) * 0.25)
+                            _frm = _frm.crop((_left, _top, _left + _tw, _top + _th))
+                        _fitted.append(_frm)
+                    while len(_fitted) < 9:
+                        _fitted.append(_fitted[-1])
+
+                    # Seeded TWICE: memory is cross-attention context, and with
+                    # one slot the anchor only CONTESTS the text prior - measured
+                    # 2026-07-28 evening: same config, different seeds, shot 1
+                    # flipped American then Australian. Doubling the anchor's
+                    # share of the context tips the coin toward the cast voice.
+                    # (The real fix is AV-extend continuation of the anchor at
+                    # each character's first shot - context can be ignored, a
+                    # waveform being extended cannot. Until that lands, weight.)
+                    for _rep in range(2):
+                        memory_bank.save_memory_slot(
+                            _fitted, _lat,
+                            audio_window_size=audio_memory_window_size,
+                            video_clip_num_frames=9,
+                            audio_waveform=_aud.waveform,
+                            audio_sample_rate=int(_aud.sampling_rate),
+                            video_fps=float(video_fps),
+                            audio_window_selection_mode="max_response",
+                            video_frame_selection_mode="center",
+                            character=str(_vchar),
+                        )
+                        # Tag as anchor: the anchor+latest policy keeps these
+                        # slots live and protected from drift-outvoting.
+                        memory_bank.memory[-1].metadata["voice_anchor"] = True
+                    print(f"[JoyEcho] voice anchor {_vchar!r}: seeded from "
+                          f"{os.path.basename(str(_vpath))} "
+                          f"({_lat.shape[1]} audio tokens).", flush=True)
+                except Exception as _vexc:
+                    print(f"[JoyEcho] voice anchor {_vchar!r} FAILED "
+                          f"({type(_vexc).__name__}: {_vexc}); continuing without.",
+                          flush=True)
+
         for shot_idx in range(num_shots):
+            _shot_speaker = _speakers[shot_idx] if _speakers else None
             prompt_seed = seed + shot_idx
             conditional_dict = {
                 k: (v.to(device) if isinstance(v, torch.Tensor) else v)
                 for k, v in conditioning[shot_idx].items()
+                if k != "joyecho_meta"    # node-level metadata, not model input
             }
 
             print(f"[JoyEcho] Shot {shot_idx+1}/{num_shots}, seed={prompt_seed}, "
@@ -1675,11 +1955,41 @@ class JoyEcho_Generate:
                             enable_audio_memory=enable_audio_memory,
                             v2a_grad_scale=v2a_grad_scale,
                             memory_position_mode="reference",
+                            speaker=_shot_speaker,
                         )
+                    # Reference clips are prepended as VIDEO-only slots, but the
+                    # audio side comes from the bank alone. The paired cross-mask
+                    # zips the two slot lists POSITIONALLY, and
+                    # _memory_slot_ranges_from_lengths falls back to an EVEN split
+                    # whenever len(segment_lengths) != num_slots - so a single
+                    # injected ref re-slices the whole audio memory at the wrong
+                    # boundaries and every stored voice is smeared across the
+                    # wrong slots. That is the "completely different voice on the
+                    # re-entry shot" bug, not drift.
+                    #
+                    # Fix: give each ref its own silent audio slot at the FRONT so
+                    # the counts match and the bank's real segments line up with
+                    # their own video slots again. Zero-LENGTH padding cannot work
+                    # here - _memory_slot_ranges_from_lengths drops empty ranges
+                    # (`if end > start`) and the alignment breaks a second time.
                     if _shot_refs and memory_audio_kwargs:
-                        print("[JoyEcho] WARNING: reference clips + enable_audio_memory=True gives "
-                              f"{len(_mem_frames)} video slots vs {len(memory_bank)} audio slots; "
-                              "if slot pairing errors, set enable_audio_memory=False.", flush=True)
+                        _npad = len(_shot_refs)
+                        _ma = memory_audio_kwargs.get("memory_audio")
+                        _segs = memory_audio_kwargs.get("memory_audio_segment_lengths")
+                        if _ma is not None and _segs:
+                            _PAD_T = 8   # tokens per ref slot; small, contributes silence
+                            _pad = torch.zeros(
+                                (_ma.shape[0], _PAD_T * _npad, _ma.shape[2]),
+                                dtype=_ma.dtype, device=_ma.device)
+                            memory_audio_kwargs["memory_audio"] = torch.cat([_pad, _ma], dim=1)
+                            memory_audio_kwargs["memory_audio_segment_lengths"] = tuple(
+                                tuple([_PAD_T] * _npad) + tuple(row) for row in _segs)
+                            memory_audio_kwargs["memory_audio_timestep"] = torch.zeros(
+                                memory_audio_kwargs["memory_audio"].shape[:2],
+                                dtype=torch.float32)
+                            print(f"[JoyEcho] paired-memory realign: {_npad} reference slot(s) "
+                                  f"padded with silent audio so {len(_mem_frames)} video slots "
+                                  f"match {len(_mem_frames)} audio slots.", flush=True)
 
                     video_latent, audio_latent = memory_pipeline.generate(
                         video_shape=tuple(video_shape),
@@ -1753,12 +2063,14 @@ class JoyEcho_Generate:
                     audio_sample_rate=16000,
                     video_fps=float(video_fps),
                     audio_window_selection_mode="max_response",
-                    video_frame_selection_mode="center",
+                    video_frame_selection_mode=(
+                        "last" if str(memory_video_anchor) == "last" else "center"),
                     audio_memory_mel_bins=128,
                     audio_memory_mel_hop_length=160,
                     audio_memory_n_fft=1024,
                     audio_memory_downsample_factor=4,
                     audio_memory_is_causal=True,
+                    character=_shot_speaker,
                 )
 
             # HEAD TRIM: each shot's first frames morph out of the memory /
@@ -1849,6 +2161,7 @@ class JoyEcho_Generate:
                         waveforms=all_audio_waveforms, fps=video_fps,
                         audio_sr=audio_sample_rate,
                         out_prefix=str(output_prefix) + "_hires",
+                        base_seed=int(seed),
                     )
             except Exception:
                 import traceback
@@ -2103,7 +2416,8 @@ class JoyEcho_Generate:
     def _hires_refine_pass(self, *, generator, video_vae, audio_vae, conditioning,
                            frames_list, audio_lats, device, factor, mode,
                            sequential_offload, resident_blocks,
-                           waveforms=None, fps=25, audio_sr=48000, out_prefix=""):
+                           waveforms=None, fps=25, audio_sr=48000, out_prefix="",
+                           base_seed=0):
         """Second-pass hires fix: per shot, upscale (bicubic) -> VAE re-encode ->
         re-noise at a tail sigma -> re-denoise through the DMD ladder tail at the
         TARGET resolution -> decode. The model synthesizes genuine detail the
@@ -2192,7 +2506,8 @@ class JoyEcho_Generate:
                     print(f"[JoyEcho] Hires: shot {si+1} shorter than a window ({T}f); skipped.", flush=True)
                     continue
                 cond = {k: (v.to(device) if isinstance(v, torch.Tensor) else v)
-                        for k, v in conditioning[si].items()}
+                        for k, v in conditioning[si].items()
+                        if k != "joyecho_meta"}
                 alat_full = audio_lats[si]                 # [1,Fa,C] cpu
                 Fa = int(alat_full.shape[1])
 
@@ -2239,7 +2554,13 @@ class JoyEcho_Generate:
                     if shot_fields is None:
                         n_events = len(sigmas) - 1  # initial noising + each re-corruption
                         NG = T // 8 + Fl + 2        # global latent-frame budget with margin
-                        gs = torch.Generator(device="cpu").manual_seed(1234 + si * 100)
+                        # The refine noise was seeded from a CONSTANT (1234) for
+                        # months - every render's detail layer shared identical
+                        # noise regardless of the seed widget (audit, 2026-07-29).
+                        # base_seed routes the user's seed in; the +1234 offset
+                        # keeps refine noise decorrelated from the base pass.
+                        gs = torch.Generator(device="cpu").manual_seed(
+                            int(base_seed) + 1234 + si * 100)
                         shot_fields = {
                             "v": [torch.randn((1, NG) + tuple(lat.shape[2:]), generator=gs)
                                   for _ in range(n_events)],
@@ -2550,9 +2871,19 @@ class JoyEcho_SingleShotGenerate:
             video_fps=float(video_fps),
         )
 
-        # Get or create memory bank
+        # Get or create memory bank.
+        # CLONE the incoming bank, never adopt it (audit CRITICAL, 2026-07-29):
+        # ComfyUI caches node outputs, so the upstream node hands this node the
+        # SAME live bank object on every queue run. Mutating it in place made
+        # each run condition on the PREVIOUS run's rendered frames and audio -
+        # a literal identity/voice carryover between unrelated queue presses.
+        # A shallow instance copy with a fresh slot list breaks the aliasing;
+        # the entries themselves are immutable after save and safe to share.
         if memory is not None:
-            memory_bank = memory["bank"]
+            import copy as _copy
+            _src_bank = memory["bank"]
+            memory_bank = _copy.copy(_src_bank)
+            memory_bank.memory = list(_src_bank.memory)
         else:
             memory_bank = PairedAudioVideoMemoryBank(
                 max_size=memory_max_size,

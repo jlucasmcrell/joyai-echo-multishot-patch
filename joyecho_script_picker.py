@@ -12,12 +12,78 @@ automatically (IS_CHANGED tracks mtime) — no need to reselect.
 """
 
 import json
+import re
 from pathlib import Path
 
 import folder_paths
 
 _PROMPTS_SUBDIR = "joyecho_prompts"
 _EMPTY = "(no .json in input/joyecho_prompts)"
+
+# Per-character audio memory needs to know WHO speaks in each shot. That used to
+# be a hand-typed speaker_order widget on the Generate node, which does not
+# survive a queue-driven workflow - nobody is going to retype it per script. The
+# script already states the speaker in every shot, so derive it here and hand it
+# downstream. The widget remains as a manual override.
+#
+# The tags are opaque: save_memory_slot(character=...) and get_memory_audio(
+# speaker=...) only ever compare them for equality, so "ID_A" works as well as
+# "zara" and needs no mapping to a refs folder.
+_SPEAKER_RE = re.compile(r"\b(ID_[A-Z]|[A-Z][a-z]+)\s+is\s+talking\b")
+LAST_SPEAKERS: list[str] = []
+
+# Voice anchors: {"character": "path/to/clip.mp4"} carried by the script's
+# "voice_refs" key. Same stash pattern as LAST_SPEAKERS; the Generate node
+# encodes each clip's audio into a tagged memory-bank slot before shot 1, so
+# the character's voice is CAST from a file instead of rolled from text.
+# Keys must exactly match the script's speaker tags.
+LAST_VOICE_REFS: dict = {}
+
+
+def set_last_voice_refs(refs: dict) -> None:
+    """Stash the current script's voice anchors (empty dict clears)."""
+    global LAST_VOICE_REFS
+    LAST_VOICE_REFS = dict(refs) if isinstance(refs, dict) else {}
+
+
+def set_last_speakers(speakers: list[str]) -> None:
+    """Stash the current script's speaker order for the Generate node.
+
+    Wiring the `speakers` output is the explicit path; this module-level stash is
+    the zero-rewiring fallback so existing saved workflows and queued runs pick
+    it up with no canvas edits. ComfyUI executes a graph's nodes in dependency
+    order within one prompt, so the picker always runs before the generator it
+    feeds, and each execution overwrites the previous value.
+    """
+    global LAST_SPEAKERS
+    LAST_SPEAKERS = list(speakers)
+
+
+def derive_speakers(data: dict, shots: list) -> list[str]:
+    """Speaker tag per shot: an explicit "speakers" array wins, else the prose.
+
+    Returns [] when the script declares nothing and no shot names a speaker -
+    callers then fall back to character-blind memory, i.e. old behaviour.
+    """
+    if isinstance(data, dict):
+        declared = data.get("speakers") or data.get("speaker_order")
+        if isinstance(declared, str):
+            declared = [t for t in re.split(r"[,\s]+", declared.strip()) if t]
+        if isinstance(declared, list) and declared:
+            return [str(declared[i % len(declared)]) for i in range(len(shots))]
+
+    out, seen_any = [], False
+    for shot in shots:
+        m = _SPEAKER_RE.search(str(shot))
+        if m:
+            out.append(m.group(1))
+            seen_any = True
+        else:
+            # Unattributed shot: reuse the previous speaker rather than guessing.
+            # A wrong tag is worse than a repeated one - it would filter the bank
+            # to the wrong character and hand this shot the wrong voice.
+            out.append(out[-1] if out else "")
+    return out if seen_any and all(out) else []
 
 
 def _scripts_dir() -> Path:
@@ -45,8 +111,8 @@ class JoyEcho_ScriptPicker:
     def INPUT_TYPES(cls):
         return {"required": {"script": (_list_scripts(),)}}
 
-    RETURN_TYPES = ("STRING", "STRING",)
-    RETURN_NAMES = ("prompts_json", "path",)
+    RETURN_TYPES = ("STRING", "STRING", "STRING",)
+    RETURN_NAMES = ("prompts_json", "path", "speakers",)
     FUNCTION = "load"
     CATEGORY = "JoyAI-Echo"
 
@@ -81,8 +147,13 @@ class JoyEcho_ScriptPicker:
             arr = data.get("shots")
         if not isinstance(arr, list) or not arr:
             raise ValueError(f"{script} must contain a non-empty 'prompts' (or 'shots') array.")
-        print(f"[JoyEcho] ScriptPicker: {script} ({len(arr)} shots).", flush=True)
-        return (text, str(p),)
+        speakers = derive_speakers(data, arr)
+        set_last_speakers(speakers)
+        set_last_voice_refs(data.get("voice_refs") or {})
+        print(f"[JoyEcho] ScriptPicker: {script} ({len(arr)} shots)"
+              + (f", speakers: {' '.join(speakers)}" if speakers else ", no speaker tags")
+              + ".", flush=True)
+        return (text, str(p), " ".join(speakers),)
 
 
 NODE_CLASS_MAPPINGS = {"JoyEcho_ScriptPicker": JoyEcho_ScriptPicker}
