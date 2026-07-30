@@ -1,8 +1,8 @@
 {
  "id": "dabc6ca9-5fa6-414e-9cdd-33077930aa75",
  "revision": 0,
- "last_node_id": 65,
- "last_link_id": 127,
+ "last_node_id": 73,
+ "last_link_id": 132,
  "nodes": [
   {
    "id": 2,
@@ -612,14 +612,14 @@
      "name": "reference_image",
      "shape": 7,
      "type": "IMAGE",
-     "link": null
+     "link": 131
     },
     {
      "localized_name": "reference_shots",
      "name": "reference_shots",
      "shape": 7,
      "type": "STRING",
-     "link": null
+     "link": 132
     },
     {
      "localized_name": "seed",
@@ -1049,6 +1049,11 @@
       "name": "low_vram"
      },
      "link": null
+    },
+    {
+     "name": "lora_stack",
+     "type": "JOYECHO_LORA_STACK",
+     "link": 128
     }
    ],
    "outputs": [
@@ -1076,9 +1081,9 @@
      "checkpoint_path": "",
      "gemma_file": "text_encoders: gemma-3-12b-it-ablit-norms-biproj-fp8mixed.safetensors",
      "gemma_path": "",
-     "lora_file": "loras: ltx23/ltx23_accent_american_v2_rank32.safetensors",
+     "lora_file": "loras: ltx23/ltx23_accent_american_v1_rank32.safetensors",
      "lora_path": "",
-     "lora_strength": 1.0,
+     "lora_strength": 0.0,
      "fp8_transformer": false,
      "fp8_scaled_mm": false,
      "encoder_fp8": false,
@@ -1090,9 +1095,9 @@
     "",
     "text_encoders: gemma-3-12b-it-ablit-norms-biproj-fp8mixed.safetensors",
     "",
-    "loras: ltx23/ltx23_accent_american_v2_rank32.safetensors",
+    "loras: ltx23/ltx23_accent_american_v1_rank32.safetensors",
     "",
-    1.0,
+    0.0,
     false,
     false,
     false,
@@ -1385,7 +1390,8 @@
      "name": "story_idea",
      "type": "STRING",
      "links": [
-      127
+      127,
+      130
      ]
     }
    ],
@@ -1396,6 +1402,286 @@
    },
    "widgets_values": [
     "character designer"
+   ]
+  },
+  {
+   "id": 69,
+   "type": "Note",
+   "pos": [
+    -1420,
+    40
+   ],
+   "size": [
+    400,
+    300
+   ],
+   "flags": {},
+   "order": 0,
+   "mode": 0,
+   "inputs": [],
+   "outputs": [],
+   "properties": {
+    "text": ""
+   },
+   "widgets_values": [
+    "READ ME - THE 24 FPS LAW\n\nvideo_fps stays at 24. Always.\n\nLTX-2.3's joint audio-video prior is 24fps-native and fps is a hidden ACCENT dial: 25fps drifts every voice to southern British, 30fps to broad Australian - and off-24 overrides accent wording in your prompt entirely. Verified by A/B with blind phonetic review.\n\nWant a British/Australian character on purpose? Render THEIR scenes at 25/30. Otherwise: 24, say the accent in the prompt, keep the accent v2 LoRA at 1.0."
+   ],
+   "title": "READ ME - THE 24 FPS LAW",
+   "color": "#432",
+   "bgcolor": "#653"
+  },
+  {
+   "id": 70,
+   "type": "Note",
+   "pos": [
+    -1420,
+    380
+   ],
+   "size": [
+    400,
+    330
+   ],
+   "flags": {},
+   "order": 0,
+   "mode": 0,
+   "inputs": [],
+   "outputs": [],
+   "properties": {
+    "text": ""
+   },
+   "widgets_values": [
+    "TWO MODES - THE SOURCE SWITCH\n\nThe RiftCast Source Switch picks what drives this queue:\n\nPROMPT FILE - classic batch rendering. Point PromptSource at any LPFF txt or script JSON; easy-seed sets the block index.\n\nCHARACTER DESIGNER - set the dropdowns, queue, and the character records an audition tape. The Packer cuts their voice anchor + 3 reference stills from that render and installs NAME.riftcast automatically. Re-queue with a new seed to recast; delete the file in input/riftcast/ to retire them.\n\nCartridges also auto-install at startup: drop any .riftcast into input/riftcast/ and just mention the character in a script."
+   ],
+   "title": "TWO MODES - THE SOURCE SWITCH",
+   "color": "#432",
+   "bgcolor": "#653"
+  },
+  {
+   "id": 71,
+   "type": "Note",
+   "pos": [
+    -1420,
+    760
+   ],
+   "size": [
+    400,
+    300
+   ],
+   "flags": {},
+   "order": 0,
+   "mode": 0,
+   "inputs": [],
+   "outputs": [],
+   "properties": {
+    "text": ""
+   },
+   "widgets_values": [
+    "VOICES + REFERENCES\n\nVoice casting: a clip in input/joyecho_voices/<tag>/ makes every script with that speaker tag use that voice. RiftCast cartridges install these for you.\n\nRefPicker scans the ACTIVE script text for names matching folders under your refs root and injects identity stills at shot 1 (no_reference = silently skip when nothing matches). In designer mode this means a PACKED character's re-auditions inherit their own face - continuity for free.\n\nThe LoadImage is only a manual fallback; leave it on example.png unless you want to force a specific reference."
+   ],
+   "title": "VOICES + REFERENCES",
+   "color": "#432",
+   "bgcolor": "#653"
+  },
+  {
+   "id": 72,
+   "type": "Note",
+   "pos": [
+    -260,
+    700
+   ],
+   "size": [
+    380,
+    260
+   ],
+   "flags": {},
+   "order": 0,
+   "mode": 0,
+   "inputs": [],
+   "outputs": [],
+   "properties": {
+    "text": ""
+   },
+   "widgets_values": [
+    "LORA STACK\n\nltx23_accent_american_v2 @ 1.0 - makes accent wording obeyable in the young-voice registers the base model ignores. Load-bearing; leave it at 1.0.\n\nltx23_surfaces_v1 @ 1.0 - always-on material realism (no trigger word). Grounds, walls, fabric, wear.\n\nChain another LoRA Stacker into this stacker's lora_stack input for character/style LoRAs. Everything fuses at load on safetensors DiT paths."
+   ],
+   "title": "LORA STACK",
+   "color": "#432",
+   "bgcolor": "#653"
+  },
+  {
+   "id": 73,
+   "type": "Note",
+   "pos": [
+    1260,
+    300
+   ],
+   "size": [
+    380,
+    300
+   ],
+   "flags": {},
+   "order": 0,
+   "mode": 0,
+   "inputs": [],
+   "outputs": [],
+   "properties": {
+    "text": ""
+   },
+   "widgets_values": [
+    "FINISHING\n\nAutoFinish builds the master automatically after the queue (RIFTCAST_AUDITION prefix here - rename per project). Judge results from the *_MASTER.mp4, never the in-canvas preview.\n\ntemporal_upscale 2x on Generate = ~48fps masters via the LTX temporal latent upsampler - audio untouched, 24fps render law preserved. Great on motion; skip it for dialogue close-ups and found-footage looks.\n\nnum_frames up to 1441 (60s) single take. 241 = 10s audition."
+   ],
+   "title": "FINISHING",
+   "color": "#432",
+   "bgcolor": "#653"
+  },
+  {
+   "id": 66,
+   "type": "JoyEcho_LoraStacker",
+   "pos": [
+    -980,
+    460
+   ],
+   "size": [
+    340,
+    220
+   ],
+   "flags": {},
+   "order": 3,
+   "mode": 0,
+   "inputs": [],
+   "outputs": [
+    {
+     "name": "lora_stack",
+     "type": "JOYECHO_LORA_STACK",
+     "links": [
+      128
+     ]
+    }
+   ],
+   "properties": {
+    "je_widget_values": {
+     "lora_1": "loras: ltx23/ltx23_accent_american_v2_rank32.safetensors",
+     "strength_1": 1.0,
+     "lora_2": "loras: ltx23/ltx23_surfaces_v1.safetensors",
+     "strength_2": 1.0,
+     "lora_3": "(none)",
+     "strength_3": 1.0
+    }
+   },
+   "widgets_values": [
+    "loras: ltx23/ltx23_accent_american_v2_rank32.safetensors",
+    1.0,
+    "loras: ltx23/ltx23_surfaces_v1.safetensors",
+    1.0,
+    "(none)",
+    1.0
+   ]
+  },
+  {
+   "id": 67,
+   "type": "LoadImage",
+   "pos": [
+    -980,
+    740
+   ],
+   "size": [
+    260,
+    320
+   ],
+   "flags": {},
+   "order": 4,
+   "mode": 0,
+   "inputs": [],
+   "outputs": [
+    {
+     "name": "IMAGE",
+     "type": "IMAGE",
+     "links": [
+      129
+     ]
+    },
+    {
+     "name": "MASK",
+     "type": "MASK",
+     "links": null
+    }
+   ],
+   "properties": {},
+   "widgets_values": [
+    "example.png",
+    "image"
+   ]
+  },
+  {
+   "id": 68,
+   "type": "JoyEcho_RefPicker",
+   "pos": [
+    -640,
+    740
+   ],
+   "size": [
+    340,
+    260
+   ],
+   "flags": {},
+   "order": 5,
+   "mode": 0,
+   "inputs": [
+    {
+     "name": "prompt_text",
+     "type": "STRING",
+     "link": 130
+    },
+    {
+     "name": "fallback_image",
+     "type": "IMAGE",
+     "link": 129
+    },
+    {
+     "name": "character",
+     "type": "STRING",
+     "link": null
+    }
+   ],
+   "outputs": [
+    {
+     "name": "reference_image",
+     "type": "IMAGE",
+     "links": [
+      131
+     ]
+    },
+    {
+     "name": "picked_path",
+     "type": "STRING",
+     "links": null
+    },
+    {
+     "name": "ref_shots",
+     "type": "STRING",
+     "links": [
+      132
+     ]
+    }
+   ],
+   "properties": {
+    "je_widget_values": {
+     "pick": "by_seed",
+     "seed": 4242,
+     "control_after_generate": "randomize",
+     "refs_root": "",
+     "on_no_match": "no_reference",
+     "character_pick": "(from character input / prompt scan)"
+    }
+   },
+   "widgets_values": [
+    "by_seed",
+    4242,
+    "randomize",
+    "",
+    "no_reference",
+    "(from character input / prompt scan)",
+    "(from character input / prompt scan)"
    ]
   }
  ],
@@ -1542,6 +1828,46 @@
    0,
    59,
    0,
+   "STRING"
+  ],
+  [
+   128,
+   66,
+   0,
+   1,
+   11,
+   "JOYECHO_LORA_STACK"
+  ],
+  [
+   130,
+   65,
+   0,
+   68,
+   0,
+   "STRING"
+  ],
+  [
+   129,
+   67,
+   0,
+   68,
+   1,
+   "IMAGE"
+  ],
+  [
+   131,
+   68,
+   0,
+   57,
+   2,
+   "IMAGE"
+  ],
+  [
+   132,
+   68,
+   2,
+   57,
+   3,
    "STRING"
   ]
  ],
