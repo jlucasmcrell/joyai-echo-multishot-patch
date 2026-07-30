@@ -99,6 +99,12 @@ class RiftCast_CharacterDesigner:
             "distinguishing": ("STRING", {"default": "", "tooltip":
                                "optional: thin-framed glasses, a small nose "
                                "stud, freckles across the nose..."}),
+        },
+        "optional": {
+            "template": ("STRING", {"forceInput": True, "tooltip":
+                         "Wire a RiftCast Audition Script node here to "
+                         "customize the casting call. Unwired = the "
+                         "built-in default."}),
         }}
 
     RETURN_TYPES = ("STRING", "STRING", "STRING")
@@ -107,7 +113,8 @@ class RiftCast_CharacterDesigner:
     CATEGORY = "JoyAI-Echo/RiftCast"
 
     def design(self, name, gender, age, ethnicity, skin, hair_color, hair_style,
-               height, build, voice, accent, wardrobe, distinguishing):
+               height, build, voice, accent, wardrobe, distinguishing,
+               template=None):
         name = (name or "NOVA").strip().upper()
         noun, pro, pos, _ = GENDER[gender]
         nationality = ("British" if accent == "British" else
@@ -123,33 +130,17 @@ class RiftCast_CharacterDesigner:
                f"{pos.capitalize()} voice is {voice}, speaking in a "
                f"{accent} accent.")
 
-        script = {
-            "speakers": [name.lower()],
-            "prompts": [(
-                "Consumer mirrorless camera video, neutral color, modest dynamic "
-                "range: a locked static medium close-up at eye level in a small "
-                "casting room, head and shoulders filling most of the frame and "
-                "the mouth fully visible, one continuous unbroken take that never "
-                "cuts and never changes angle. The backdrop is matte gray seamless "
-                "paper with a soft vertical curl at its edge, taped at the top "
-                "corners, and the floor edge shows scuffed pale concrete. The "
-                "light is one large soft key from the front, even and flattering. "
-                f"{dna} "
-                f"Looking into the lens, calm and personable, {name} is talking, "
-                f"saying in a {accent} accent, \"Hi, my name's "
-                f"{name.title()}. This is my audition tape, so, here's a little "
-                f"about how I sound when I'm just talking. I'll read whatever "
-                f"you've got, whenever you're ready.\" "
-                f"{name} shifts weight once, tucks a strand of "
-                f"hair back, and gives one small easy smile as the take ends. "
-                f"{pos.capitalize()} lips move naturally in tight sync with every "
-                f"word. {name} is the only person in frame and "
-                f"{pos} voice is the only voice on the audio track. The only "
-                f"sounds are the room's quiet air, a faint camera-handling sound "
-                f"at the start, fabric shifting, and {pos} voice close and clean "
-                f"on the mic."
-            )],
-        }
+        tmpl = template or AUDITION_SCENE_DEFAULT
+        prompt = (tmpl
+                  .replace("{dialogue}", AUDITION_DIALOGUE_DEFAULT)
+                  .replace("{dna}", dna)
+                  .replace("{name_title}", name.title())
+                  .replace("{name}", name)
+                  .replace("{accent}", accent)
+                  .replace("{pro}", pro)
+                  .replace("{pos_cap}", pos.capitalize())
+                  .replace("{pos}", pos))
+        script = {"speakers": [name.lower()], "prompts": [prompt]}
         return (json.dumps(script, ensure_ascii=True), dna, name)
 
 
@@ -350,3 +341,63 @@ class JoyEcho_RenderClock:
 
 NODE_CLASS_MAPPINGS["JoyEcho_RenderClock"] = JoyEcho_RenderClock
 NODE_DISPLAY_NAME_MAPPINGS["JoyEcho_RenderClock"] = "JoyEcho Render Clock (fps + duration -> frames)"
+
+AUDITION_SCENE_DEFAULT = (
+    "Consumer mirrorless camera video, neutral color, modest dynamic "
+    "range: a locked static medium close-up at eye level in a small "
+    "casting room, head and shoulders filling most of the frame and "
+    "the mouth fully visible, one continuous unbroken take that never "
+    "cuts and never changes angle. The backdrop is matte gray seamless "
+    "paper with a soft vertical curl at its edge, taped at the top "
+    "corners, and the floor edge shows scuffed pale concrete. The "
+    "light is one large soft key from the front, even and flattering. "
+    "{dna} "
+    "Looking into the lens, calm and personable, {name} is talking, "
+    "saying in a {accent} accent, \"{dialogue}\" "
+    "{name} shifts weight once, tucks a strand of "
+    "hair back, and gives one small easy smile as the take ends. "
+    "{pos_cap} lips move naturally in tight sync with every "
+    "word. {name} is the only person in frame and "
+    "{pos} voice is the only voice on the audio track. The only "
+    "sounds are the room's quiet air, a faint camera-handling sound "
+    "at the start, fabric shifting, and {pos} voice close and clean "
+    "on the mic.")
+
+AUDITION_DIALOGUE_DEFAULT = (
+    "Hi, my name's {name_title}. This is my audition tape, so, here's a "
+    "little about how I sound when I'm just talking. I'll read whatever "
+    "you've got, whenever you're ready.")
+
+
+class RiftCast_AuditionScript:
+    """Editable casting-call template - the scene and the spoken lines the
+    Character Designer uses for audition tapes. Separate from your
+    production prompt files; wire audition_template into the Designer's
+    template input. Placeholders (safe string replacement, stray braces
+    are harmless): {dna} {name} {name_title} {accent} {pro} {pos}
+    {pos_cap} {dialogue}.
+
+    Keep these rules if you rewrite it: mouth-visible close-up, ONE
+    unbroken take (the Packer cuts anchor + refs from this footage),
+    keep the 'saying in a {accent} accent' binding, dialogue stays
+    non-falsifiable, and END ON MOTION (a settled character dead-stares)."""
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {"required": {
+            "scene_template": ("STRING", {"multiline": True,
+                                          "default": AUDITION_SCENE_DEFAULT}),
+            "dialogue": ("STRING", {"multiline": True,
+                                    "default": AUDITION_DIALOGUE_DEFAULT}),
+        }}
+
+    RETURN_TYPES = ("STRING",)
+    RETURN_NAMES = ("audition_template",)
+    FUNCTION = "template"
+    CATEGORY = "JoyAI-Echo/RiftCast"
+
+    def template(self, scene_template, dialogue):
+        return (scene_template.replace("{dialogue}", dialogue),)
+
+
+NODE_CLASS_MAPPINGS["RiftCast_AuditionScript"] = RiftCast_AuditionScript
+NODE_DISPLAY_NAME_MAPPINGS["RiftCast_AuditionScript"] = "RiftCast Audition Script (casting call)"

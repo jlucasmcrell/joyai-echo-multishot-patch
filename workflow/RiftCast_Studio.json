@@ -1,8 +1,8 @@
 {
  "id": "dabc6ca9-5fa6-414e-9cdd-33077930aa75",
  "revision": 0,
- "last_node_id": 76,
- "last_link_id": 145,
+ "last_node_id": 80,
+ "last_link_id": 146,
  "nodes": [
   {
    "id": 2,
@@ -1493,6 +1493,11 @@
       "name": "distinguishing"
      },
      "link": null
+    },
+    {
+     "name": "template",
+     "type": "STRING",
+     "link": 146
     }
    ],
    "outputs": [
@@ -2311,6 +2316,32 @@
    ],
    "color": "#432",
    "bgcolor": "#653"
+  },
+  {
+   "id": 80,
+   "type": "RiftCast_AuditionScript",
+   "pos": [
+    34.545454545345706,
+    77.27272727274003
+   ],
+   "size": [
+    380,
+    320
+   ],
+   "flags": {},
+   "order": 0,
+   "mode": 0,
+   "inputs": [],
+   "outputs": [
+    {
+     "name": "audition_template",
+     "type": "STRING",
+     "links": [
+      146
+     ]
+    }
+   ],
+   "properties": {}
   }
  ],
  "links": [
@@ -2537,6 +2568,14 @@
    57,
    5,
    "INT"
+  ],
+  [
+   146,
+   80,
+   0,
+   60,
+   13,
+   "STRING"
   ]
  ],
  "groups": [
