@@ -27,7 +27,7 @@ Nearly every problem reported with this pack is one of these.
 | **Quality degrades over a long run** — waxy skin, smearing by the late shots | The memory-bank trim was a no-op when `memory_max_size <= num_fix_frames`, so the bank grew unbounded. | Fixed in this patch (**Bug fix #1b**). `memory_size=` now freezes at your cap. |
 | **A GGUF errors about VAEs** | A GGUF is **DiT-only**. | Keep a full bf16 checkpoint in `checkpoint_path` — it supplies the VAEs, vocoder and connectors. |
 | **Burned-in subtitles or captions** | The DMD pipeline has no CFG, so a plain negative does nothing. | Use `negative_prompt_video` / `negative_scale_video` (~0.5). Above ~0.8 it locks every shot to shot 1's composition. |
-| **The voice comes out British** | LTX drifts British unless told otherwise. | Name it in the *positive*: "in a casual American accent". |
+| **Voices come out British or Australian and IGNORE accent wording** | `video_fps` is not 24. The joint AV prior is 24 fps-native; any deviation drifts every voice Commonwealth-ward (25 → southern British, 30 → broad Australian — dose-response verified by A/B on identical configs, 2026-07-30) and geometrically overrides accent prose. | Set **`video_fps` = 24** (the v1.7 default) AND name the accent in the *positive*: "in a casual American accent". At 24 fps the wording is obeyed; at 25+ it is not. Full story: **Feature #22**. |
 | **ComfyUI dies loading the VAEs, or `AttributeError: SiglipVisionModel` / `KeyError: 'rope_type'`** | transformers version. The pack's `requirements.txt` pins `<4.58`, which is out of date with the code — it ships shims for the 5.x RoPE and Siglip changes — so `pip install -r requirements.txt` silently downgrades a working 5.x install. | Reinstall the requirements into the **embedded** python, then `pip install "transformers==5.3.0"`. Confirmed good: 4.57 and 5.3.0. Confirmed broken: 5.13.1. |
 | **Occasional robotic voice on long runs** | JoyAI-Echo's finetune is what suppresses it; the e50 merge keeps half of it. | For long multishot runs prefer the full-Echo surgical merge; use e50 for talking heads. |
 | **Second shot won't lip-sync in a hand-built chain** | Guiding shot 2 with shot 1's decoded last frame is broken on *any* checkpoint — the guide is pixel-continuable, so the sampler reproduces it. | Extend with real audio+video latent context. See [Multishot Lite v2](https://huggingface.co/joeygambino/ltx23-multishot-lite). |
@@ -198,6 +198,21 @@ Two fixes so a text-only Gemma-3 GGUF loads cleanly:
   (per-tensor scalar scales; per-channel scales are skipped and those modules
   stay bf16), and a loud warning prints if a file matches neither.
 (`rebels_loaders.py`)
+
+### 3. comfy_quant fp8 checkpoints crashed the state-dict loader (v1.7)
+The INT8 ConvRot support intercepted EVERY `.comfy_quant` marker at the
+state-dict layer and raised on formats it didn't own — which broke loading of
+fp8-mixed single-file gemma encoders ("comfy_quant format 'float8_e4m3fn' is
+not supported"). The interception is now scoped to `int8_tensorwise` only;
+any other quant format passes through raw for the downstream fp8 swap to
+consume, exactly as before INT8 support landed. (`libs/ltx_core/loader/sft_loader.py`)
+
+### 4. Console windows flashing at the end of every render (v1.7)
+The AutoFinish worker was spawned with `DETACHED_PROCESS`, i.e. with no
+console at all — so every ffmpeg/ffprobe it ran allocated its own visible
+console window: a burst of half a dozen focus-stealing flashes as each master
+was assembled. The worker now launches with `CREATE_NO_WINDOW`: it gets an
+invisible console that all its children inherit silently. (`joyecho_autofinish.py`)
 
 ---
 
@@ -412,6 +427,45 @@ the visible character's description in that shot's prompt.
 - **The conditioning disk cache key includes the checkpoint** - a model swap
   can no longer be served the previous model's conditioning tensors.
   (Existing cache files are invalidated once; they rebuild on first render.)
+
+### 22. The 24 fps rule — frame rate steers ACCENTS (2026-07-30)
+
+The most consequential finding in this pack, discovered chasing a week of
+"why is everyone suddenly Australian":
+
+**LTX-2.3's joint audio-video prior is 24 fps-native, and the render fps is a
+hidden accent dial.** The model experiences fps as video-token density per
+second of audio RoPE time. Move it off 24 and voices slide monotonically into
+the Commonwealth vowel space — same text, same seed, same everything:
+
+| `video_fps` | same prompt, same config | reviewer verdict |
+|---|---|---|
+| 24 | witness monologue | rhotic **General American**, 5/5 segments |
+| 25 | witness monologue | non-rhotic **southern British**, 5/5 segments |
+| 30 | witness monologue | broad **General Australian** (rising terminals, raised DRESS), 5/5 |
+
+Two practical consequences:
+
+- **Off-24 fps overrides your prompt.** At 25 fps, even a line carrying
+  "speaking in a casual American accent" renders British — a few conditioning
+  tokens cannot outvote a geometric signal present in every attention
+  operation at every step. At 24 fps the same wording is obeyed.
+- **This interacts with Bug fix #0.** Pre-patch, the rope clock was hardcoded
+  24, so 25 fps renders had broken lip-sync but American voices. The sync fix
+  made the clock honest — and surfaced the accent drift that the bug had been
+  masking. If your voices "changed" after applying the patch, this is why:
+  you were rendering at 25. Drop to 24 and you get sync AND your accents.
+
+As of v1.7 the node default is 24, the bundled workflow ships at 24, and the
+Generate node prints a warning if you dial anything else. The flip side is a
+free feature: if you *want* an authentic British or Australian character,
+render their scenes at 25 or 30 fps instead of writing accent prose — it is
+more consistent than any wording.
+
+Voice prior note: with NO accent stated, young-female characters lean
+Australian even at 24 fps (the base model's lean). State the accent on every
+spoken line regardless — fps sets whether the model listens; the prompt still
+has to do the asking.
 
 ### 19. Finishing: who builds your master (READ THIS before touching hires)
 `hires_factor` is a ROUTING switch, not a quality slider - it decides which

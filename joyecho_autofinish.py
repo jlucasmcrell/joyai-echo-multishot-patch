@@ -115,7 +115,12 @@ class JoyEcho_AutoFinish:
                "rtx" if str(upscale_mode).lower().startswith("rtx") else "cas"]
         flags = 0
         if os.name == "nt":
-            flags = (subprocess.DETACHED_PROCESS
+            # CREATE_NO_WINDOW (not DETACHED_PROCESS): the worker gets an
+            # INVISIBLE console that its ffmpeg/ffprobe children inherit. A
+            # DETACHED worker has no console at all, so every child allocated
+            # its own visible one - the flashing focus-stealing popups at the
+            # end of each render.
+            flags = (subprocess.CREATE_NO_WINDOW
                      | subprocess.CREATE_NEW_PROCESS_GROUP)
         subprocess.Popen(cmd, creationflags=flags,
                          stdout=subprocess.DEVNULL,

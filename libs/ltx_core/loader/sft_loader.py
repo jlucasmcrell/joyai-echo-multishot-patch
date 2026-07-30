@@ -98,19 +98,38 @@ class SafetensorsStateDictLoader(StateDictLoader):
         for shard_path in model_paths:
             with safetensors.safe_open(shard_path, framework="pt", device=str(device)) as f:
                 safetensor_keys = f.keys()
-                # comfy_quant awareness: markers identify int8-quantized layers
-                # whose weights we reconstruct to bf16 on the fly; the marker
-                # and scale sidecar tensors themselves are never emitted.
+                # comfy_quant awareness: int8_tensorwise markers identify layers
+                # we reconstruct to bf16 at load (marker + scale sidecars are
+                # then never emitted). Any OTHER comfy_quant format (e.g. the
+                # float8_e4m3fn fp8mixed gemma builds) passes through RAW -
+                # weight, weight_scale and marker intact - because a downstream
+                # consumer owns it (_swap_gemma_fp8 in rebels_loaders). That is
+                # the pre-int8-patch behavior those files were built against.
                 cq_bases = {k[: -len(".comfy_quant")]
                             for k in safetensor_keys if k.endswith(".comfy_quant")}
-                if cq_bases:
+                int8_bases = set()
+                for b in cq_bases:
+                    try:
+                        conf = json.loads(bytes(
+                            f.get_tensor(b + ".comfy_quant").numpy().tobytes()
+                        ).decode("utf-8"))
+                    except Exception:
+                        conf = {}
+                    if conf.get("format") == "int8_tensorwise":
+                        int8_bases.add(b)
+                if int8_bases:
                     print(f"[JoyEcho] comfy_quant checkpoint: reconstructing "
-                          f"{len(cq_bases)} INT8 layers to bf16 at load "
+                          f"{len(int8_bases)} INT8 layers to bf16 at load "
                           f"(ConvRot un-rotation included)...", flush=True)
+                if len(cq_bases) - len(int8_bases) > 0:
+                    print(f"[JoyEcho] comfy_quant checkpoint: passing "
+                          f"{len(cq_bases) - len(int8_bases)} non-int8 quantized "
+                          f"layers through untouched (handled downstream, e.g. "
+                          f"fp8mixed gemma).", flush=True)
                 for name in safetensor_keys:
-                    if cq_bases:
+                    if int8_bases:
                         if name.endswith((".comfy_quant", ".weight_scale")) and \
-                                name.rsplit(".", 1)[0] in cq_bases:
+                                name.rsplit(".", 1)[0] in int8_bases:
                             continue
                     expected_name = name if sd_ops is None else sd_ops.apply_to_key(name)
                     if expected_name is None:
@@ -121,8 +140,8 @@ class SafetensorsStateDictLoader(StateDictLoader):
                     # encoders/decoders held at once in create_vae_wrappers) dangle
                     # and the next load faults with a native access violation on
                     # Windows. Force an owned copy off the mmap. (Rebels local patch)
-                    if cq_bases and name.endswith(".weight") and \
-                            name[: -len(".weight")] in cq_bases:
+                    if int8_bases and name.endswith(".weight") and \
+                            name[: -len(".weight")] in int8_bases:
                         base = name[: -len(".weight")]
                         value = _dequant_comfy_int8(
                             f.get_tensor(name),

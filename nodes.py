@@ -1234,7 +1234,7 @@ class JoyEcho_Generate:
                 "video_width": ("INT", {"default": 1280, "min": 256, "max": 1920, "step": 32}),
             },
             "optional": {
-                "video_fps": ("INT", {"default": 25, "min": 1, "max": 60}),
+                "video_fps": ("INT", {"default": 24, "min": 1, "max": 60, "tooltip": "KEEP AT 24. The LTX joint audio-video prior is 24fps-native: any other value (25 included) systematically drifts spoken voices toward Commonwealth accents (British/Australian) and overrides accent wording in the prompt. Verified A/B 2026-07-29."}),
                 "v2a_grad_scale": ("FLOAT", {"default": 2.0, "min": 0.0, "max": 10.0, "step": 0.1}),
                 "memory_max_size": ("INT", {"default": 7, "min": 0, "max": 20}),
                 "num_fix_frames": ("INT", {"default": 3, "min": 0, "max": 10}),
@@ -1405,7 +1405,7 @@ class JoyEcho_Generate:
                      "values shifted into the wrong slots. FIX: right-click this "
                      "node and remove it, add a fresh 'JoyEcho Generate' node, "
                      "reconnect its inputs and re-enter your settings (or load the "
-                     "workflow from the current v1.5 zip). ")
+                     "workflow from the current release zip). ")
         if hires_factor is not None:
             try:
                 float(hires_factor)
@@ -1513,6 +1513,11 @@ class JoyEcho_Generate:
         # drift, crossing visibility at ~9.6s into every shot (the "10s lip
         # sync cliff", 2026-07-23).
         generator.VIDEO_FPS = float(video_fps)
+        if int(video_fps) != 24:
+            print(f"[JoyEcho] WARNING: video_fps={video_fps}. The joint AV prior is "
+                  f"24fps-native - non-24 fps drifts voices toward Commonwealth "
+                  f"accents and overrides accent wording (verified 2026-07-29). "
+                  f"Use 24 unless you specifically want that.", flush=True)
 
         # Compute latent shapes
         video_shape, audio_shape = compute_latent_shapes(
@@ -2772,7 +2777,7 @@ class JoyEcho_SingleShotGenerate:
             },
             "optional": {
                 "memory": ("JOYECHO_MEMORY",),
-                "video_fps": ("INT", {"default": 25, "min": 1, "max": 60}),
+                "video_fps": ("INT", {"default": 24, "min": 1, "max": 60, "tooltip": "KEEP AT 24. The LTX joint audio-video prior is 24fps-native: any other value (25 included) systematically drifts spoken voices toward Commonwealth accents (British/Australian) and overrides accent wording in the prompt. Verified A/B 2026-07-29."}),
                 "v2a_grad_scale": ("FLOAT", {"default": 2.0, "min": 0.0, "max": 10.0, "step": 0.1}),
                 "memory_max_size": ("INT", {"default": 7, "min": 0, "max": 20}),
                 "num_fix_frames": ("INT", {"default": 3, "min": 0, "max": 10}),
@@ -2861,6 +2866,11 @@ class JoyEcho_SingleShotGenerate:
         generator.video_frame_seqlen = generator.latent_height * generator.latent_width
         # render fps drives the video RoPE clock (see multishot Generate note)
         generator.VIDEO_FPS = float(video_fps)
+        if int(video_fps) != 24:
+            print(f"[JoyEcho] WARNING: video_fps={video_fps}. The joint AV prior is "
+                  f"24fps-native - non-24 fps drifts voices toward Commonwealth "
+                  f"accents and overrides accent wording (verified 2026-07-29). "
+                  f"Use 24 unless you specifically want that.", flush=True)
 
         # Compute latent shapes
         video_shape, audio_shape = compute_latent_shapes(
@@ -3241,21 +3251,32 @@ class JoyEcho_LLMEnhance:
         # finished script (e.g. from the Script Picker) via the mode toggle.
         if "passthrough" in mode.lower():
             text = story_idea.strip()
-            try:
-                data = json.loads(text)
-            except json.JSONDecodeError as e:
-                raise ValueError(
-                    f"Passthrough mode expects raw JSON in story_idea, but it did not parse: {e}"
-                )
-            arr = data.get("prompts") if isinstance(data, dict) else None
-            if arr is None and isinstance(data, dict):
-                arr = data.get("shots")
-            if not isinstance(arr, list) or not arr:
-                raise ValueError(
-                    'Passthrough mode expects {"prompts": [...]} JSON (non-empty array) in story_idea.'
-                )
-            print(f"[JoyEcho] LLMEnhance PASSTHROUGH: {len(arr)} shots, no LLM call.", flush=True)
-            return (text,)
+            data = None
+            if text.startswith("{"):
+                try:
+                    data = json.loads(text)
+                except json.JSONDecodeError:
+                    data = None
+            if isinstance(data, dict):
+                arr = data.get("prompts") or data.get("shots")
+                if not isinstance(arr, list) or not arr:
+                    raise ValueError(
+                        'Passthrough mode: JSON input must contain a non-empty '
+                        '"prompts" (or "shots") array.'
+                    )
+                print(f"[JoyEcho] LLMEnhance PASSTHROUGH: {len(arr)} shots, "
+                      f"no LLM call.", flush=True)
+                return (text,)
+            # PLAIN TEXT (the LPFF/txt PromptSource path): a raw prompt IS a
+            # finished one-shot script. Refusing it forced every txt batch
+            # through the LLM rewrite, which silently destroyed any experiment
+            # depending on exact prompt text (found by the accent census,
+            # 2026-07-29). Wrap it; downstream sees the same JSON shape as ever.
+            if not text:
+                raise ValueError("Passthrough mode: story_idea is empty.")
+            print("[JoyEcho] LLMEnhance PASSTHROUGH: plain-text prompt wrapped "
+                  "as 1 shot, no LLM call.", flush=True)
+            return (json.dumps({"prompts": [text]}, ensure_ascii=True),)
 
         # ── REVISE: rewrite the PROSE of an existing script, keep its SHAPE ──
         # Rebels local patch 2026-07-20. Built for vision-native reasoning

@@ -1,1544 +1,1544 @@
 {
-  "id": "dabc6ca9-5fa6-414e-9cdd-33077930aa75",
-  "revision": 0,
-  "last_node_id": 59,
-  "last_link_id": 117,
-  "nodes": [
+ "id": "dabc6ca9-5fa6-414e-9cdd-33077930aa75",
+ "revision": 0,
+ "last_node_id": 59,
+ "last_link_id": 117,
+ "nodes": [
+  {
+   "id": 2,
+   "type": "JoyEcho_TextEncode",
+   "pos": [
+    2180,
+    100
+   ],
+   "size": [
+    536.8797872639861,
+    1115.7615213997844
+   ],
+   "flags": {},
+   "order": 5,
+   "mode": 0,
+   "inputs": [
     {
-      "id": 2,
-      "type": "JoyEcho_TextEncode",
-      "pos": [
-        2180,
-        100
-      ],
-      "size": [
-        536.8797872639861,
-        1115.7615213997844
-      ],
-      "flags": {},
-      "order": 5,
-      "mode": 0,
-      "inputs": [
-        {
-          "localized_name": "model",
-          "name": "model",
-          "type": "JOYECHO_MODEL",
-          "link": 1
-        },
-        {
-          "localized_name": "prompts",
-          "name": "prompts",
-          "type": "STRING",
-          "widget": {
-            "name": "prompts"
-          },
-          "link": 115
-        },
-        {
-          "localized_name": "negative_prompt_video",
-          "name": "negative_prompt_video",
-          "shape": 7,
-          "type": "STRING",
-          "widget": {
-            "name": "negative_prompt_video"
-          },
-          "link": null
-        },
-        {
-          "localized_name": "negative_scale_video",
-          "name": "negative_scale_video",
-          "shape": 7,
-          "type": "FLOAT",
-          "widget": {
-            "name": "negative_scale_video"
-          },
-          "link": null
-        },
-        {
-          "localized_name": "negative_prompt_audio",
-          "name": "negative_prompt_audio",
-          "shape": 7,
-          "type": "STRING",
-          "widget": {
-            "name": "negative_prompt_audio"
-          },
-          "link": null
-        },
-        {
-          "localized_name": "negative_scale_audio",
-          "name": "negative_scale_audio",
-          "shape": 7,
-          "type": "FLOAT",
-          "widget": {
-            "name": "negative_scale_audio"
-          },
-          "link": null
-        },
-        {
-          "localized_name": "release_text_encoder",
-          "name": "release_text_encoder",
-          "shape": 7,
-          "type": "BOOLEAN",
-          "widget": {
-            "name": "release_text_encoder"
-          },
-          "link": null
-        }
-      ],
-      "outputs": [
-        {
-          "localized_name": "model",
-          "name": "model",
-          "type": "JOYECHO_MODEL",
-          "slot_index": 0,
-          "links": [
-            104
-          ]
-        },
-        {
-          "localized_name": "conditioning",
-          "name": "conditioning",
-          "type": "JOYECHO_COND",
-          "slot_index": 1,
-          "links": [
-            105
-          ]
-        }
-      ],
-      "title": "JoyEcho Text Encode (15 shots)",
-      "properties": {
-        "aux_id": "RealRebelAI/ComfyUI_JoyAI_Echo_GGUF_Nodes",
-        "ver": "0d9e32fcd2d255a16604368fcaa1875c380c7f3b",
-        "Node name for S&R": "JoyEcho_TextEncode",
-        "ue_properties": {
-          "widget_ue_connectable": {},
-          "version": "7.8",
-          "input_ue_unconnectable": {}
-        }
-      },
-      "widgets_values": [
-        "",
-        "subtitles,\nclosed captions,\ncaptions,\nburned-in text,\nOCR,\ntypography,\nletters,\nwords,\nnumbers,\nglyphs,\ntitle cards,\nUI,\ninterface,\nspeech bubbles,\ncomic text,\ncredits,\nwatermark,\ntimestamp,\nticker,\nlower thirds,\nwriting,\ncalligraphy,\nengraving,\nscreen text,\nmonitor text,\nphone screen text,\nTV graphics,\nmenus",
-        0.5,
-        "music, singing, song, humming, melody, score, soundtrack, musical, instrumental",
-        0.3,
-        false
-      ]
+     "localized_name": "model",
+     "name": "model",
+     "type": "JOYECHO_MODEL",
+     "link": 1
     },
     {
-      "id": 7,
-      "type": "SaveVideo",
-      "pos": [
-        4360,
-        540
-      ],
-      "size": [
-        857.6928055978576,
-        1025.6802482016337
-      ],
-      "flags": {},
-      "order": 10,
-      "mode": 0,
-      "inputs": [
-        {
-          "localized_name": "video",
-          "name": "video",
-          "type": "VIDEO",
-          "link": 10
-        },
-        {
-          "localized_name": "filename_prefix",
-          "name": "filename_prefix",
-          "type": "STRING",
-          "widget": {
-            "name": "filename_prefix"
-          },
-          "link": null
-        },
-        {
-          "localized_name": "format",
-          "name": "format",
-          "type": "COMBO",
-          "widget": {
-            "name": "format"
-          },
-          "link": null
-        },
-        {
-          "localized_name": "codec",
-          "name": "codec",
-          "type": "COMBO",
-          "widget": {
-            "name": "codec"
-          },
-          "link": null
-        }
-      ],
-      "outputs": [
-        {
-          "localized_name": "video",
-          "name": "video",
-          "type": "VIDEO",
-          "links": null
-        }
-      ],
-      "properties": {
-        "cnr_id": "comfy-core",
-        "ver": "0.26.2",
-        "Node name for S&R": "SaveVideo",
-        "ue_properties": {
-          "widget_ue_connectable": {},
-          "version": "7.8",
-          "input_ue_unconnectable": {}
-        }
-      },
-      "widgets_values": [
-        "joyecho/output",
-        "auto",
-        "auto"
-      ]
+     "localized_name": "prompts",
+     "name": "prompts",
+     "type": "STRING",
+     "widget": {
+      "name": "prompts"
+     },
+     "link": 115
     },
     {
-      "id": 42,
-      "type": "ShowText|pysssss",
-      "pos": [
-        900,
-        917
-      ],
-      "size": [
-        1162.4142638716282,
-        724.3470203103975
-      ],
-      "flags": {},
-      "order": 6,
-      "mode": 0,
-      "inputs": [
-        {
-          "localized_name": "text",
-          "name": "text",
-          "type": "STRING",
-          "link": 116
-        }
-      ],
-      "outputs": [
-        {
-          "localized_name": "STRING",
-          "name": "STRING",
-          "shape": 6,
-          "type": "STRING",
-          "links": null
-        }
-      ],
-      "properties": {
-        "cnr_id": "comfyui-custom-scripts",
-        "ver": "609f3afaa74b2f88ef9ce8d939626065e3247469",
-        "Node name for S&R": "ShowText|pysssss",
-        "ue_properties": {
-          "widget_ue_connectable": {},
-          "input_ue_unconnectable": {},
-          "version": "7.8"
-        }
-      },
-      "widgets_values": [
-        ""
-      ]
+     "localized_name": "negative_prompt_video",
+     "name": "negative_prompt_video",
+     "shape": 7,
+     "type": "STRING",
+     "widget": {
+      "name": "negative_prompt_video"
+     },
+     "link": null
     },
     {
-      "id": 6,
-      "type": "CreateVideo",
-      "pos": [
-        4360,
-        360
-      ],
-      "size": [
-        301.3775449810605,
-        102
-      ],
-      "flags": {},
-      "order": 9,
-      "mode": 0,
-      "inputs": [
-        {
-          "localized_name": "images",
-          "name": "images",
-          "type": "IMAGE",
-          "link": 113
-        },
-        {
-          "localized_name": "audio",
-          "name": "audio",
-          "shape": 7,
-          "type": "AUDIO",
-          "link": 108
-        },
-        {
-          "localized_name": "fps",
-          "name": "fps",
-          "type": "FLOAT",
-          "widget": {
-            "name": "fps"
-          },
-          "link": null
-        },
-        {
-          "localized_name": "bit_depth",
-          "name": "bit_depth",
-          "shape": 7,
-          "type": "INT",
-          "widget": {
-            "name": "bit_depth"
-          },
-          "link": null
-        }
-      ],
-      "outputs": [
-        {
-          "localized_name": "VIDEO",
-          "name": "VIDEO",
-          "type": "VIDEO",
-          "slot_index": 0,
-          "links": [
-            10
-          ]
-        }
-      ],
-      "title": "Create Video (Merge All Shots)",
-      "properties": {
-        "cnr_id": "comfy-core",
-        "ver": "0.26.2",
-        "Node name for S&R": "CreateVideo",
-        "ue_properties": {
-          "widget_ue_connectable": {},
-          "version": "7.8",
-          "input_ue_unconnectable": {}
-        }
-      },
-      "widgets_values": [
-        25,
-        8
-      ]
+     "localized_name": "negative_scale_video",
+     "name": "negative_scale_video",
+     "shape": 7,
+     "type": "FLOAT",
+     "widget": {
+      "name": "negative_scale_video"
+     },
+     "link": null
     },
     {
-      "id": 59,
-      "type": "JoyEcho_LLMEnhance",
-      "pos": [
-        900,
-        100
-      ],
-      "size": [
-        1161.0279043079718,
-        736.9512031915835
-      ],
-      "flags": {},
-      "order": 3,
-      "mode": 0,
-      "inputs": [
-        {
-          "localized_name": "story_idea",
-          "name": "story_idea",
-          "type": "STRING",
-          "widget": {
-            "name": "story_idea"
-          },
-          "link": 114
-        },
-        {
-          "localized_name": "mode",
-          "name": "mode",
-          "type": "COMBO",
-          "widget": {
-            "name": "mode"
-          },
-          "link": null
-        },
-        {
-          "localized_name": "api_key",
-          "name": "api_key",
-          "type": "STRING",
-          "widget": {
-            "name": "api_key"
-          },
-          "link": null
-        },
-        {
-          "localized_name": "system_prompt",
-          "name": "system_prompt",
-          "type": "STRING",
-          "widget": {
-            "name": "system_prompt"
-          },
-          "link": null
-        },
-        {
-          "localized_name": "base_url",
-          "name": "base_url",
-          "shape": 7,
-          "type": "STRING",
-          "widget": {
-            "name": "base_url"
-          },
-          "link": null
-        },
-        {
-          "localized_name": "model_name",
-          "name": "model_name",
-          "shape": 7,
-          "type": "STRING",
-          "widget": {
-            "name": "model_name"
-          },
-          "link": null
-        },
-        {
-          "localized_name": "num_shots",
-          "name": "num_shots",
-          "shape": 7,
-          "type": "INT",
-          "widget": {
-            "name": "num_shots"
-          },
-          "link": null
-        },
-        {
-          "localized_name": "temperature",
-          "name": "temperature",
-          "shape": 7,
-          "type": "FLOAT",
-          "widget": {
-            "name": "temperature"
-          },
-          "link": null
-        },
-        {
-          "localized_name": "num_frames",
-          "name": "num_frames",
-          "shape": 7,
-          "type": "INT",
-          "widget": {
-            "name": "num_frames"
-          },
-          "link": null
-        },
-        {
-          "localized_name": "fps",
-          "name": "fps",
-          "shape": 7,
-          "type": "FLOAT",
-          "widget": {
-            "name": "fps"
-          },
-          "link": null
-        }
-      ],
-      "outputs": [
-        {
-          "localized_name": "prompts_json",
-          "name": "prompts_json",
-          "type": "STRING",
-          "links": [
-            115,
-            116
-          ]
-        }
-      ],
-      "properties": {
-        "aux_id": "RealRebelAI/ComfyUI_JoyAI_Echo_GGUF_Nodes",
-        "ver": "0d9e32fcd2d255a16604368fcaa1875c380c7f3b",
-        "Node name for S&R": "JoyEcho_LLMEnhance",
-        "ue_properties": {
-          "widget_ue_connectable": {},
-          "input_ue_unconnectable": {},
-          "version": "7.8"
-        }
-      },
-      "widgets_values": [
-        "",
-        "passthrough (raw JSON, skip LLM)",
-        "",
-        "",
-        "http://localhost:11434/v1",
-        "minimax-m3:cloud",
-        0,
-        0.7,
-        313,
-        25
-      ]
+     "localized_name": "negative_prompt_audio",
+     "name": "negative_prompt_audio",
+     "shape": 7,
+     "type": "STRING",
+     "widget": {
+      "name": "negative_prompt_audio"
+     },
+     "link": null
     },
     {
-      "id": 55,
-      "type": "JoyEcho_RefPicker",
-      "pos": [
-        2820,
-        460
-      ],
-      "size": [
-        403.8873046875,
-        242
-      ],
-      "flags": {},
-      "order": 4,
-      "mode": 0,
-      "inputs": [
-        {
-          "localized_name": "prompt_text",
-          "name": "prompt_text",
-          "shape": 7,
-          "type": "STRING",
-          "link": 96
-        },
-        {
-          "localized_name": "fallback_image",
-          "name": "fallback_image",
-          "shape": 7,
-          "type": "IMAGE",
-          "link": null
-        },
-        {
-          "localized_name": "pick",
-          "name": "pick",
-          "type": "COMBO",
-          "widget": {
-            "name": "pick"
-          },
-          "link": null
-        },
-        {
-          "localized_name": "seed",
-          "name": "seed",
-          "type": "INT",
-          "widget": {
-            "name": "seed"
-          },
-          "link": null
-        },
-        {
-          "localized_name": "refs_root",
-          "name": "refs_root",
-          "shape": 7,
-          "type": "STRING",
-          "widget": {
-            "name": "refs_root"
-          },
-          "link": null
-        },
-        {
-          "localized_name": "on_no_match",
-          "name": "on_no_match",
-          "shape": 7,
-          "type": "COMBO",
-          "widget": {
-            "name": "on_no_match"
-          },
-          "link": null
-        },
-        {
-          "localized_name": "character",
-          "name": "character",
-          "shape": 7,
-          "type": "STRING",
-          "widget": {
-            "name": "character"
-          },
-          "link": 100
-        },
-        {
-          "localized_name": "character_pick",
-          "name": "character_pick",
-          "shape": 7,
-          "type": "COMBO",
-          "widget": {
-            "name": "character_pick"
-          },
-          "link": null
-        }
-      ],
-      "outputs": [
-        {
-          "localized_name": "reference_image",
-          "name": "reference_image",
-          "type": "IMAGE",
-          "links": [
-            106
-          ]
-        },
-        {
-          "localized_name": "picked_path",
-          "name": "picked_path",
-          "type": "STRING",
-          "links": null
-        },
-        {
-          "localized_name": "ref_shots",
-          "name": "ref_shots",
-          "type": "STRING",
-          "links": [
-            107
-          ]
-        }
-      ],
-      "properties": {
-        "aux_id": "RealRebelAI/ComfyUI_JoyAI_Echo_GGUF_Nodes",
-        "ver": "0d9e32fcd2d255a16604368fcaa1875c380c7f3b",
-        "Node name for S&R": "JoyEcho_RefPicker",
-        "ue_properties": {
-          "widget_ue_connectable": {},
-          "input_ue_unconnectable": {},
-          "version": "7.8"
-        }
-      },
-      "widgets_values": [
-        "by_seed",
-        1673952081,
-        "randomize",
-        "",
-        "no_reference",
-        "(from character input / prompt scan)",
-        "(from character input / prompt scan)"
-      ]
+     "localized_name": "negative_scale_audio",
+     "name": "negative_scale_audio",
+     "shape": 7,
+     "type": "FLOAT",
+     "widget": {
+      "name": "negative_scale_audio"
+     },
+     "link": null
     },
     {
-      "id": 58,
-      "type": "JoyEcho_AutoFinish",
-      "pos": [
-        4360,
-        100
-      ],
-      "size": [
-        328.24765625,
-        178
-      ],
-      "flags": {},
-      "order": 8,
-      "mode": 0,
-      "inputs": [
-        {
-          "localized_name": "images",
-          "name": "images",
-          "type": "IMAGE",
-          "link": 110
-        },
-        {
-          "localized_name": "enabled",
-          "name": "enabled",
-          "type": "BOOLEAN",
-          "widget": {
-            "name": "enabled"
-          },
-          "link": null
-        },
-        {
-          "localized_name": "master_name",
-          "name": "master_name",
-          "type": "STRING",
-          "widget": {
-            "name": "master_name"
-          },
-          "link": null
-        },
-        {
-          "localized_name": "scale_factor",
-          "name": "scale_factor",
-          "type": "FLOAT",
-          "widget": {
-            "name": "scale_factor"
-          },
-          "link": null
-        },
-        {
-          "localized_name": "quality",
-          "name": "quality",
-          "type": "COMBO",
-          "widget": {
-            "name": "quality"
-          },
-          "link": null
-        },
-        {
-          "localized_name": "batch_size",
-          "name": "batch_size",
-          "type": "INT",
-          "widget": {
-            "name": "batch_size"
-          },
-          "link": null
-        },
-        {
-          "localized_name": "shots_subdir",
-          "name": "shots_subdir",
-          "shape": 7,
-          "type": "STRING",
-          "widget": {
-            "name": "shots_subdir"
-          },
-          "link": null
-        }
-      ],
-      "outputs": [
-        {
-          "localized_name": "images",
-          "name": "images",
-          "type": "IMAGE",
-          "links": [
-            113
-          ]
-        }
-      ],
-      "properties": {
-        "aux_id": "RealRebelAI/ComfyUI_JoyAI_Echo_GGUF_Nodes",
-        "ver": "0d9e32fcd2d255a16604368fcaa1875c380c7f3b",
-        "Node name for S&R": "JoyEcho_AutoFinish",
-        "ue_properties": {
-          "widget_ue_connectable": {},
-          "input_ue_unconnectable": {},
-          "version": "7.8"
-        }
-      },
-      "widgets_values": [
-        true,
-        " multishot",
-        1.25,
-        "ULTRA",
-        8,
-        "joyecho"
-      ]
-    },
-    {
-      "id": 57,
-      "type": "JoyEcho_Generate",
-      "pos": [
-        3900,
-        100
-      ],
-      "size": [
-        324.470703125,
-        646
-      ],
-      "flags": {},
-      "order": 7,
-      "mode": 0,
-      "inputs": [
-        {
-          "localized_name": "model",
-          "name": "model",
-          "type": "JOYECHO_MODEL",
-          "link": 104
-        },
-        {
-          "localized_name": "conditioning",
-          "name": "conditioning",
-          "type": "JOYECHO_COND",
-          "link": 105
-        },
-        {
-          "localized_name": "reference_image",
-          "name": "reference_image",
-          "shape": 7,
-          "type": "IMAGE",
-          "link": 106
-        },
-        {
-          "localized_name": "reference_shots",
-          "name": "reference_shots",
-          "shape": 7,
-          "type": "STRING",
-          "link": 107
-        },
-        {
-          "localized_name": "seed",
-          "name": "seed",
-          "type": "INT",
-          "widget": {
-            "name": "seed"
-          },
-          "link": null
-        },
-        {
-          "localized_name": "num_frames",
-          "name": "num_frames",
-          "type": "INT",
-          "widget": {
-            "name": "num_frames"
-          },
-          "link": null
-        },
-        {
-          "localized_name": "video_height",
-          "name": "video_height",
-          "type": "INT",
-          "widget": {
-            "name": "video_height"
-          },
-          "link": null
-        },
-        {
-          "localized_name": "video_width",
-          "name": "video_width",
-          "type": "INT",
-          "widget": {
-            "name": "video_width"
-          },
-          "link": null
-        },
-        {
-          "localized_name": "video_fps",
-          "name": "video_fps",
-          "shape": 7,
-          "type": "INT",
-          "widget": {
-            "name": "video_fps"
-          },
-          "link": null
-        },
-        {
-          "localized_name": "v2a_grad_scale",
-          "name": "v2a_grad_scale",
-          "shape": 7,
-          "type": "FLOAT",
-          "widget": {
-            "name": "v2a_grad_scale"
-          },
-          "link": null
-        },
-        {
-          "localized_name": "memory_max_size",
-          "name": "memory_max_size",
-          "shape": 7,
-          "type": "INT",
-          "widget": {
-            "name": "memory_max_size"
-          },
-          "link": null
-        },
-        {
-          "localized_name": "num_fix_frames",
-          "name": "num_fix_frames",
-          "shape": 7,
-          "type": "INT",
-          "widget": {
-            "name": "num_fix_frames"
-          },
-          "link": null
-        },
-        {
-          "localized_name": "enable_audio_memory",
-          "name": "enable_audio_memory",
-          "shape": 7,
-          "type": "BOOLEAN",
-          "widget": {
-            "name": "enable_audio_memory"
-          },
-          "link": null
-        },
-        {
-          "localized_name": "audio_memory_window_size",
-          "name": "audio_memory_window_size",
-          "shape": 7,
-          "type": "INT",
-          "widget": {
-            "name": "audio_memory_window_size"
-          },
-          "link": null
-        },
-        {
-          "localized_name": "sequential_offload",
-          "name": "sequential_offload",
-          "shape": 7,
-          "type": "BOOLEAN",
-          "widget": {
-            "name": "sequential_offload"
-          },
-          "link": null
-        },
-        {
-          "localized_name": "output_prefix",
-          "name": "output_prefix",
-          "shape": 7,
-          "type": "STRING",
-          "widget": {
-            "name": "output_prefix"
-          },
-          "link": null
-        },
-        {
-          "localized_name": "transition",
-          "name": "transition",
-          "shape": 7,
-          "type": "COMBO",
-          "widget": {
-            "name": "transition"
-          },
-          "link": null
-        },
-        {
-          "localized_name": "transition_frames",
-          "name": "transition_frames",
-          "shape": 7,
-          "type": "INT",
-          "widget": {
-            "name": "transition_frames"
-          },
-          "link": null
-        },
-        {
-          "localized_name": "glitch_intensity",
-          "name": "glitch_intensity",
-          "shape": 7,
-          "type": "FLOAT",
-          "widget": {
-            "name": "glitch_intensity"
-          },
-          "link": null
-        },
-        {
-          "localized_name": "head_trim_frames",
-          "name": "head_trim_frames",
-          "shape": 7,
-          "type": "INT",
-          "widget": {
-            "name": "head_trim_frames"
-          },
-          "link": null
-        },
-        {
-          "localized_name": "decode_tiling",
-          "name": "decode_tiling",
-          "shape": 7,
-          "type": "COMBO",
-          "widget": {
-            "name": "decode_tiling"
-          },
-          "link": null
-        },
-        {
-          "localized_name": "head_trim_first_shot",
-          "name": "head_trim_first_shot",
-          "shape": 7,
-          "type": "INT",
-          "widget": {
-            "name": "head_trim_first_shot"
-          },
-          "link": null
-        },
-        {
-          "localized_name": "reference_zoom",
-          "name": "reference_zoom",
-          "shape": 7,
-          "type": "FLOAT",
-          "widget": {
-            "name": "reference_zoom"
-          },
-          "link": null
-        },
-        {
-          "localized_name": "resident_blocks",
-          "name": "resident_blocks",
-          "shape": 7,
-          "type": "INT",
-          "widget": {
-            "name": "resident_blocks"
-          },
-          "link": null
-        },
-        {
-          "localized_name": "hires_factor",
-          "name": "hires_factor",
-          "shape": 7,
-          "type": "FLOAT",
-          "widget": {
-            "name": "hires_factor"
-          },
-          "link": null
-        },
-        {
-          "localized_name": "hires_denoise",
-          "name": "hires_denoise",
-          "shape": 7,
-          "type": "COMBO",
-          "widget": {
-            "name": "hires_denoise"
-          },
-          "link": null
-        }
-      ],
-      "outputs": [
-        {
-          "localized_name": "images",
-          "name": "images",
-          "type": "IMAGE",
-          "links": [
-            110
-          ]
-        },
-        {
-          "localized_name": "audio",
-          "name": "audio",
-          "type": "AUDIO",
-          "links": [
-            108
-          ]
-        }
-      ],
-      "properties": {
-        "aux_id": "RealRebelAI/ComfyUI_JoyAI_Echo_GGUF_Nodes",
-        "ver": "0d9e32fcd2d255a16604368fcaa1875c380c7f3b",
-        "Node name for S&R": "JoyEcho_Generate",
-        "ue_properties": {
-          "widget_ue_connectable": {},
-          "input_ue_unconnectable": {},
-          "version": "7.8"
-        }
-      },
-      "widgets_values": [
-        1059836071,
-        "randomize",
-        321,
-        864,
-        1536,
-        25,
-        2,
-        5,
-        3,
-        true,
-        96,
-        true,
-        "joyecho/shot",
-        "vhs_glitch",
-        8,
-        0.7,
-        0,
-        "auto",
-        0,
-        1.2,
-        24,
-        1,
-        "subtle (1 step)"
-      ]
-    },
-    {
-      "id": 1,
-      "type": "JoyEcho_ModelLoader",
-      "pos": [
-        2820,
-        100
-      ],
-      "size": [
-        959.6457021586295,
-        298
-      ],
-      "flags": {},
-      "order": 0,
-      "mode": 0,
-      "inputs": [
-        {
-          "localized_name": "model_file",
-          "name": "model_file",
-          "shape": 7,
-          "type": "COMBO",
-          "widget": {
-            "name": "model_file"
-          },
-          "link": null
-        },
-        {
-          "localized_name": "checkpoint_path",
-          "name": "checkpoint_path",
-          "shape": 7,
-          "type": "STRING",
-          "widget": {
-            "name": "checkpoint_path"
-          },
-          "link": null
-        },
-        {
-          "localized_name": "gemma_file",
-          "name": "gemma_file",
-          "shape": 7,
-          "type": "COMBO",
-          "widget": {
-            "name": "gemma_file"
-          },
-          "link": null
-        },
-        {
-          "localized_name": "gemma_path",
-          "name": "gemma_path",
-          "shape": 7,
-          "type": "STRING",
-          "widget": {
-            "name": "gemma_path"
-          },
-          "link": null
-        },
-        {
-          "localized_name": "lora_file",
-          "name": "lora_file",
-          "shape": 7,
-          "type": "COMBO",
-          "widget": {
-            "name": "lora_file"
-          },
-          "link": null
-        },
-        {
-          "localized_name": "lora_path",
-          "name": "lora_path",
-          "shape": 7,
-          "type": "STRING",
-          "widget": {
-            "name": "lora_path"
-          },
-          "link": null
-        },
-        {
-          "localized_name": "lora_strength",
-          "name": "lora_strength",
-          "shape": 7,
-          "type": "FLOAT",
-          "widget": {
-            "name": "lora_strength"
-          },
-          "link": null
-        },
-        {
-          "localized_name": "fp8_transformer",
-          "name": "fp8_transformer",
-          "shape": 7,
-          "type": "BOOLEAN",
-          "widget": {
-            "name": "fp8_transformer"
-          },
-          "link": null
-        },
-        {
-          "localized_name": "fp8_scaled_mm",
-          "name": "fp8_scaled_mm",
-          "shape": 7,
-          "type": "BOOLEAN",
-          "widget": {
-            "name": "fp8_scaled_mm"
-          },
-          "link": null
-        },
-        {
-          "localized_name": "encoder_fp8",
-          "name": "encoder_fp8",
-          "shape": 7,
-          "type": "BOOLEAN",
-          "widget": {
-            "name": "encoder_fp8"
-          },
-          "link": null
-        },
-        {
-          "localized_name": "low_vram",
-          "name": "low_vram",
-          "shape": 7,
-          "type": "BOOLEAN",
-          "widget": {
-            "name": "low_vram"
-          },
-          "link": null
-        }
-      ],
-      "outputs": [
-        {
-          "localized_name": "model",
-          "name": "model",
-          "type": "JOYECHO_MODEL",
-          "slot_index": 0,
-          "links": [
-            1
-          ]
-        }
-      ],
-      "properties": {
-        "aux_id": "RealRebelAI/ComfyUI_JoyAI_Echo_GGUF_Nodes",
-        "ver": "0d9e32fcd2d255a16604368fcaa1875c380c7f3b",
-        "Node name for S&R": "JoyEcho_ModelLoader",
-        "ue_properties": {
-          "widget_ue_connectable": {},
-          "version": "7.8",
-          "input_ue_unconnectable": {}
-        }
-      },
-      "widgets_values": [
-        "diffusion_models: ltx23_echoVid-ltxAud_surgical_fp8.safetensors",
-        "",
-        "(use gemma_path field)",
-        "",
-        "(use lora_path / none)",
-        "",
-        1.0,
-        false,
-        false,
-        false,
-        true
-      ]
-    },
-    {
-      "id": 52,
-      "type": "JoyEcho_PromptSource",
-      "pos": [
-        0,
-        286
-      ],
-      "size": [
-        724.5169729521541,
-        201.68048280657888
-      ],
-      "flags": {},
-      "order": 2,
-      "mode": 0,
-      "inputs": [
-        {
-          "localized_name": "source_file",
-          "name": "source_file",
-          "type": "COMBO",
-          "widget": {
-            "name": "source_file"
-          },
-          "link": null
-        },
-        {
-          "localized_name": "load_cap",
-          "name": "load_cap",
-          "shape": 7,
-          "type": "INT",
-          "widget": {
-            "name": "load_cap"
-          },
-          "link": null
-        },
-        {
-          "localized_name": "start_index",
-          "name": "start_index",
-          "shape": 7,
-          "type": "INT",
-          "widget": {
-            "name": "start_index"
-          },
-          "link": 117
-        },
-        {
-          "localized_name": "character_override",
-          "name": "character_override",
-          "shape": 7,
-          "type": "STRING",
-          "widget": {
-            "name": "character_override"
-          },
-          "link": null
-        },
-        {
-          "localized_name": "manual_path",
-          "name": "manual_path",
-          "shape": 7,
-          "type": "STRING",
-          "widget": {
-            "name": "manual_path"
-          },
-          "link": null
-        }
-      ],
-      "outputs": [
-        {
-          "localized_name": "story_idea",
-          "name": "story_idea",
-          "shape": 6,
-          "type": "STRING",
-          "links": [
-            96,
-            114
-          ]
-        },
-        {
-          "localized_name": "character",
-          "name": "character",
-          "shape": 6,
-          "type": "STRING",
-          "links": [
-            100
-          ]
-        },
-        {
-          "localized_name": "count",
-          "name": "count",
-          "type": "INT",
-          "links": null
-        }
-      ],
-      "properties": {
-        "aux_id": "RealRebelAI/ComfyUI_JoyAI_Echo_GGUF_Nodes",
-        "ver": "0d9e32fcd2d255a16604368fcaa1875c380c7f3b",
-        "Node name for S&R": "JoyEcho_PromptSource",
-        "ue_properties": {
-          "widget_ue_connectable": {},
-          "input_ue_unconnectable": {},
-          "version": "7.8"
-        }
-      },
-      "widgets_values": [
-        "JSON: example_multishot.json",
-        0,
-        0,
-        "",
-        ""
-      ]
-    },
-    {
-      "id": 11,
-      "type": "easy seed",
-      "pos": [
-        0,
-        100
-      ],
-      "size": [
-        210,
-        106
-      ],
-      "flags": {},
-      "order": 1,
-      "mode": 0,
-      "inputs": [
-        {
-          "localized_name": "seed",
-          "name": "seed",
-          "type": "INT",
-          "widget": {
-            "name": "seed"
-          },
-          "link": null
-        }
-      ],
-      "outputs": [
-        {
-          "localized_name": "seed",
-          "name": "seed",
-          "type": "INT",
-          "links": [
-            117
-          ]
-        }
-      ],
-      "properties": {
-        "cnr_id": "comfyui-easy-use",
-        "ver": "337a03bb19273ee084e56b16a59ad35cb07a1a04",
-        "Node name for S&R": "easy seed",
-        "ue_properties": {
-          "widget_ue_connectable": {},
-          "version": "7.8",
-          "input_ue_unconnectable": {}
-        }
-      },
-      "widgets_values": [
-        1,
-        "increment",
-        null
-      ]
+     "localized_name": "release_text_encoder",
+     "name": "release_text_encoder",
+     "shape": 7,
+     "type": "BOOLEAN",
+     "widget": {
+      "name": "release_text_encoder"
+     },
+     "link": null
     }
-  ],
-  "links": [
-    [
-      1,
-      1,
-      0,
-      2,
-      0,
-      "JOYECHO_MODEL"
-    ],
-    [
-      10,
-      6,
-      0,
-      7,
-      0,
-      "VIDEO"
-    ],
-    [
-      96,
-      52,
-      0,
-      55,
-      0,
-      "STRING"
-    ],
-    [
-      100,
-      52,
-      1,
-      55,
-      6,
-      "STRING"
-    ],
-    [
-      104,
-      2,
-      0,
-      57,
-      0,
-      "JOYECHO_MODEL"
-    ],
-    [
-      105,
-      2,
-      1,
-      57,
-      1,
-      "JOYECHO_COND"
-    ],
-    [
-      106,
-      55,
-      0,
-      57,
-      2,
-      "IMAGE"
-    ],
-    [
-      107,
-      55,
-      2,
-      57,
-      3,
-      "STRING"
-    ],
-    [
-      108,
-      57,
-      1,
-      6,
-      1,
-      "AUDIO"
-    ],
-    [
-      110,
-      57,
-      0,
-      58,
-      0,
-      "IMAGE"
-    ],
-    [
-      113,
-      58,
-      0,
-      6,
-      0,
-      "IMAGE"
-    ],
-    [
-      114,
-      52,
-      0,
-      59,
-      0,
-      "STRING"
-    ],
-    [
-      115,
-      59,
-      0,
-      2,
-      1,
-      "STRING"
-    ],
-    [
-      116,
-      59,
-      0,
-      42,
-      0,
-      "STRING"
-    ],
-    [
-      117,
-      11,
-      0,
-      52,
-      2,
-      "INT"
-    ]
-  ],
-  "groups": [
+   ],
+   "outputs": [
     {
-      "id": 1,
-      "title": "1 - Prompt Source",
-      "bounding": [
-        -50,
-        -20,
-        824.5169729521541,
-        557.6804828065789
-      ],
-      "color": "#3f5159",
-      "font_size": 28,
-      "flags": {}
+     "localized_name": "model",
+     "name": "model",
+     "type": "JOYECHO_MODEL",
+     "slot_index": 0,
+     "links": [
+      104
+     ]
     },
     {
-      "id": 2,
-      "title": "2 - Enhance & Encode",
-      "bounding": [
-        850,
-        -20,
-        1916.8797872639861,
-        1711.3470203103975
-      ],
-      "color": "#39604a",
-      "font_size": 28,
-      "flags": {}
-    },
-    {
-      "id": 3,
-      "title": "3 - Models & Reference",
-      "bounding": [
-        2770,
-        -20,
-        1059.6457021586293,
-        772
-      ],
-      "color": "#5a4a63",
-      "font_size": 28,
-      "flags": {}
-    },
-    {
-      "id": 4,
-      "title": "4 - Generate",
-      "bounding": [
-        3850,
-        -20,
-        424.470703125,
-        816
-      ],
-      "color": "#6e5a35",
-      "font_size": 28,
-      "flags": {}
-    },
-    {
-      "id": 5,
-      "title": "5 - Finish & Save",
-      "bounding": [
-        4310,
-        -20,
-        957.6928055978578,
-        1635.6802482016337
-      ],
-      "color": "#5a3d3d",
-      "font_size": 28,
-      "flags": {}
+     "localized_name": "conditioning",
+     "name": "conditioning",
+     "type": "JOYECHO_COND",
+     "slot_index": 1,
+     "links": [
+      105
+     ]
     }
-  ],
-  "config": {},
-  "extra": {
-    "ds": {
-      "scale": 1.0629366000001077,
-      "offset": [
-        1918.8868219750034,
-        304.29594287360624
-      ]
-    },
-    "frontendVersion": "1.45.15",
-    "ue_links": [],
-    "anomalous_hashes": {},
-    "links_added_by_ue": []
+   ],
+   "title": "JoyEcho Text Encode (15 shots)",
+   "properties": {
+    "aux_id": "RealRebelAI/ComfyUI_JoyAI_Echo_GGUF_Nodes",
+    "ver": "0d9e32fcd2d255a16604368fcaa1875c380c7f3b",
+    "Node name for S&R": "JoyEcho_TextEncode",
+    "ue_properties": {
+     "widget_ue_connectable": {},
+     "version": "7.8",
+     "input_ue_unconnectable": {}
+    }
+   },
+   "widgets_values": [
+    "",
+    "subtitles,\nclosed captions,\ncaptions,\nburned-in text,\nOCR,\ntypography,\nletters,\nwords,\nnumbers,\nglyphs,\ntitle cards,\nUI,\ninterface,\nspeech bubbles,\ncomic text,\ncredits,\nwatermark,\ntimestamp,\nticker,\nlower thirds,\nwriting,\ncalligraphy,\nengraving,\nscreen text,\nmonitor text,\nphone screen text,\nTV graphics,\nmenus",
+    0.5,
+    "music, singing, song, humming, melody, score, soundtrack, musical, instrumental",
+    0.3,
+    false
+   ]
   },
-  "version": 0.4
+  {
+   "id": 7,
+   "type": "SaveVideo",
+   "pos": [
+    4360,
+    540
+   ],
+   "size": [
+    857.6928055978576,
+    1025.6802482016337
+   ],
+   "flags": {},
+   "order": 10,
+   "mode": 0,
+   "inputs": [
+    {
+     "localized_name": "video",
+     "name": "video",
+     "type": "VIDEO",
+     "link": 10
+    },
+    {
+     "localized_name": "filename_prefix",
+     "name": "filename_prefix",
+     "type": "STRING",
+     "widget": {
+      "name": "filename_prefix"
+     },
+     "link": null
+    },
+    {
+     "localized_name": "format",
+     "name": "format",
+     "type": "COMBO",
+     "widget": {
+      "name": "format"
+     },
+     "link": null
+    },
+    {
+     "localized_name": "codec",
+     "name": "codec",
+     "type": "COMBO",
+     "widget": {
+      "name": "codec"
+     },
+     "link": null
+    }
+   ],
+   "outputs": [
+    {
+     "localized_name": "video",
+     "name": "video",
+     "type": "VIDEO",
+     "links": null
+    }
+   ],
+   "properties": {
+    "cnr_id": "comfy-core",
+    "ver": "0.26.2",
+    "Node name for S&R": "SaveVideo",
+    "ue_properties": {
+     "widget_ue_connectable": {},
+     "version": "7.8",
+     "input_ue_unconnectable": {}
+    }
+   },
+   "widgets_values": [
+    "joyecho/output",
+    "auto",
+    "auto"
+   ]
+  },
+  {
+   "id": 42,
+   "type": "ShowText|pysssss",
+   "pos": [
+    900,
+    917
+   ],
+   "size": [
+    1162.4142638716282,
+    724.3470203103975
+   ],
+   "flags": {},
+   "order": 6,
+   "mode": 0,
+   "inputs": [
+    {
+     "localized_name": "text",
+     "name": "text",
+     "type": "STRING",
+     "link": 116
+    }
+   ],
+   "outputs": [
+    {
+     "localized_name": "STRING",
+     "name": "STRING",
+     "shape": 6,
+     "type": "STRING",
+     "links": null
+    }
+   ],
+   "properties": {
+    "cnr_id": "comfyui-custom-scripts",
+    "ver": "609f3afaa74b2f88ef9ce8d939626065e3247469",
+    "Node name for S&R": "ShowText|pysssss",
+    "ue_properties": {
+     "widget_ue_connectable": {},
+     "input_ue_unconnectable": {},
+     "version": "7.8"
+    }
+   },
+   "widgets_values": [
+    ""
+   ]
+  },
+  {
+   "id": 6,
+   "type": "CreateVideo",
+   "pos": [
+    4360,
+    360
+   ],
+   "size": [
+    301.3775449810605,
+    102
+   ],
+   "flags": {},
+   "order": 9,
+   "mode": 0,
+   "inputs": [
+    {
+     "localized_name": "images",
+     "name": "images",
+     "type": "IMAGE",
+     "link": 113
+    },
+    {
+     "localized_name": "audio",
+     "name": "audio",
+     "shape": 7,
+     "type": "AUDIO",
+     "link": 108
+    },
+    {
+     "localized_name": "fps",
+     "name": "fps",
+     "type": "FLOAT",
+     "widget": {
+      "name": "fps"
+     },
+     "link": null
+    },
+    {
+     "localized_name": "bit_depth",
+     "name": "bit_depth",
+     "shape": 7,
+     "type": "INT",
+     "widget": {
+      "name": "bit_depth"
+     },
+     "link": null
+    }
+   ],
+   "outputs": [
+    {
+     "localized_name": "VIDEO",
+     "name": "VIDEO",
+     "type": "VIDEO",
+     "slot_index": 0,
+     "links": [
+      10
+     ]
+    }
+   ],
+   "title": "Create Video (Merge All Shots)",
+   "properties": {
+    "cnr_id": "comfy-core",
+    "ver": "0.26.2",
+    "Node name for S&R": "CreateVideo",
+    "ue_properties": {
+     "widget_ue_connectable": {},
+     "version": "7.8",
+     "input_ue_unconnectable": {}
+    }
+   },
+   "widgets_values": [
+    25,
+    8
+   ]
+  },
+  {
+   "id": 59,
+   "type": "JoyEcho_LLMEnhance",
+   "pos": [
+    900,
+    100
+   ],
+   "size": [
+    1161.0279043079718,
+    736.9512031915835
+   ],
+   "flags": {},
+   "order": 3,
+   "mode": 0,
+   "inputs": [
+    {
+     "localized_name": "story_idea",
+     "name": "story_idea",
+     "type": "STRING",
+     "widget": {
+      "name": "story_idea"
+     },
+     "link": 114
+    },
+    {
+     "localized_name": "mode",
+     "name": "mode",
+     "type": "COMBO",
+     "widget": {
+      "name": "mode"
+     },
+     "link": null
+    },
+    {
+     "localized_name": "api_key",
+     "name": "api_key",
+     "type": "STRING",
+     "widget": {
+      "name": "api_key"
+     },
+     "link": null
+    },
+    {
+     "localized_name": "system_prompt",
+     "name": "system_prompt",
+     "type": "STRING",
+     "widget": {
+      "name": "system_prompt"
+     },
+     "link": null
+    },
+    {
+     "localized_name": "base_url",
+     "name": "base_url",
+     "shape": 7,
+     "type": "STRING",
+     "widget": {
+      "name": "base_url"
+     },
+     "link": null
+    },
+    {
+     "localized_name": "model_name",
+     "name": "model_name",
+     "shape": 7,
+     "type": "STRING",
+     "widget": {
+      "name": "model_name"
+     },
+     "link": null
+    },
+    {
+     "localized_name": "num_shots",
+     "name": "num_shots",
+     "shape": 7,
+     "type": "INT",
+     "widget": {
+      "name": "num_shots"
+     },
+     "link": null
+    },
+    {
+     "localized_name": "temperature",
+     "name": "temperature",
+     "shape": 7,
+     "type": "FLOAT",
+     "widget": {
+      "name": "temperature"
+     },
+     "link": null
+    },
+    {
+     "localized_name": "num_frames",
+     "name": "num_frames",
+     "shape": 7,
+     "type": "INT",
+     "widget": {
+      "name": "num_frames"
+     },
+     "link": null
+    },
+    {
+     "localized_name": "fps",
+     "name": "fps",
+     "shape": 7,
+     "type": "FLOAT",
+     "widget": {
+      "name": "fps"
+     },
+     "link": null
+    }
+   ],
+   "outputs": [
+    {
+     "localized_name": "prompts_json",
+     "name": "prompts_json",
+     "type": "STRING",
+     "links": [
+      115,
+      116
+     ]
+    }
+   ],
+   "properties": {
+    "aux_id": "RealRebelAI/ComfyUI_JoyAI_Echo_GGUF_Nodes",
+    "ver": "0d9e32fcd2d255a16604368fcaa1875c380c7f3b",
+    "Node name for S&R": "JoyEcho_LLMEnhance",
+    "ue_properties": {
+     "widget_ue_connectable": {},
+     "input_ue_unconnectable": {},
+     "version": "7.8"
+    }
+   },
+   "widgets_values": [
+    "",
+    "passthrough (raw JSON, skip LLM)",
+    "",
+    "",
+    "http://localhost:11434/v1",
+    "minimax-m3:cloud",
+    0,
+    0.7,
+    313,
+    25
+   ]
+  },
+  {
+   "id": 55,
+   "type": "JoyEcho_RefPicker",
+   "pos": [
+    2820,
+    460
+   ],
+   "size": [
+    403.8873046875,
+    242
+   ],
+   "flags": {},
+   "order": 4,
+   "mode": 0,
+   "inputs": [
+    {
+     "localized_name": "prompt_text",
+     "name": "prompt_text",
+     "shape": 7,
+     "type": "STRING",
+     "link": 96
+    },
+    {
+     "localized_name": "fallback_image",
+     "name": "fallback_image",
+     "shape": 7,
+     "type": "IMAGE",
+     "link": null
+    },
+    {
+     "localized_name": "pick",
+     "name": "pick",
+     "type": "COMBO",
+     "widget": {
+      "name": "pick"
+     },
+     "link": null
+    },
+    {
+     "localized_name": "seed",
+     "name": "seed",
+     "type": "INT",
+     "widget": {
+      "name": "seed"
+     },
+     "link": null
+    },
+    {
+     "localized_name": "refs_root",
+     "name": "refs_root",
+     "shape": 7,
+     "type": "STRING",
+     "widget": {
+      "name": "refs_root"
+     },
+     "link": null
+    },
+    {
+     "localized_name": "on_no_match",
+     "name": "on_no_match",
+     "shape": 7,
+     "type": "COMBO",
+     "widget": {
+      "name": "on_no_match"
+     },
+     "link": null
+    },
+    {
+     "localized_name": "character",
+     "name": "character",
+     "shape": 7,
+     "type": "STRING",
+     "widget": {
+      "name": "character"
+     },
+     "link": 100
+    },
+    {
+     "localized_name": "character_pick",
+     "name": "character_pick",
+     "shape": 7,
+     "type": "COMBO",
+     "widget": {
+      "name": "character_pick"
+     },
+     "link": null
+    }
+   ],
+   "outputs": [
+    {
+     "localized_name": "reference_image",
+     "name": "reference_image",
+     "type": "IMAGE",
+     "links": [
+      106
+     ]
+    },
+    {
+     "localized_name": "picked_path",
+     "name": "picked_path",
+     "type": "STRING",
+     "links": null
+    },
+    {
+     "localized_name": "ref_shots",
+     "name": "ref_shots",
+     "type": "STRING",
+     "links": [
+      107
+     ]
+    }
+   ],
+   "properties": {
+    "aux_id": "RealRebelAI/ComfyUI_JoyAI_Echo_GGUF_Nodes",
+    "ver": "0d9e32fcd2d255a16604368fcaa1875c380c7f3b",
+    "Node name for S&R": "JoyEcho_RefPicker",
+    "ue_properties": {
+     "widget_ue_connectable": {},
+     "input_ue_unconnectable": {},
+     "version": "7.8"
+    }
+   },
+   "widgets_values": [
+    "by_seed",
+    1673952081,
+    "randomize",
+    "",
+    "no_reference",
+    "(from character input / prompt scan)",
+    "(from character input / prompt scan)"
+   ]
+  },
+  {
+   "id": 58,
+   "type": "JoyEcho_AutoFinish",
+   "pos": [
+    4360,
+    100
+   ],
+   "size": [
+    328.24765625,
+    178
+   ],
+   "flags": {},
+   "order": 8,
+   "mode": 0,
+   "inputs": [
+    {
+     "localized_name": "images",
+     "name": "images",
+     "type": "IMAGE",
+     "link": 110
+    },
+    {
+     "localized_name": "enabled",
+     "name": "enabled",
+     "type": "BOOLEAN",
+     "widget": {
+      "name": "enabled"
+     },
+     "link": null
+    },
+    {
+     "localized_name": "master_name",
+     "name": "master_name",
+     "type": "STRING",
+     "widget": {
+      "name": "master_name"
+     },
+     "link": null
+    },
+    {
+     "localized_name": "scale_factor",
+     "name": "scale_factor",
+     "type": "FLOAT",
+     "widget": {
+      "name": "scale_factor"
+     },
+     "link": null
+    },
+    {
+     "localized_name": "quality",
+     "name": "quality",
+     "type": "COMBO",
+     "widget": {
+      "name": "quality"
+     },
+     "link": null
+    },
+    {
+     "localized_name": "batch_size",
+     "name": "batch_size",
+     "type": "INT",
+     "widget": {
+      "name": "batch_size"
+     },
+     "link": null
+    },
+    {
+     "localized_name": "shots_subdir",
+     "name": "shots_subdir",
+     "shape": 7,
+     "type": "STRING",
+     "widget": {
+      "name": "shots_subdir"
+     },
+     "link": null
+    }
+   ],
+   "outputs": [
+    {
+     "localized_name": "images",
+     "name": "images",
+     "type": "IMAGE",
+     "links": [
+      113
+     ]
+    }
+   ],
+   "properties": {
+    "aux_id": "RealRebelAI/ComfyUI_JoyAI_Echo_GGUF_Nodes",
+    "ver": "0d9e32fcd2d255a16604368fcaa1875c380c7f3b",
+    "Node name for S&R": "JoyEcho_AutoFinish",
+    "ue_properties": {
+     "widget_ue_connectable": {},
+     "input_ue_unconnectable": {},
+     "version": "7.8"
+    }
+   },
+   "widgets_values": [
+    true,
+    " multishot",
+    1.25,
+    "ULTRA",
+    8,
+    "joyecho"
+   ]
+  },
+  {
+   "id": 57,
+   "type": "JoyEcho_Generate",
+   "pos": [
+    3900,
+    100
+   ],
+   "size": [
+    324.470703125,
+    646
+   ],
+   "flags": {},
+   "order": 7,
+   "mode": 0,
+   "inputs": [
+    {
+     "localized_name": "model",
+     "name": "model",
+     "type": "JOYECHO_MODEL",
+     "link": 104
+    },
+    {
+     "localized_name": "conditioning",
+     "name": "conditioning",
+     "type": "JOYECHO_COND",
+     "link": 105
+    },
+    {
+     "localized_name": "reference_image",
+     "name": "reference_image",
+     "shape": 7,
+     "type": "IMAGE",
+     "link": 106
+    },
+    {
+     "localized_name": "reference_shots",
+     "name": "reference_shots",
+     "shape": 7,
+     "type": "STRING",
+     "link": 107
+    },
+    {
+     "localized_name": "seed",
+     "name": "seed",
+     "type": "INT",
+     "widget": {
+      "name": "seed"
+     },
+     "link": null
+    },
+    {
+     "localized_name": "num_frames",
+     "name": "num_frames",
+     "type": "INT",
+     "widget": {
+      "name": "num_frames"
+     },
+     "link": null
+    },
+    {
+     "localized_name": "video_height",
+     "name": "video_height",
+     "type": "INT",
+     "widget": {
+      "name": "video_height"
+     },
+     "link": null
+    },
+    {
+     "localized_name": "video_width",
+     "name": "video_width",
+     "type": "INT",
+     "widget": {
+      "name": "video_width"
+     },
+     "link": null
+    },
+    {
+     "localized_name": "video_fps",
+     "name": "video_fps",
+     "shape": 7,
+     "type": "INT",
+     "widget": {
+      "name": "video_fps"
+     },
+     "link": null
+    },
+    {
+     "localized_name": "v2a_grad_scale",
+     "name": "v2a_grad_scale",
+     "shape": 7,
+     "type": "FLOAT",
+     "widget": {
+      "name": "v2a_grad_scale"
+     },
+     "link": null
+    },
+    {
+     "localized_name": "memory_max_size",
+     "name": "memory_max_size",
+     "shape": 7,
+     "type": "INT",
+     "widget": {
+      "name": "memory_max_size"
+     },
+     "link": null
+    },
+    {
+     "localized_name": "num_fix_frames",
+     "name": "num_fix_frames",
+     "shape": 7,
+     "type": "INT",
+     "widget": {
+      "name": "num_fix_frames"
+     },
+     "link": null
+    },
+    {
+     "localized_name": "enable_audio_memory",
+     "name": "enable_audio_memory",
+     "shape": 7,
+     "type": "BOOLEAN",
+     "widget": {
+      "name": "enable_audio_memory"
+     },
+     "link": null
+    },
+    {
+     "localized_name": "audio_memory_window_size",
+     "name": "audio_memory_window_size",
+     "shape": 7,
+     "type": "INT",
+     "widget": {
+      "name": "audio_memory_window_size"
+     },
+     "link": null
+    },
+    {
+     "localized_name": "sequential_offload",
+     "name": "sequential_offload",
+     "shape": 7,
+     "type": "BOOLEAN",
+     "widget": {
+      "name": "sequential_offload"
+     },
+     "link": null
+    },
+    {
+     "localized_name": "output_prefix",
+     "name": "output_prefix",
+     "shape": 7,
+     "type": "STRING",
+     "widget": {
+      "name": "output_prefix"
+     },
+     "link": null
+    },
+    {
+     "localized_name": "transition",
+     "name": "transition",
+     "shape": 7,
+     "type": "COMBO",
+     "widget": {
+      "name": "transition"
+     },
+     "link": null
+    },
+    {
+     "localized_name": "transition_frames",
+     "name": "transition_frames",
+     "shape": 7,
+     "type": "INT",
+     "widget": {
+      "name": "transition_frames"
+     },
+     "link": null
+    },
+    {
+     "localized_name": "glitch_intensity",
+     "name": "glitch_intensity",
+     "shape": 7,
+     "type": "FLOAT",
+     "widget": {
+      "name": "glitch_intensity"
+     },
+     "link": null
+    },
+    {
+     "localized_name": "head_trim_frames",
+     "name": "head_trim_frames",
+     "shape": 7,
+     "type": "INT",
+     "widget": {
+      "name": "head_trim_frames"
+     },
+     "link": null
+    },
+    {
+     "localized_name": "decode_tiling",
+     "name": "decode_tiling",
+     "shape": 7,
+     "type": "COMBO",
+     "widget": {
+      "name": "decode_tiling"
+     },
+     "link": null
+    },
+    {
+     "localized_name": "head_trim_first_shot",
+     "name": "head_trim_first_shot",
+     "shape": 7,
+     "type": "INT",
+     "widget": {
+      "name": "head_trim_first_shot"
+     },
+     "link": null
+    },
+    {
+     "localized_name": "reference_zoom",
+     "name": "reference_zoom",
+     "shape": 7,
+     "type": "FLOAT",
+     "widget": {
+      "name": "reference_zoom"
+     },
+     "link": null
+    },
+    {
+     "localized_name": "resident_blocks",
+     "name": "resident_blocks",
+     "shape": 7,
+     "type": "INT",
+     "widget": {
+      "name": "resident_blocks"
+     },
+     "link": null
+    },
+    {
+     "localized_name": "hires_factor",
+     "name": "hires_factor",
+     "shape": 7,
+     "type": "FLOAT",
+     "widget": {
+      "name": "hires_factor"
+     },
+     "link": null
+    },
+    {
+     "localized_name": "hires_denoise",
+     "name": "hires_denoise",
+     "shape": 7,
+     "type": "COMBO",
+     "widget": {
+      "name": "hires_denoise"
+     },
+     "link": null
+    }
+   ],
+   "outputs": [
+    {
+     "localized_name": "images",
+     "name": "images",
+     "type": "IMAGE",
+     "links": [
+      110
+     ]
+    },
+    {
+     "localized_name": "audio",
+     "name": "audio",
+     "type": "AUDIO",
+     "links": [
+      108
+     ]
+    }
+   ],
+   "properties": {
+    "aux_id": "RealRebelAI/ComfyUI_JoyAI_Echo_GGUF_Nodes",
+    "ver": "0d9e32fcd2d255a16604368fcaa1875c380c7f3b",
+    "Node name for S&R": "JoyEcho_Generate",
+    "ue_properties": {
+     "widget_ue_connectable": {},
+     "input_ue_unconnectable": {},
+     "version": "7.8"
+    }
+   },
+   "widgets_values": [
+    1059836071,
+    "randomize",
+    321,
+    864,
+    1536,
+    24,
+    2,
+    5,
+    3,
+    true,
+    96,
+    true,
+    "joyecho/shot",
+    "vhs_glitch",
+    8,
+    0.7,
+    0,
+    "auto",
+    0,
+    1.2,
+    24,
+    1,
+    "subtle (1 step)"
+   ]
+  },
+  {
+   "id": 1,
+   "type": "JoyEcho_ModelLoader",
+   "pos": [
+    2820,
+    100
+   ],
+   "size": [
+    959.6457021586295,
+    298
+   ],
+   "flags": {},
+   "order": 0,
+   "mode": 0,
+   "inputs": [
+    {
+     "localized_name": "model_file",
+     "name": "model_file",
+     "shape": 7,
+     "type": "COMBO",
+     "widget": {
+      "name": "model_file"
+     },
+     "link": null
+    },
+    {
+     "localized_name": "checkpoint_path",
+     "name": "checkpoint_path",
+     "shape": 7,
+     "type": "STRING",
+     "widget": {
+      "name": "checkpoint_path"
+     },
+     "link": null
+    },
+    {
+     "localized_name": "gemma_file",
+     "name": "gemma_file",
+     "shape": 7,
+     "type": "COMBO",
+     "widget": {
+      "name": "gemma_file"
+     },
+     "link": null
+    },
+    {
+     "localized_name": "gemma_path",
+     "name": "gemma_path",
+     "shape": 7,
+     "type": "STRING",
+     "widget": {
+      "name": "gemma_path"
+     },
+     "link": null
+    },
+    {
+     "localized_name": "lora_file",
+     "name": "lora_file",
+     "shape": 7,
+     "type": "COMBO",
+     "widget": {
+      "name": "lora_file"
+     },
+     "link": null
+    },
+    {
+     "localized_name": "lora_path",
+     "name": "lora_path",
+     "shape": 7,
+     "type": "STRING",
+     "widget": {
+      "name": "lora_path"
+     },
+     "link": null
+    },
+    {
+     "localized_name": "lora_strength",
+     "name": "lora_strength",
+     "shape": 7,
+     "type": "FLOAT",
+     "widget": {
+      "name": "lora_strength"
+     },
+     "link": null
+    },
+    {
+     "localized_name": "fp8_transformer",
+     "name": "fp8_transformer",
+     "shape": 7,
+     "type": "BOOLEAN",
+     "widget": {
+      "name": "fp8_transformer"
+     },
+     "link": null
+    },
+    {
+     "localized_name": "fp8_scaled_mm",
+     "name": "fp8_scaled_mm",
+     "shape": 7,
+     "type": "BOOLEAN",
+     "widget": {
+      "name": "fp8_scaled_mm"
+     },
+     "link": null
+    },
+    {
+     "localized_name": "encoder_fp8",
+     "name": "encoder_fp8",
+     "shape": 7,
+     "type": "BOOLEAN",
+     "widget": {
+      "name": "encoder_fp8"
+     },
+     "link": null
+    },
+    {
+     "localized_name": "low_vram",
+     "name": "low_vram",
+     "shape": 7,
+     "type": "BOOLEAN",
+     "widget": {
+      "name": "low_vram"
+     },
+     "link": null
+    }
+   ],
+   "outputs": [
+    {
+     "localized_name": "model",
+     "name": "model",
+     "type": "JOYECHO_MODEL",
+     "slot_index": 0,
+     "links": [
+      1
+     ]
+    }
+   ],
+   "properties": {
+    "aux_id": "RealRebelAI/ComfyUI_JoyAI_Echo_GGUF_Nodes",
+    "ver": "0d9e32fcd2d255a16604368fcaa1875c380c7f3b",
+    "Node name for S&R": "JoyEcho_ModelLoader",
+    "ue_properties": {
+     "widget_ue_connectable": {},
+     "version": "7.8",
+     "input_ue_unconnectable": {}
+    }
+   },
+   "widgets_values": [
+    "diffusion_models: ltx23_echoVid-ltxAud_surgical_fp8.safetensors",
+    "",
+    "(use gemma_path field)",
+    "",
+    "(use lora_path / none)",
+    "",
+    1.0,
+    false,
+    false,
+    false,
+    true
+   ]
+  },
+  {
+   "id": 52,
+   "type": "JoyEcho_PromptSource",
+   "pos": [
+    0,
+    286
+   ],
+   "size": [
+    724.5169729521541,
+    201.68048280657888
+   ],
+   "flags": {},
+   "order": 2,
+   "mode": 0,
+   "inputs": [
+    {
+     "localized_name": "source_file",
+     "name": "source_file",
+     "type": "COMBO",
+     "widget": {
+      "name": "source_file"
+     },
+     "link": null
+    },
+    {
+     "localized_name": "load_cap",
+     "name": "load_cap",
+     "shape": 7,
+     "type": "INT",
+     "widget": {
+      "name": "load_cap"
+     },
+     "link": null
+    },
+    {
+     "localized_name": "start_index",
+     "name": "start_index",
+     "shape": 7,
+     "type": "INT",
+     "widget": {
+      "name": "start_index"
+     },
+     "link": 117
+    },
+    {
+     "localized_name": "character_override",
+     "name": "character_override",
+     "shape": 7,
+     "type": "STRING",
+     "widget": {
+      "name": "character_override"
+     },
+     "link": null
+    },
+    {
+     "localized_name": "manual_path",
+     "name": "manual_path",
+     "shape": 7,
+     "type": "STRING",
+     "widget": {
+      "name": "manual_path"
+     },
+     "link": null
+    }
+   ],
+   "outputs": [
+    {
+     "localized_name": "story_idea",
+     "name": "story_idea",
+     "shape": 6,
+     "type": "STRING",
+     "links": [
+      96,
+      114
+     ]
+    },
+    {
+     "localized_name": "character",
+     "name": "character",
+     "shape": 6,
+     "type": "STRING",
+     "links": [
+      100
+     ]
+    },
+    {
+     "localized_name": "count",
+     "name": "count",
+     "type": "INT",
+     "links": null
+    }
+   ],
+   "properties": {
+    "aux_id": "RealRebelAI/ComfyUI_JoyAI_Echo_GGUF_Nodes",
+    "ver": "0d9e32fcd2d255a16604368fcaa1875c380c7f3b",
+    "Node name for S&R": "JoyEcho_PromptSource",
+    "ue_properties": {
+     "widget_ue_connectable": {},
+     "input_ue_unconnectable": {},
+     "version": "7.8"
+    }
+   },
+   "widgets_values": [
+    "JSON: example_multishot.json",
+    0,
+    0,
+    "",
+    ""
+   ]
+  },
+  {
+   "id": 11,
+   "type": "easy seed",
+   "pos": [
+    0,
+    100
+   ],
+   "size": [
+    210,
+    106
+   ],
+   "flags": {},
+   "order": 1,
+   "mode": 0,
+   "inputs": [
+    {
+     "localized_name": "seed",
+     "name": "seed",
+     "type": "INT",
+     "widget": {
+      "name": "seed"
+     },
+     "link": null
+    }
+   ],
+   "outputs": [
+    {
+     "localized_name": "seed",
+     "name": "seed",
+     "type": "INT",
+     "links": [
+      117
+     ]
+    }
+   ],
+   "properties": {
+    "cnr_id": "comfyui-easy-use",
+    "ver": "337a03bb19273ee084e56b16a59ad35cb07a1a04",
+    "Node name for S&R": "easy seed",
+    "ue_properties": {
+     "widget_ue_connectable": {},
+     "version": "7.8",
+     "input_ue_unconnectable": {}
+    }
+   },
+   "widgets_values": [
+    1,
+    "increment",
+    null
+   ]
+  }
+ ],
+ "links": [
+  [
+   1,
+   1,
+   0,
+   2,
+   0,
+   "JOYECHO_MODEL"
+  ],
+  [
+   10,
+   6,
+   0,
+   7,
+   0,
+   "VIDEO"
+  ],
+  [
+   96,
+   52,
+   0,
+   55,
+   0,
+   "STRING"
+  ],
+  [
+   100,
+   52,
+   1,
+   55,
+   6,
+   "STRING"
+  ],
+  [
+   104,
+   2,
+   0,
+   57,
+   0,
+   "JOYECHO_MODEL"
+  ],
+  [
+   105,
+   2,
+   1,
+   57,
+   1,
+   "JOYECHO_COND"
+  ],
+  [
+   106,
+   55,
+   0,
+   57,
+   2,
+   "IMAGE"
+  ],
+  [
+   107,
+   55,
+   2,
+   57,
+   3,
+   "STRING"
+  ],
+  [
+   108,
+   57,
+   1,
+   6,
+   1,
+   "AUDIO"
+  ],
+  [
+   110,
+   57,
+   0,
+   58,
+   0,
+   "IMAGE"
+  ],
+  [
+   113,
+   58,
+   0,
+   6,
+   0,
+   "IMAGE"
+  ],
+  [
+   114,
+   52,
+   0,
+   59,
+   0,
+   "STRING"
+  ],
+  [
+   115,
+   59,
+   0,
+   2,
+   1,
+   "STRING"
+  ],
+  [
+   116,
+   59,
+   0,
+   42,
+   0,
+   "STRING"
+  ],
+  [
+   117,
+   11,
+   0,
+   52,
+   2,
+   "INT"
+  ]
+ ],
+ "groups": [
+  {
+   "id": 1,
+   "title": "1 - Prompt Source",
+   "bounding": [
+    -50,
+    -20,
+    824.5169729521541,
+    557.6804828065789
+   ],
+   "color": "#3f5159",
+   "font_size": 28,
+   "flags": {}
+  },
+  {
+   "id": 2,
+   "title": "2 - Enhance & Encode",
+   "bounding": [
+    850,
+    -20,
+    1916.8797872639861,
+    1711.3470203103975
+   ],
+   "color": "#39604a",
+   "font_size": 28,
+   "flags": {}
+  },
+  {
+   "id": 3,
+   "title": "3 - Models & Reference",
+   "bounding": [
+    2770,
+    -20,
+    1059.6457021586293,
+    772
+   ],
+   "color": "#5a4a63",
+   "font_size": 28,
+   "flags": {}
+  },
+  {
+   "id": 4,
+   "title": "4 - Generate",
+   "bounding": [
+    3850,
+    -20,
+    424.470703125,
+    816
+   ],
+   "color": "#6e5a35",
+   "font_size": 28,
+   "flags": {}
+  },
+  {
+   "id": 5,
+   "title": "5 - Finish & Save",
+   "bounding": [
+    4310,
+    -20,
+    957.6928055978578,
+    1635.6802482016337
+   ],
+   "color": "#5a3d3d",
+   "font_size": 28,
+   "flags": {}
+  }
+ ],
+ "config": {},
+ "extra": {
+  "ds": {
+   "scale": 1.0629366000001077,
+   "offset": [
+    1918.8868219750034,
+    304.29594287360624
+   ]
+  },
+  "frontendVersion": "1.45.15",
+  "ue_links": [],
+  "anomalous_hashes": {},
+  "links_added_by_ue": []
+ },
+ "version": 0.4
 }
