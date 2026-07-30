@@ -22,11 +22,15 @@ training. Format spec: `RIFTCAST_SPEC.md`; `riftcast.py` packs, inspects,
 and cuts cartridges from finished renders; demo cartridges (WREN, HANK)
 ship in the repo.
 
-The bundled **RiftCast Studio** workflow adds a Character Designer
-(dropdowns → audition tape → automatically packed cartridge), a source
-switch between designer and classic LPFF/JSON prompt files, and a Render
-Clock node that drives every fps/frames socket from one place with 8n+1
-frame snapping.
+The bundled **RiftCast Studio** workflow is a full character creator: a
+Character Designer node for identity and a Style + Wardrobe node for
+appearance (**71 styles** across 10 families, plus hair colour, hair shape,
+makeup, accessories, demeanor and a wardrobe override) → audition tape →
+automatically packed cartridge. A style never injects its own label; each
+entry expands into concrete renderable descriptors, with separate masculine
+and feminine wardrobe readings. The workflow also carries a source switch
+between designer and classic LPFF/JSON prompt files, and a Render Clock node
+that drives every fps/frames socket from one place with 8n+1 frame snapping.
 
 Also in 2.0: `video_fps` defaults to 24 per the accent finding (Feature
 #22 below — off-24 fps drifts every voice toward British/Australian and
