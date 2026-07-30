@@ -130,17 +130,32 @@ class RiftCast_CharacterDesigner:
                f"{pos.capitalize()} voice is {voice}, speaking in a "
                f"{accent} accent.")
 
+        # AUDITION ISOLATION (2026-07-30). An audition must be a FRESH ROLL.
+        # Once a character is packed, its assets are installed
+        # (joyecho_refs/<NAME>/ + joyecho_voices/<tag>/) and would otherwise be
+        # re-cast on the next audition: RefPicker matches the name in prose and
+        # injects the old face, and folder auto-cast seeds the old voice - so
+        # the dropdowns would appear to do nothing. Both matchers are avoided
+        # by construction:
+        #   - prose refers to the subject as ID_A (RefPicker matches nothing;
+        #     it strips quoted dialogue before scanning, so the name is safe
+        #     to keep in the spoken line)
+        #   - the speaker tag is a reserved audition tag that cannot match a
+        #     voice folder
+        # The REAL name still rides on dna_text/character_name for the Packer,
+        # so the cartridge is written correctly.
+        dna_audition = dna.replace(name, "ID_A", 1)
         tmpl = template or AUDITION_SCENE_DEFAULT
         prompt = (tmpl
                   .replace("{dialogue}", AUDITION_DIALOGUE_DEFAULT)
-                  .replace("{dna}", dna)
+                  .replace("{dna}", dna_audition)
                   .replace("{name_title}", name.title())
-                  .replace("{name}", name)
+                  .replace("{name}", "ID_A")
                   .replace("{accent}", accent)
                   .replace("{pro}", pro)
                   .replace("{pos_cap}", pos.capitalize())
                   .replace("{pos}", pos))
-        script = {"speakers": [name.lower()], "prompts": [prompt]}
+        script = {"speakers": [AUDITION_SPEAKER_TAG], "prompts": [prompt]}
         return (json.dumps(script, ensure_ascii=True), dna, name)
 
 
@@ -236,7 +251,14 @@ class RiftCast_Packer:
                       indent=1)
 
             out_path = os.path.join(_packs_dir(), f"{name}.riftcast")
+            existed = os.path.isfile(out_path)
             pack(td, out_path)
+            if existed:
+                print(f"[RiftCast] NOTE: {name}.riftcast already existed and was "
+                      f"REPLACED by this audition. (Auditions are isolated from "
+                      f"installed cartridges, so this roll was a fresh one - but "
+                      f"the previous {name} is now gone. Use a different name to "
+                      f"keep both.)", flush=True)
 
         # materialize immediately - castable without a restart
         from .joyecho_cartridge import auto_materialize_all
@@ -341,6 +363,8 @@ class JoyEcho_RenderClock:
 
 NODE_CLASS_MAPPINGS["JoyEcho_RenderClock"] = JoyEcho_RenderClock
 NODE_DISPLAY_NAME_MAPPINGS["JoyEcho_RenderClock"] = "JoyEcho Render Clock (fps + duration -> frames)"
+
+AUDITION_SPEAKER_TAG = "id_a"   # reserved: never a voice folder
 
 AUDITION_SCENE_DEFAULT = (
     "Consumer mirrorless camera video, neutral color, modest dynamic "
