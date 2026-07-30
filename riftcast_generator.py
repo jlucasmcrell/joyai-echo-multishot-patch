@@ -266,3 +266,47 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "RiftCast_CharacterDesigner": "RiftCast Character Designer",
     "RiftCast_Packer": "RiftCast Packer (audition -> cartridge)",
 }
+
+
+class RiftCast_SourceSwitch:
+    """Route ONE of two prompt sources into the render chain.
+
+    'prompt file' passes the PromptSource/LPFF script through untouched -
+    your normal batch rendering. 'character designer' passes the Designer's
+    audition script. Both inputs stay wired; only the selected one flows.
+    """
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {
+            "required": {
+                "source": (["prompt file", "character designer"], {
+                    "default": "prompt file",
+                    "tooltip": "Which script drives this queue: your LPFF/"
+                               "JSON prompt file, or the Character Designer's "
+                               "audition tape."}),
+            },
+            "optional": {
+                "file_script": ("STRING", {"forceInput": True}),
+                "designer_script": ("STRING", {"forceInput": True}),
+            },
+        }
+
+    RETURN_TYPES = ("STRING",)
+    RETURN_NAMES = ("story_idea",)
+    FUNCTION = "route"
+    CATEGORY = "JoyAI-Echo/RiftCast"
+
+    def route(self, source, file_script=None, designer_script=None):
+        if source == "character designer":
+            if not designer_script:
+                raise ValueError("source is 'character designer' but no "
+                                 "Character Designer is wired in")
+            return (designer_script,)
+        if not file_script:
+            raise ValueError("source is 'prompt file' but no PromptSource "
+                             "is wired in")
+        return (file_script,)
+
+
+NODE_CLASS_MAPPINGS["RiftCast_SourceSwitch"] = RiftCast_SourceSwitch
+NODE_DISPLAY_NAME_MAPPINGS["RiftCast_SourceSwitch"] = "RiftCast Source Switch (file / designer)"
