@@ -1,7 +1,7 @@
 {
  "id": "dabc6ca9-5fa6-414e-9cdd-33077930aa75",
  "revision": 0,
- "last_node_id": 80,
+ "last_node_id": 78,
  "last_link_id": 146,
  "nodes": [
   {
@@ -16,7 +16,7 @@
     1115.7615213997844
    ],
    "flags": {},
-   "order": 15,
+   "order": 16,
    "mode": 0,
    "inputs": [
     {
@@ -145,7 +145,7 @@
     1025.6802482016337
    ],
    "flags": {},
-   "order": 22,
+   "order": 23,
    "mode": 0,
    "inputs": [
     {
@@ -218,7 +218,7 @@
     724.3470203103975
    ],
    "flags": {},
-   "order": 16,
+   "order": 17,
    "mode": 0,
    "inputs": [
     {
@@ -261,7 +261,7 @@
     718
    ],
    "flags": {},
-   "order": 17,
+   "order": 18,
    "mode": 0,
    "inputs": [
     {
@@ -636,7 +636,7 @@
     226
    ],
    "flags": {},
-   "order": 18,
+   "order": 19,
    "mode": 0,
    "inputs": [
     {
@@ -774,7 +774,7 @@
     300
    ],
    "flags": {},
-   "order": 1,
+   "order": 0,
    "mode": 0,
    "inputs": [],
    "outputs": [],
@@ -805,7 +805,7 @@
     328
    ],
    "flags": {},
-   "order": 10,
+   "order": 11,
    "mode": 0,
    "inputs": [
     {
@@ -986,7 +986,7 @@
     220
    ],
    "flags": {},
-   "order": 2,
+   "order": 1,
    "mode": 0,
    "inputs": [
     {
@@ -1106,7 +1106,7 @@
     260
    ],
    "flags": {},
-   "order": 3,
+   "order": 2,
    "mode": 0,
    "inputs": [],
    "outputs": [],
@@ -1137,7 +1137,7 @@
     300
    ],
    "flags": {},
-   "order": 4,
+   "order": 3,
    "mode": 0,
    "inputs": [],
    "outputs": [],
@@ -1168,7 +1168,7 @@
     320
    ],
    "flags": {},
-   "order": 5,
+   "order": 4,
    "mode": 0,
    "inputs": [
     {
@@ -1231,7 +1231,7 @@
     260
    ],
    "flags": {},
-   "order": 14,
+   "order": 15,
    "mode": 0,
    "inputs": [
     {
@@ -1374,9 +1374,16 @@
     400
    ],
    "flags": {},
-   "order": 6,
+   "order": 5,
    "mode": 0,
    "inputs": [
+    {
+     "localized_name": "template",
+     "name": "template",
+     "shape": 7,
+     "type": "STRING",
+     "link": 146
+    },
     {
      "localized_name": "name",
      "name": "name",
@@ -1493,11 +1500,6 @@
       "name": "distinguishing"
      },
      "link": null
-    },
-    {
-     "name": "template",
-     "type": "STRING",
-     "link": 146
     }
    ],
    "outputs": [
@@ -1579,7 +1581,7 @@
     138.78787878788103
    ],
    "flags": {},
-   "order": 21,
+   "order": 22,
    "mode": 0,
    "inputs": [
     {
@@ -1622,7 +1624,7 @@
     736.9512031915835
    ],
    "flags": {},
-   "order": 13,
+   "order": 14,
    "mode": 0,
    "inputs": [
     {
@@ -1779,7 +1781,7 @@
     102
    ],
    "flags": {},
-   "order": 20,
+   "order": 21,
    "mode": 0,
    "inputs": [
     {
@@ -1854,7 +1856,7 @@
     217.3553719008354
    ],
    "flags": {},
-   "order": 7,
+   "order": 6,
    "mode": 0,
    "inputs": [],
    "outputs": [],
@@ -1885,7 +1887,7 @@
     190
    ],
    "flags": {},
-   "order": 19,
+   "order": 20,
    "mode": 0,
    "inputs": [
     {
@@ -1983,7 +1985,7 @@
     122
    ],
    "flags": {},
-   "order": 9,
+   "order": 7,
    "mode": 0,
    "inputs": [
     {
@@ -2035,13 +2037,14 @@
     }
    ],
    "properties": {
-    "ue_properties": {
-     "widget_ue_connectable": {},
-     "input_ue_unconnectable": {}
-    },
     "aux_id": "RealRebelAI/ComfyUI_JoyAI_Echo_GGUF_Nodes",
     "ver": "0d9e32fcd2d255a16604368fcaa1875c380c7f3b",
     "Node name for S&R": "JoyEcho_RenderClock",
+    "ue_properties": {
+     "widget_ue_connectable": {},
+     "input_ue_unconnectable": {},
+     "version": "7.8"
+    },
     "je_widget_values": {
      "fps": 24,
      "duration_seconds": 10
@@ -2064,7 +2067,7 @@
     194
    ],
    "flags": {},
-   "order": 11,
+   "order": 12,
    "mode": 0,
    "inputs": [
     {
@@ -2231,7 +2234,7 @@
     110
    ],
    "flags": {},
-   "order": 12,
+   "order": 13,
    "mode": 0,
    "inputs": [
     {
@@ -2298,7 +2301,7 @@
     330
    ],
    "flags": {},
-   "order": 0,
+   "order": 9,
    "mode": 0,
    "inputs": [],
    "outputs": [],
@@ -2318,22 +2321,42 @@
    "bgcolor": "#653"
   },
   {
-   "id": 80,
+   "id": 78,
    "type": "RiftCast_AuditionScript",
    "pos": [
-    34.545454545345706,
-    77.27272727274003
+    -411.55388911686487,
+    399.7981302149365
    ],
    "size": [
-    380,
-    320
+    416.2570753709434,
+    496.8683328607069
    ],
    "flags": {},
-   "order": 0,
+   "order": 10,
    "mode": 0,
-   "inputs": [],
+   "inputs": [
+    {
+     "localized_name": "scene_template",
+     "name": "scene_template",
+     "type": "STRING",
+     "widget": {
+      "name": "scene_template"
+     },
+     "link": null
+    },
+    {
+     "localized_name": "dialogue",
+     "name": "dialogue",
+     "type": "STRING",
+     "widget": {
+      "name": "dialogue"
+     },
+     "link": null
+    }
+   ],
    "outputs": [
     {
+     "localized_name": "audition_template",
      "name": "audition_template",
      "type": "STRING",
      "links": [
@@ -2341,7 +2364,19 @@
      ]
     }
    ],
-   "properties": {}
+   "properties": {
+    "aux_id": "RealRebelAI/ComfyUI_JoyAI_Echo_GGUF_Nodes",
+    "ver": "0d9e32fcd2d255a16604368fcaa1875c380c7f3b",
+    "ue_properties": {
+     "widget_ue_connectable": {},
+     "input_ue_unconnectable": {}
+    },
+    "Node name for S&R": "RiftCast_AuditionScript"
+   },
+   "widgets_values": [
+    "Consumer mirrorless camera video, neutral color, modest dynamic range: a locked static medium close-up at eye level in a small casting room, head and shoulders filling most of the frame and the mouth fully visible, one continuous unbroken take that never cuts and never changes angle. The backdrop is matte gray seamless paper with a soft vertical curl at its edge, taped at the top corners, and the floor edge shows scuffed pale concrete. The light is one large soft key from the front, even and flattering. {dna} Looking into the lens, calm and personable, {name} is talking, saying in a {accent} accent, \"{dialogue}\" {name} shifts weight once, tucks a strand of hair back, and gives one small easy smile as the take ends. {pos_cap} lips move naturally in tight sync with every word. {name} is the only person in frame and {pos} voice is the only voice on the audio track. The only sounds are the room's quiet air, a faint camera-handling sound at the start, fabric shifting, and {pos} voice close and clean on the mic.",
+    "Hi, my name's {name_title}. This is my audition tape, so, here's a little about how I sound when I'm just talking. I'll read whatever you've got, whenever you're ready."
+   ]
   }
  ],
  "links": [
@@ -2571,10 +2606,10 @@
   ],
   [
    146,
-   80,
+   78,
    0,
    60,
-   13,
+   0,
    "STRING"
   ]
  ],
@@ -2643,10 +2678,10 @@
  "config": {},
  "extra": {
   "ds": {
-   "scale": 0.6600000000000721,
+   "scale": 1.4147686146001555,
    "offset": [
-    617.5769294373819,
-    301.20651897025544
+    547.6421837631121,
+    -209.12318778115792
    ]
   },
   "frontendVersion": "1.45.15",
