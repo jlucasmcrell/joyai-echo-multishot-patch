@@ -159,4 +159,16 @@ try:
 except Exception as e:
     print(f"[Rebels JE] joyecho_autofinish failed to load: {e!r}", flush=True)
 
-__all__ = ["NODE_CLASS_MAPPINGS", "NODE_DISPLAY_NAME_MAPPINGS"]
+try:
+    from .joyecho_cartridge import (
+        NODE_CLASS_MAPPINGS as _CG_CM,
+        NODE_DISPLAY_NAME_MAPPINGS as _CG_DM,
+    )
+    NODE_CLASS_MAPPINGS.update(_CG_CM)
+    NODE_DISPLAY_NAME_MAPPINGS.update(_CG_DM)
+except Exception as _e:
+    print(f"[JoyAI-Echo] cartridge loader unavailable: {_e}")
+
+WEB_DIRECTORY = "./web/js"
+
+__all__ = ["NODE_CLASS_MAPPINGS", "NODE_DISPLAY_NAME_MAPPINGS", "WEB_DIRECTORY"]
