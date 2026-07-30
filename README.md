@@ -12,6 +12,28 @@
 > someone reported something.** You will not be left hanging.
 
 
+## New in 2.0 — RiftCast
+
+Characters are now portable files. A `.riftcast` cartridge carries a
+character's voice anchor, reference stills, canonical description, and
+optionally LoRAs, environments, and a CharacterCardV3 persona — drop it in
+`input/riftcast/` and the character casts by speaker tag in any script, no
+training. Format spec: `RIFTCAST_SPEC.md`; `riftcast.py` packs, inspects,
+and cuts cartridges from finished renders; demo cartridges (WREN, HANK)
+ship in the repo.
+
+The bundled **RiftCast Studio** workflow adds a Character Designer
+(dropdowns → audition tape → automatically packed cartridge), a source
+switch between designer and classic LPFF/JSON prompt files, and a Render
+Clock node that drives every fps/frames socket from one place with 8n+1
+frame snapping.
+
+Also in 2.0: `video_fps` defaults to 24 per the accent finding (Feature
+#22 below — off-24 fps drifts every voice toward British/Australian and
+overrides accent wording), widget values persist by NAME across node-layout
+changes, `temporal_upscale` 2x latent upsampling to ~48 fps masters, and a
+1441-frame (60 s) single-take ceiling.
+
 ## Quick fixes — read this first
 
 Nearly every problem reported with this pack is one of these.
