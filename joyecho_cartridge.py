@@ -102,3 +102,48 @@ class JoyEcho_CartridgeLoader:
 
 NODE_CLASS_MAPPINGS = {"JoyEcho_CartridgeLoader": JoyEcho_CartridgeLoader}
 NODE_DISPLAY_NAME_MAPPINGS = {"JoyEcho_CartridgeLoader": "JoyEcho Cartridge Loader (.joypack)"}
+
+
+def auto_materialize_all():
+    """Unpack any new/changed .joypack in input/joypacks/ at startup.
+
+    Makes cartridges drop-in: put the file in the folder, restart (or load
+    once via the node), and the character is castable by speaker tag. A
+    content-hash marker in _cache/ keeps this a no-op for already-installed
+    packs, so startup cost is one hash per cartridge.
+    """
+    import hashlib
+    try:
+        d = _packs_dir()
+        in_dir = (folder_paths.get_input_directory() if folder_paths
+                  else os.path.join(os.getcwd(), "input"))
+        marker_dir = os.path.join(d, "_cache", "_installed")
+        os.makedirs(marker_dir, exist_ok=True)
+        for fn in sorted(os.listdir(d)):
+            if not fn.lower().endswith(".joypack"):
+                continue
+            path = os.path.join(d, fn)
+            h = hashlib.sha256(open(path, "rb").read()).hexdigest()[:16]
+            marker = os.path.join(marker_dir, fn + "." + h)
+            if os.path.isfile(marker):
+                continue
+            try:
+                res = materialize(
+                    path,
+                    voices_dir=os.path.join(in_dir, "joyecho_voices"),
+                    refs_dir=os.path.join(in_dir, "joyecho_refs"),
+                    loras_dir=(os.path.join(folder_paths.models_dir, "loras", "joypack")
+                               if folder_paths else
+                               os.path.join(os.getcwd(), "models", "loras", "joypack")),
+                    cache_dir=os.path.join(d, "_cache"))
+                open(marker, "w").write(h)
+                print(f"[JoyEcho] Cartridge auto-installed: '{res['name']}' as "
+                      f"speaker '{res['speaker_tag']}' ({fn})", flush=True)
+            except Exception as e:
+                print(f"[JoyEcho] Cartridge auto-install FAILED for {fn}: {e}",
+                      flush=True)
+    except Exception as e:
+        print(f"[JoyEcho] Cartridge auto-install scan skipped: {e}", flush=True)
+
+
+auto_materialize_all()
