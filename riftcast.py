@@ -1,12 +1,12 @@
-"""joypack - portable video-character cartridges (.joypack), spec v1.0.
+"""RiftCast - portable video-character cartridges (.riftcast), spec v1.0.
 
-Library + CLI. See JOYPACK_SPEC.md for the format. A .joypack is a plain zip;
+Library + CLI. See RIFTCAST_SPEC.md for the format. A .joypack is a plain zip;
 this module packs one from a source folder and safely unpacks/materializes one
 into the JoyEcho host conventions (joyecho_voices/<tag>/, refs root, loras).
 
 CLI:
-    python joypack.py pack   <source_dir> <out.joypack>
-    python joypack.py inspect <file.joypack>
+    python riftcast.py pack   <source_dir> <out.joypack>
+    python riftcast.py inspect <file.joypack>
 
 Security: archives are DATA. No execution, no path traversal (rejected), no
 pickle weight formats (safetensors only for loras/).
@@ -21,7 +21,7 @@ import sys
 import zipfile
 
 SPEC_VERSION = "1.0"
-REQUIRED_KEYS = ("joypack", "name", "speaker_tag", "voice", "refs", "dna")
+REQUIRED_KEYS = ("riftcast", "name", "speaker_tag", "voice", "refs", "dna")
 VOICE_EXTS = (".mp4", ".wav")
 REF_EXTS = (".png", ".jpg", ".jpeg", ".webp")
 
@@ -58,7 +58,7 @@ def pack(source_dir, out_path):
         manifest = json.load(open(man_path, encoding="utf-8"))
     else:
         name = os.path.basename(source_dir.rstrip("\\/"))
-        manifest = {"joypack": SPEC_VERSION, "name": name,
+        manifest = {"riftcast": SPEC_VERSION, "name": name,
                     "speaker_tag": name.lower()}
 
     # discover required components if unlisted
@@ -115,7 +115,9 @@ def read_manifest(pack_path):
         try:
             manifest = json.loads(z.read("manifest.json").decode("utf-8"))
         except KeyError:
-            raise JoypackError("not a joypack: manifest.json missing")
+            raise JoypackError("not a riftcast: manifest.json missing")
+    if "riftcast" not in manifest and "joypack" in manifest:
+        manifest["riftcast"] = manifest.pop("joypack")  # pre-rename cartridge
     for k in REQUIRED_KEYS:
         if k not in manifest:
             raise JoypackError(f"manifest missing required key: {k}")
@@ -185,6 +187,47 @@ def materialize(pack_path, voices_dir, refs_dir, loras_dir, cache_dir):
     return out
 
 
+
+
+def cut(master_path, name, dna_path, out_path=None, speech_at=1.0,
+        speech_dur=5.0, ref_times=None, ffmpeg="ffmpeg"):
+    """Cut a cartridge directly from a finished render.
+
+    master_path: an mp4 where the character speaks alone with face visible.
+    dna_path: the canonical DNA text file (authorial - cannot be automated).
+    Cuts a voice anchor at speech_at..+speech_dur and reference stills at
+    ref_times (default: three spread frames), then packs.
+    """
+    import subprocess
+    import tempfile
+    tag = name.lower()
+    ref_times = ref_times or [speech_at + 1.0, speech_at + 3.0, speech_at + 4.5]
+    with tempfile.TemporaryDirectory() as td:
+        for sub in ("voice", "refs", "prompts"):
+            os.makedirs(os.path.join(td, sub))
+        r = subprocess.run([ffmpeg, "-y", "-v", "error", "-ss", str(speech_at),
+                            "-t", str(speech_dur), "-i", master_path,
+                            "-c:v", "libx264", "-crf", "18",
+                            "-c:a", "aac", "-b:a", "192k",
+                            os.path.join(td, "voice", "anchor.mp4")],
+                           capture_output=True, text=True)
+        if r.returncode != 0:
+            raise JoypackError(f"anchor cut failed: {r.stderr[:200]}")
+        for i, t in enumerate(ref_times, 1):
+            subprocess.run([ffmpeg, "-y", "-v", "error", "-ss", str(t),
+                            "-i", master_path, "-frames:v", "1",
+                            os.path.join(td, "refs", f"{tag}_{i:02d}.png")],
+                           capture_output=True, text=True)
+        shutil.copyfile(dna_path, os.path.join(td, "prompts", "dna.txt"))
+        manifest = {"riftcast": SPEC_VERSION, "name": name, "speaker_tag": tag,
+                    "display_name": name.title(),
+                    "voice": {"file": "voice/anchor.mp4"},
+                    "render_law": {"video_fps": 24}}
+        json.dump(manifest, open(os.path.join(td, "manifest.json"), "w"), indent=1)
+        out_path = out_path or f"{name}.riftcast"
+        return pack(td, out_path)
+
+
 def main():
     if len(sys.argv) < 3:
         print(__doc__)
@@ -195,6 +238,15 @@ def main():
         print(f"packed {man['name']} -> {out}")
         print(f"  speaker_tag={man['speaker_tag']} refs={len(man['refs'])} "
               f"voice={man['voice']['file']}")
+    elif cmd == "cut":
+        # joypack.py cut <master.mp4> <NAME> <dna.txt> [out.joypack] [speech_at] [speech_dur]
+        a = sys.argv
+        out, man = cut(a[2], a[3], a[4],
+                       out_path=a[5] if len(a) > 5 else None,
+                       speech_at=float(a[6]) if len(a) > 6 else 1.0,
+                       speech_dur=float(a[7]) if len(a) > 7 else 5.0,
+                       ffmpeg=os.environ.get("RIFTCAST_FFMPEG", "ffmpeg"))
+        print(f"cut {man['name']} -> {out}")
     elif cmd == "inspect":
         man = read_manifest(sys.argv[2])
         print(json.dumps(man, indent=1))

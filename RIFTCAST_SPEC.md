@@ -1,4 +1,6 @@
-# .joypack — portable video-character cartridge (spec v1.0)
+# RiftCast (.riftcast) — portable video-character cartridge (spec v1.0)
+
+Things come through the Rift. Now characters do too - as files.
 
 One file = one character: face, voice, canon description, and optionally the
 LoRAs and environments that define them. Drop it into a JoyEcho workflow and
@@ -8,7 +10,7 @@ V3/CHARX lineage into photoreal joint audio-video generation.
 
 ## Container
 
-A `.joypack` is a ZIP archive (store or deflate) with this layout:
+A `.riftcast` is a ZIP archive (store or deflate) with this layout:
 
 ```
 manifest.json                REQUIRED  spec + inventory (see below)
@@ -35,7 +37,7 @@ environment/rooms.txt        optional  verbatim room description(s) - the
 
 ```json
 {
-  "joypack": "1.0",
+  "riftcast": "1.0",
   "name": "MARA",
   "speaker_tag": "mara",
   "display_name": "Detective Mara",
@@ -55,7 +57,7 @@ environment/rooms.txt        optional  verbatim room description(s) - the
 }
 ```
 
-Only `joypack`, `name`, `speaker_tag`, `voice`, `refs`, and `dna` are required.
+Only `riftcast`, `name`, `speaker_tag`, `voice`, `refs`, and `dna` are required.
 Unknown keys MUST be ignored (forward compatibility). `render_law` records
 generation constraints the character was authored under - loaders should warn
 when the live workflow violates them (the fps/accent law above all).
@@ -90,5 +92,5 @@ standard safetensors-only policy applies (no pickle formats).
 
 ## Versioning
 
-`joypack: "1.0"` this document. Planned 1.1: serialized memory-bank state
+`riftcast: "1.0"` this document. Planned 1.1: serialized memory-bank state
 (`bank/state.joybank`) for scene-warm characters; multi-character packs.

@@ -6,7 +6,7 @@ into models/loras/joypack/<name>/) and outputs the character's texts for
 prompt assembly. The render path needs no changes - after loading, any script
 whose speaker tag matches is voiced and identified as the cartridge character.
 
-See JOYPACK_SPEC.md for the format.
+See RIFTCAST_SPEC.md for the format.
 """
 import json
 import os
@@ -16,7 +16,7 @@ try:
 except Exception:
     folder_paths = None
 
-from .joypack import materialize, read_manifest, JoypackError
+from .riftcast import materialize, read_manifest, JoypackError
 
 
 def _packs_dir():
@@ -24,7 +24,7 @@ def _packs_dir():
         base = folder_paths.get_input_directory()
     else:
         base = os.path.join(os.getcwd(), "input")
-    d = os.path.join(base, "joypacks")
+    d = os.path.join(base, "riftcast")
     os.makedirs(d, exist_ok=True)
     return d
 
@@ -35,17 +35,17 @@ class JoyEcho_CartridgeLoader:
         packs = ["(none)"]
         try:
             packs += sorted(f for f in os.listdir(_packs_dir())
-                            if f.lower().endswith(".joypack"))
+                            if f.lower().endswith((".riftcast", ".joypack")))
         except Exception:
             pass
         return {
             "required": {
                 "cartridge": (packs, {
-                    "tooltip": "A .joypack from input/joypacks/. Loading installs "
+                    "tooltip": "A .riftcast cartridge from input/riftcast/. Loading installs "
                                "the character's voice anchor, reference stills and "
                                "LoRAs into this workflow's normal folders - any "
                                "script whose speaker tag matches renders as this "
-                               "character. See JOYPACK_SPEC.md."}),
+                               "character. See RIFTCAST_SPEC.md."}),
                 "refs_root": ("STRING", {"default": "joyecho_refs", "tooltip":
                               "Where reference stills install (RefPicker's root). "
                               "Absolute path or relative to the input folder."}),
@@ -68,15 +68,15 @@ class JoyEcho_CartridgeLoader:
         refs_dir = (refs_root if os.path.isabs(refs_root)
                     else os.path.join(in_dir, refs_root))
         if folder_paths:
-            loras_dir = os.path.join(folder_paths.models_dir, "loras", "joypack")
+            loras_dir = os.path.join(folder_paths.models_dir, "loras", "riftcast")
         else:
-            loras_dir = os.path.join(os.getcwd(), "models", "loras", "joypack")
-        cache_dir = os.path.join(in_dir, "joypacks", "_cache")
+            loras_dir = os.path.join(os.getcwd(), "models", "loras", "riftcast")
+        cache_dir = os.path.join(in_dir, "riftcast", "_cache")
 
         try:
             res = materialize(pack_path, voices_dir, refs_dir, loras_dir, cache_dir)
         except (JoypackError, OSError) as e:
-            raise ValueError(f"joypack load failed: {e}")
+            raise ValueError(f"riftcast load failed: {e}")
 
         law = res.get("render_law", {})
         law_note = ""
@@ -101,7 +101,7 @@ class JoyEcho_CartridgeLoader:
 
 
 NODE_CLASS_MAPPINGS = {"JoyEcho_CartridgeLoader": JoyEcho_CartridgeLoader}
-NODE_DISPLAY_NAME_MAPPINGS = {"JoyEcho_CartridgeLoader": "JoyEcho Cartridge Loader (.joypack)"}
+NODE_DISPLAY_NAME_MAPPINGS = {"JoyEcho_CartridgeLoader": "RiftCast Loader (.riftcast)"}
 
 
 def auto_materialize_all():
@@ -120,7 +120,7 @@ def auto_materialize_all():
         marker_dir = os.path.join(d, "_cache", "_installed")
         os.makedirs(marker_dir, exist_ok=True)
         for fn in sorted(os.listdir(d)):
-            if not fn.lower().endswith(".joypack"):
+            if not fn.lower().endswith((".riftcast", ".joypack")):
                 continue
             path = os.path.join(d, fn)
             h = hashlib.sha256(open(path, "rb").read()).hexdigest()[:16]
@@ -132,9 +132,9 @@ def auto_materialize_all():
                     path,
                     voices_dir=os.path.join(in_dir, "joyecho_voices"),
                     refs_dir=os.path.join(in_dir, "joyecho_refs"),
-                    loras_dir=(os.path.join(folder_paths.models_dir, "loras", "joypack")
+                    loras_dir=(os.path.join(folder_paths.models_dir, "loras", "riftcast")
                                if folder_paths else
-                               os.path.join(os.getcwd(), "models", "loras", "joypack")),
+                               os.path.join(os.getcwd(), "models", "loras", "riftcast")),
                     cache_dir=os.path.join(d, "_cache"))
                 open(marker, "w").write(h)
                 print(f"[JoyEcho] Cartridge auto-installed: '{res['name']}' as "
