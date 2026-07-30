@@ -1224,7 +1224,7 @@ class JoyEcho_Generate:
                 "model": ("JOYECHO_MODEL",),
                 "conditioning": ("JOYECHO_COND",),
                 "seed": ("INT", {"default": 12345, "min": 0, "max": 2**31 - 1}),
-                "num_frames": ("INT", {"default": 241, "min": 9, "max": 481, "step": 8,
+                "num_frames": ("INT", {"default": 241, "min": 9, "max": 1441, "step": 8,
                                        "tooltip": "Must be 1 + 8*k (e.g. 121, 241, 361)"}),
                 # Rebels local patch: portrait resolutions. Height was capped at
                 # 1088 while width allowed 1920, which silently forbade portrait
@@ -1380,6 +1380,19 @@ class JoyEcho_Generate:
                                "it) - use heights whose /32 is EVEN (768, not 736) or it "
                                "smears one edge.",
                 }),
+                "temporal_upscale": (["off", "2x (48 fps master)"], {
+                    "default": "off",
+                    "tooltip": "LTX temporal latent upsampler (x2) on each shot's OWN latents "
+                               "after sampling: per-shot files and the master come out at "
+                               "double fps (24 -> ~48) with the audio untouched - same "
+                               "duration, twice the motion samples, no optical-flow ghosting. "
+                               "The render itself stays at video_fps 24, so the accent/sync "
+                               "law is unaffected; the in-canvas preview also stays at base "
+                               "fps (only the saved files double). v1 limitation: requires "
+                               "hires_factor 1.0 (skipped with a warning otherwise). Keep OFF "
+                               "for found-footage looks - interpolated camcorder reads as "
+                               "soap opera.",
+                }),
             },
         }
 
@@ -1449,6 +1462,7 @@ class JoyEcho_Generate:
         resident_blocks: int = 0,
         hires_factor: float = 1.0,
         hires_denoise: str = "subtle (1 step)",
+        temporal_upscale: str = "off",
     ):
         from ltx_distillation.inference.bidirectional_pipeline import BidirectionalAVInferencePipeline
         from ltx_distillation.inference.memory_bidirectional_pipeline import BidirectionalMemoryAVInferencePipeline
@@ -1617,6 +1631,12 @@ class JoyEcho_Generate:
         _hires_audio_lats = []
         _hires_video_lats = []  # spatial hires mode only (~10MB/shot on CPU)
         _hires_spatial = str(hires_denoise).lower().startswith("spatial")
+        _temporal_on = str(temporal_upscale).lower().startswith("2x")
+        if _temporal_on and hires_factor > 1.0:
+            print("[JoyEcho] temporal_upscale requires hires_factor 1.0 in this "
+                  "version - the hires passes re-save shots at base fps and would "
+                  "undo it. Temporal upscale SKIPPED.", flush=True)
+            _temporal_on = False
 
         num_shots = len(conditioning)
         offloader = None
@@ -2050,6 +2070,23 @@ class JoyEcho_Generate:
             if device.type == "cuda":
                 torch.cuda.synchronize()
 
+            # Temporal x2: second decode from the shot's OWN latents through the
+            # LTX temporal upsampler while the decoder is still on GPU. Only the
+            # SAVED shot files (and thus the worker-built master) get the doubled
+            # fps; the bank, refs and in-graph frames stay base-fps native.
+            _tu_uint8 = None
+            if _temporal_on:
+                try:
+                    _tu_uint8 = self._temporal_upsample_decode(
+                        video_vae, video_latent, _decode_tiling_config, device)
+                    print(f"[JoyEcho] temporal x2: shot {shot_idx+1} "
+                          f"{video_uint8.shape[0]}f -> {_tu_uint8.shape[0]}f "
+                          f"(saved at {video_fps * 2} fps).", flush=True)
+                except Exception as _tu_e:
+                    print(f"[JoyEcho] temporal x2 FAILED on shot {shot_idx+1}: "
+                          f"{_tu_e} - saving base-fps shot instead.", flush=True)
+                    _tu_uint8 = None
+
             # Move VAE back to CPU
             _move(video_vae.decoder, "cpu")
             _move(audio_vae.decoder, "cpu")
@@ -2097,6 +2134,8 @@ class JoyEcho_Generate:
                 _trim = max(_trim, _t1)
             if _trim > 0 and video_uint8.shape[0] > _trim + 16:
                 video_uint8 = video_uint8[_trim:]
+                if _tu_uint8 is not None:
+                    _tu_uint8 = _tu_uint8[2 * _trim:]  # same cut in doubled frames
                 if audio_waveform is not None:
                     _cut = int(round(_trim / float(video_fps) * audio_sample_rate))
                     if audio_waveform.shape[-1] > _cut:
@@ -2131,10 +2170,19 @@ class JoyEcho_Generate:
 
             # Save per-shot video immediately for real-time preview (now trimmed,
             # so it matches the final output frame-for-frame).
-            self._save_shot_video(
-                video_uint8, audio_waveform, shot_idx,
-                video_fps, audio_sample_rate, output_prefix
-            )
+            if _tu_uint8 is not None:
+                # doubled-fps shot file: the AutoFinish worker probes r_frame_rate
+                # per shot, so the master assembles at the doubled rate untouched
+                self._save_shot_video(
+                    _tu_uint8, audio_waveform, shot_idx,
+                    video_fps * 2, audio_sample_rate, output_prefix
+                )
+                del _tu_uint8
+            else:
+                self._save_shot_video(
+                    video_uint8, audio_waveform, shot_idx,
+                    video_fps, audio_sample_rate, output_prefix
+                )
 
             del video_latent, audio_latent, audio_memory_latent, video_uint8, audio_waveform
             _empty_cache()
@@ -2653,6 +2701,71 @@ class JoyEcho_Generate:
             _empty_cache()
         print(f"[JoyEcho] Hires refine pass done in {_time.time()-_t0:.0f}s.", flush=True)
 
+    def _temporal_upsample_decode(self, video_vae, video_latent, tiling_config, device):
+        """Decode a shot's video latents through the LTX temporal x2 upsampler.
+
+        Mirrors the hires-spatial pass: pipeline latents [1,F,C,h,w] ->
+        un-normalize -> reflect-pad T (the upsampler family corrupts sequence
+        ends; pads absorb it) -> upsample -> crop pad -> re-normalize -> tiled
+        decode. Deterministic, video-only - the audio lane is never touched.
+        Returns uint8 frames with F_out ~= 2*F-1. Decoder must already be on
+        `device` (call inside Phase B).
+        """
+        import json as _json
+        import folder_paths
+        import comfy.utils as _cutils
+        from comfy.ldm.lightricks.latent_upsampler import LatentUpsampler
+        from ltx_core.model.video_vae import TemporalTilingConfig, TilingConfig
+        from ltx_distillation.utils import decode_benchmark_sample
+
+        # The doubled sequence (~2x frames) MUST decode temporally tiled no
+        # matter what the shot's own tiling resolved to - an untiled 449-frame
+        # decode is exactly the uncatchable native cuDNN abort the tiled-decode
+        # work fixed (killed the whole process on first try, 2026-07-30).
+        tiling_config = TilingConfig(
+            spatial_config=None,
+            temporal_config=TemporalTilingConfig(tile_size_in_frames=64,
+                                                 tile_overlap_in_frames=24))
+
+        _dt = torch.bfloat16
+        cls = type(self)
+        if getattr(cls, "_tu_model", None) is None:
+            path = folder_paths.get_full_path_or_raise(
+                "latent_upscale_models",
+                "ltx-2.3-temporal-upscaler-x2-1.0.safetensors")
+            sd, metadata = _cutils.load_torch_file(
+                path, safe_load=True, return_metadata=True)
+            m = LatentUpsampler.from_config(
+                _json.loads(metadata["config"])).to(dtype=_dt)
+            m.load_state_dict(sd)
+            m.eval()
+            cls._tu_model = m
+            del sd
+        up_model = cls._tu_model.to(device)
+
+        stats = video_vae.decoder.per_channel_statistics  # on device with decoder
+        raw = video_latent.permute(0, 2, 1, 3, 4)          # [1,C,F,h,w]
+        raw = stats.un_normalize(raw.to(device=device, dtype=torch.float32))
+        f_in = raw.shape[2]
+        p = min(8, f_in - 1)
+        if p > 0:
+            raw = torch.cat([raw[:, :, 1:p + 1].flip(2), raw,
+                             raw[:, :, -(p + 1):-1].flip(2)], dim=2)
+        with torch.no_grad():
+            up = up_model(raw.to(dtype=_dt))
+        _scale = up.shape[2] / raw.shape[2]
+        del raw
+        if p > 0:
+            _po = int(round(p * _scale))
+            up = up[:, :, _po:up.shape[2] - _po]
+        up = stats.normalize(up.to(torch.float32)).to(_dt)
+        up = up.permute(0, 2, 1, 3, 4).contiguous()        # [1,F2,C,h,w]
+        u8, _ = decode_benchmark_sample(video_vae, None, up.to(device), None,
+                                        video_tiling_config=tiling_config)
+        del up
+        up_model.to("cpu")
+        return u8
+
     @staticmethod
     def _save_shot_video(video_uint8, audio_waveform, shot_idx, fps, audio_sr, prefix):
         """Save a single shot as mp4 immediately after generation."""
@@ -2766,7 +2879,7 @@ class JoyEcho_SingleShotGenerate:
                     "tooltip": "Single shot prompt text",
                 }),
                 "seed": ("INT", {"default": 12345, "min": 0, "max": 2**31 - 1}),
-                "num_frames": ("INT", {"default": 241, "min": 9, "max": 481, "step": 8,
+                "num_frames": ("INT", {"default": 241, "min": 9, "max": 1441, "step": 8,
                                        "tooltip": "Must be 1 + 8*k (e.g. 121, 241, 361)"}),
                 # Rebels local patch: portrait resolutions. Height was capped at
                 # 1088 while width allowed 1920, which silently forbade portrait
