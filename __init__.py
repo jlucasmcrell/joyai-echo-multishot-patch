@@ -169,6 +169,16 @@ try:
 except Exception as _e:
     print(f"[JoyAI-Echo] cartridge loader unavailable: {_e}")
 
+try:
+    from .riftcast_generator import (
+        NODE_CLASS_MAPPINGS as _RG_CM,
+        NODE_DISPLAY_NAME_MAPPINGS as _RG_DM,
+    )
+    NODE_CLASS_MAPPINGS.update(_RG_CM)
+    NODE_DISPLAY_NAME_MAPPINGS.update(_RG_DM)
+except Exception as _e:
+    print(f"[JoyAI-Echo] RiftCast generator unavailable: {_e}")
+
 WEB_DIRECTORY = "./web/js"
 
 __all__ = ["NODE_CLASS_MAPPINGS", "NODE_DISPLAY_NAME_MAPPINGS", "WEB_DIRECTORY"]
