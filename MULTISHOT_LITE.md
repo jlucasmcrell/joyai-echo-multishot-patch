@@ -15,8 +15,8 @@ tags:
 
 # LTX-2.3 Multishot Lite
 
-**Two chained talking-character shots on LTX-2.3, using only core ComfyUI nodes.**
-Shot 2 opens on shot 1's exact last frame so they cut together, the character
+**Two-shot talking-character video on LTX-2.3 — shot 2 is a TRUE audio+video
+extension of shot 1** (not a cut), the character
 speaks in a reference voice you supply, and both shots are joined and refined
 into a single final file.
 
@@ -30,6 +30,46 @@ Needs ComfyUI, the models, and ComfyUI-KJNodes (one node powers the extension). 
 > stuck, open a discussion — I answer.**
 
 ---
+
+## Quick fixes — read this first
+
+Nearly every problem reported with this workflow is one of these.
+
+| symptom | what's actually wrong | fix |
+|---|---|---|
+| **Second shot doesn't lip-sync** — voiceover over a barely-moving face | You are on **v1.x**, which chained shots on shot 1's decoded last frame. That guide is pixel-continuable, so the sampler copies it instead of animating. Structural — no setting fixes it. | Update to **v2.0+**. Shot 2 is now a true audio+video latent extension. |
+| **`LTXVAudioVideoMask` node is missing (red)** | v2 uses one node from **ComfyUI-KJNodes** for the extension. | Install ComfyUI-KJNodes. Everything else is core ComfyUI. |
+| **Burned-in subtitles or captions appear** | The graph ships at **cfg 1**, and at cfg 1 negative prompts are **inert** on distilled models — your negative is doing nothing. | Raise cfg to about **1.3** on both `CFGGuider` nodes. |
+| **Voices come out British or Australian and IGNORE accent wording** | Frame rate. LTX-2.3's joint AV prior is 24 fps-native, and this graph shipped at 25 through v2.0 — off-24 fps drifts every voice Commonwealth-ward (25 → southern British, 30 → broad Australian, A/B-verified 2026-07-30) and geometrically overrides accent prose. | Update to **v2.1** (ships at 24 fps), or set every fps widget in your graph to **24** — both `LTXVConditioning`, `LTXVPreprocess`, `LTXVEmptyLatentAudio`, all `CreateVideo` nodes, and the AV-extend mask (fps 24, times 3.04 / 13.04). THEN name the accent in the *positive*: "in a casual American accent". |
+| **The model reads your scene description aloud** | Nothing told it which words are spoken. | Keep the exclusivity block: "She is the only person speaking, and the only voice on the audio track is hers … nothing else is read aloud." |
+| **Audio and video durations drift apart after changing length** | In **v1** the audio latent did not follow the `length` primitive — a silent desync. | Fixed in v2. Change `length`, then set the AV-extend node's `video_end_time` / `audio_end_time` to **`(length + 72) / 24`**. At the shipped 241 that is 13.04; for ~20 s use length 265 and 14.04. |
+| **Length change errors out** | LTX-2.3 hard constraints. | Frames must be **8n+1** (121, 241, 265, 329…) and both dimensions divisible by **32**. |
+| **Output is mush, or the face wanders** | Wrong checkpoint class. | This graph's 8-step sigma ladder assumes a **distilled** LTX-2.x checkpoint. A non-distilled one will not resolve in 8 steps. |
+| **Out of VRAM, or renders crawl** | A bf16 LTX-2.3 checkpoint is ~40 GB of weights. | Pick an **fp8** checkpoint in `UNETLoader` (or set `weight_dtype` to an fp8 option), and drop resolution before you drop steps. |
+
+**The one people miss most:** cfg 1 makes your negative prompt do nothing. If you are fighting burned-in text, that is why.
+
+## v2.1 — 24 fps: your frame rate was choosing your accents
+
+The graph shipped at 25 fps through v2.0. It turns out LTX-2.3's joint
+audio-video prior is 24 fps-native and render fps is a hidden **accent
+dial**: at 25 fps the same prompt and seed render non-rhotic southern
+British, at 30 fps broad Australian — and any off-24 setting overrides
+accent wording in the prompt entirely (a few conditioning tokens cannot
+outvote a geometric signal present in every attention operation at every
+denoising step). Dose-response verified by A/B on identical configs,
+2026-07-30: 24 fps = rhotic General American at full reviewer confidence.
+
+v2.1 changes every fps-carrying widget to 24 (`LTXVConditioning` ×2,
+`LTXVPreprocess`, `LTXVEmptyLatentAudio`, `CreateVideo` ×3) and rescales the
+AV-extend mask times so the extension window stays on the same latent frames
+(73 / 313 → 3.04 s / 13.04 s at 24 fps). Duration math is now `length / 24`;
+the extend end-time formula is `(length + 72) / 24`.
+
+Flip side, free feature: if you *want* an authentic British or Australian
+character, render their scenes at 25 or 30 fps — it is more consistent than
+any accent wording. And at any fps, still name the accent on every spoken
+line: with nothing stated, young female voices lean Australian even at 24.
 
 ## v2.0 — the chained shot is now a TRUE extension (fixes chained lip sync)
 
@@ -172,14 +212,14 @@ SETUP → SHOT 1 → [last frame] → SHOT 2 → FINISH (join + refine) → FINA
 
 ## Quick start
 
-1. Download **[`LTX23_Multishot_Lite_v2.0.zip`](https://github.com/jlucasmcrell/ltx23-multishot-lite/releases/latest)**
+1. Download **[`LTX23_Multishot_Lite_v2.0.zip`](./LTX23_Multishot_Lite_v2.0.zip)**
    (or just the workflow JSON) and open it in ComfyUI.
 2. Set the six loaders in the **SETUP** group — see the table in
-   [INSTRUCTIONS_LITE.md](./INSTRUCTIONS_LITE.md). Each reads a *different* models folder.
+   [INSTRUCTIONS.md](./INSTRUCTIONS.md). Each reads a *different* models folder.
 3. Put a 3–5 second voice clip and a first-frame image in `ComfyUI/input/`.
 4. Queue. Judge `multishot_lite/FINAL`.
 
-Full walkthrough, per-VRAM settings and troubleshooting: **[INSTRUCTIONS_LITE.md](./INSTRUCTIONS_LITE.md)**
+Full walkthrough, per-VRAM settings and troubleshooting: **[INSTRUCTIONS.md](./INSTRUCTIONS.md)**
 
 ## What you need
 
@@ -245,3 +285,10 @@ frames in system RAM during the join. Start at the shipped defaults.
 LTX-2 Community License. Gemma components are subject to the
 [Gemma Terms of Use](https://ai.google.dev/gemma/terms). AI-generated content
 must be disclosed as such. Not affiliated with Lightricks or Google.
+
+## Support
+
+Everything here is free and stays free. If it saved you time, you can
+[sponsor me on GitHub](https://github.com/sponsors/jlucasmcrell),
+[buy me a coffee](https://ko-fi.com/joeygambino), or
+[support me on Liberapay](https://liberapay.com/joeygambino).

@@ -131,13 +131,13 @@ from moving two dials at once and crediting the wrong one.
 ## 6. Length and resolution
 
 Both are set **once** in the GLOBAL group. `length` must be **8n+1** (97, 145,
-241, 265, 329...), duration = `length / 25`, dimensions divisible by 32.
+241, 265, 329...), duration = `length / 24`, dimensions divisible by 32.
 
 Everything downstream of `length` now follows it automatically (the last-frame
 picker uses negative indexing, the trims clamp). **The one manual value:** the
-AV-extend node's `video_end_time`/`audio_end_time` = `(length + 72) / 25`.
-At the shipped 241 that is 12.52; for a ~20 s shot set length 265 and end times
-13.48.
+AV-extend node's `video_end_time`/`audio_end_time` = `(length + 72) / 24`.
+At the shipped 241 that is 13.04; for a ~20 s shot set length 265 and end times
+14.04.
 
 ## 7. Prompting
 
@@ -164,7 +164,7 @@ Keep that when you rewrite. Other rules that carry over:
 
 ## 8. The chain (v2: a true extension)
 
-Shot 2 does not restart — it **extends** shot 1. The last 73 frames (2.92 s) of
+Shot 2 does not restart — it **extends** shot 1. The last 73 frames (3.04 s) of
 shot 1's video and audio are encoded as latent context on the AV-extend node
 (`LTXVAudioVideoMask`, `pad` mode), the model generates forward from an ongoing
 utterance, and the context region is dropped from the output before the join.
@@ -195,7 +195,7 @@ ffmpeg -i FINAL.mp4 -vf "cas=0.55" -c:v libx264 -crf 16 -preset medium \
 ```
 
 - Shot 2's first frame **is** shot 1's last frame, so the joint holds one
-  duplicated frame — 1/25th of a second, invisible at a cut.
+  duplicated frame — 1/24th of a second, invisible at a cut.
 
 ## 10. Troubleshooting
 
