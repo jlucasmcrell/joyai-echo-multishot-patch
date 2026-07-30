@@ -326,7 +326,11 @@ class JoyEcho_RenderClock:
                     "24fps-native; other values drift accents (25=British, "
                     "30=Australian) and override accent wording."}),
             "duration_seconds": ("FLOAT", {"default": 10.0, "min": 0.5,
-                                           "max": 60.0, "step": 0.5}),
+                                           "max": 60.0, "step": 0.5, "tooltip":
+                    "PER SHOT, not total. Every shot in the script renders "
+                    "this long: a 5-shot script at 10s makes a ~50s master "
+                    "(minus head-trims/transitions). Single-shot scripts and "
+                    "auditions: this IS the full duration."}),
         }}
 
     RETURN_TYPES = ("INT", "FLOAT", "INT")
@@ -339,8 +343,8 @@ class JoyEcho_RenderClock:
         n = max(1, round((raw - 1) / 8.0))
         frames = int(8 * n + 1)
         frames = min(frames, 1441)
-        print(f"[JoyEcho] RenderClock: {fps} fps x {duration_seconds:.1f}s "
-              f"-> {frames} frames (8n+1 snapped).", flush=True)
+        print(f"[JoyEcho] RenderClock: {fps} fps x {duration_seconds:.1f}s PER SHOT "
+              f"-> {frames} frames/shot (8n+1 snapped).", flush=True)
         return (int(fps), float(fps), frames)
 
 
