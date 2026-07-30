@@ -1,8 +1,8 @@
 {
  "id": "dabc6ca9-5fa6-414e-9cdd-33077930aa75",
  "revision": 0,
- "last_node_id": 74,
- "last_link_id": 138,
+ "last_node_id": 76,
+ "last_link_id": 145,
  "nodes": [
   {
    "id": 2,
@@ -16,7 +16,7 @@
     1115.7615213997844
    ],
    "flags": {},
-   "order": 5,
+   "order": 15,
    "mode": 0,
    "inputs": [
     {
@@ -114,6 +114,14 @@
      "widget_ue_connectable": {},
      "version": "7.8",
      "input_ue_unconnectable": {}
+    },
+    "je_widget_values": {
+     "prompts": "",
+     "negative_prompt_video": "subtitles,\nclosed captions,\ncaptions,\nburned-in text,\nOCR,\ntypography,\nletters,\nwords,\nnumbers,\nglyphs,\ntitle cards,\nUI,\ninterface,\nspeech bubbles,\ncomic text,\ncredits,\nwatermark,\ntimestamp,\nticker,\nlower thirds,\nwriting,\ncalligraphy,\nengraving,\nscreen text,\nmonitor text,\nphone screen text,\nTV graphics,\nmenus",
+     "negative_scale_video": 0.5,
+     "negative_prompt_audio": "music, singing, song, humming, melody, score, soundtrack, musical, instrumental",
+     "negative_scale_audio": 0.3,
+     "release_text_encoder": false
     }
    },
    "widgets_values": [
@@ -137,7 +145,7 @@
     1025.6802482016337
    ],
    "flags": {},
-   "order": 10,
+   "order": 22,
    "mode": 0,
    "inputs": [
     {
@@ -210,7 +218,7 @@
     724.3470203103975
    ],
    "flags": {},
-   "order": 6,
+   "order": 16,
    "mode": 0,
    "inputs": [
     {
@@ -239,370 +247,7 @@
      "version": "7.8"
     }
    },
-   "widgets_values": [
-    ""
-   ]
-  },
-  {
-   "id": 6,
-   "type": "CreateVideo",
-   "pos": [
-    4360,
-    360
-   ],
-   "size": [
-    301.3775449810605,
-    102
-   ],
-   "flags": {},
-   "order": 9,
-   "mode": 0,
-   "inputs": [
-    {
-     "localized_name": "images",
-     "name": "images",
-     "type": "IMAGE",
-     "link": 113
-    },
-    {
-     "localized_name": "audio",
-     "name": "audio",
-     "shape": 7,
-     "type": "AUDIO",
-     "link": 108
-    },
-    {
-     "localized_name": "fps",
-     "name": "fps",
-     "type": "FLOAT",
-     "widget": {
-      "name": "fps"
-     },
-     "link": null
-    },
-    {
-     "localized_name": "bit_depth",
-     "name": "bit_depth",
-     "shape": 7,
-     "type": "INT",
-     "widget": {
-      "name": "bit_depth"
-     },
-     "link": null
-    },
-    {
-     "name": "fps",
-     "type": "FLOAT",
-     "link": 135,
-     "widget": {
-      "name": "fps"
-     }
-    }
-   ],
-   "outputs": [
-    {
-     "localized_name": "VIDEO",
-     "name": "VIDEO",
-     "type": "VIDEO",
-     "slot_index": 0,
-     "links": [
-      10
-     ]
-    }
-   ],
-   "title": "Create Video (Merge All Shots)",
-   "properties": {
-    "cnr_id": "comfy-core",
-    "ver": "0.26.2",
-    "Node name for S&R": "CreateVideo",
-    "ue_properties": {
-     "widget_ue_connectable": {},
-     "version": "7.8",
-     "input_ue_unconnectable": {}
-    }
-   },
-   "widgets_values": [
-    25,
-    8
-   ]
-  },
-  {
-   "id": 59,
-   "type": "JoyEcho_LLMEnhance",
-   "pos": [
-    900,
-    100
-   ],
-   "size": [
-    1161.0279043079718,
-    736.9512031915835
-   ],
-   "flags": {},
-   "order": 3,
-   "mode": 0,
-   "inputs": [
-    {
-     "localized_name": "story_idea",
-     "name": "story_idea",
-     "type": "STRING",
-     "widget": {
-      "name": "story_idea"
-     },
-     "link": 127
-    },
-    {
-     "localized_name": "mode",
-     "name": "mode",
-     "type": "COMBO",
-     "widget": {
-      "name": "mode"
-     },
-     "link": null
-    },
-    {
-     "localized_name": "api_key",
-     "name": "api_key",
-     "type": "STRING",
-     "widget": {
-      "name": "api_key"
-     },
-     "link": null
-    },
-    {
-     "localized_name": "system_prompt",
-     "name": "system_prompt",
-     "type": "STRING",
-     "widget": {
-      "name": "system_prompt"
-     },
-     "link": null
-    },
-    {
-     "localized_name": "base_url",
-     "name": "base_url",
-     "shape": 7,
-     "type": "STRING",
-     "widget": {
-      "name": "base_url"
-     },
-     "link": null
-    },
-    {
-     "localized_name": "model_name",
-     "name": "model_name",
-     "shape": 7,
-     "type": "STRING",
-     "widget": {
-      "name": "model_name"
-     },
-     "link": null
-    },
-    {
-     "localized_name": "num_shots",
-     "name": "num_shots",
-     "shape": 7,
-     "type": "INT",
-     "widget": {
-      "name": "num_shots"
-     },
-     "link": null
-    },
-    {
-     "localized_name": "temperature",
-     "name": "temperature",
-     "shape": 7,
-     "type": "FLOAT",
-     "widget": {
-      "name": "temperature"
-     },
-     "link": null
-    },
-    {
-     "localized_name": "num_frames",
-     "name": "num_frames",
-     "shape": 7,
-     "type": "INT",
-     "widget": {
-      "name": "num_frames"
-     },
-     "link": null
-    },
-    {
-     "localized_name": "fps",
-     "name": "fps",
-     "shape": 7,
-     "type": "FLOAT",
-     "widget": {
-      "name": "fps"
-     },
-     "link": null
-    },
-    {
-     "name": "fps",
-     "type": "FLOAT",
-     "link": 136,
-     "widget": {
-      "name": "fps"
-     }
-    },
-    {
-     "name": "num_frames",
-     "type": "INT",
-     "link": 137,
-     "widget": {
-      "name": "num_frames"
-     }
-    }
-   ],
-   "outputs": [
-    {
-     "localized_name": "prompts_json",
-     "name": "prompts_json",
-     "type": "STRING",
-     "links": [
-      115,
-      116
-     ]
-    }
-   ],
-   "properties": {
-    "aux_id": "RealRebelAI/ComfyUI_JoyAI_Echo_GGUF_Nodes",
-    "ver": "0d9e32fcd2d255a16604368fcaa1875c380c7f3b",
-    "Node name for S&R": "JoyEcho_LLMEnhance",
-    "ue_properties": {
-     "widget_ue_connectable": {},
-     "input_ue_unconnectable": {},
-     "version": "7.8"
-    },
-    "je_widget_values": {
-     "mode": "passthrough (raw JSON, skip LLM)"
-    }
-   },
-   "widgets_values": [
-    "passthrough (raw JSON, skip LLM)",
-    "passthrough (raw JSON, skip LLM)",
-    "",
-    "",
-    "http://localhost:11434/v1",
-    "minimax-m3:cloud",
-    0,
-    0.7,
-    313,
-    25
-   ]
-  },
-  {
-   "id": 58,
-   "type": "JoyEcho_AutoFinish",
-   "pos": [
-    4360,
-    100
-   ],
-   "size": [
-    328.24765625,
-    178
-   ],
-   "flags": {},
-   "order": 8,
-   "mode": 0,
-   "inputs": [
-    {
-     "localized_name": "images",
-     "name": "images",
-     "type": "IMAGE",
-     "link": 110
-    },
-    {
-     "localized_name": "enabled",
-     "name": "enabled",
-     "type": "BOOLEAN",
-     "widget": {
-      "name": "enabled"
-     },
-     "link": null
-    },
-    {
-     "localized_name": "master_name",
-     "name": "master_name",
-     "type": "STRING",
-     "widget": {
-      "name": "master_name"
-     },
-     "link": null
-    },
-    {
-     "localized_name": "scale_factor",
-     "name": "scale_factor",
-     "type": "FLOAT",
-     "widget": {
-      "name": "scale_factor"
-     },
-     "link": null
-    },
-    {
-     "localized_name": "quality",
-     "name": "quality",
-     "type": "COMBO",
-     "widget": {
-      "name": "quality"
-     },
-     "link": null
-    },
-    {
-     "localized_name": "batch_size",
-     "name": "batch_size",
-     "type": "INT",
-     "widget": {
-      "name": "batch_size"
-     },
-     "link": null
-    },
-    {
-     "localized_name": "shots_subdir",
-     "name": "shots_subdir",
-     "shape": 7,
-     "type": "STRING",
-     "widget": {
-      "name": "shots_subdir"
-     },
-     "link": null
-    }
-   ],
-   "outputs": [
-    {
-     "localized_name": "images",
-     "name": "images",
-     "type": "IMAGE",
-     "links": [
-      113
-     ]
-    }
-   ],
-   "properties": {
-    "aux_id": "RealRebelAI/ComfyUI_JoyAI_Echo_GGUF_Nodes",
-    "ver": "0d9e32fcd2d255a16604368fcaa1875c380c7f3b",
-    "Node name for S&R": "JoyEcho_AutoFinish",
-    "ue_properties": {
-     "widget_ue_connectable": {},
-     "input_ue_unconnectable": {},
-     "version": "7.8"
-    },
-    "je_widget_values": {
-     "enabled": true,
-     "master_name": "RIFTCAST_AUDITION",
-     "scale_factor": 1.0,
-     "quality": "ULTRA",
-     "shots_subdir": "joyecho"
-    }
-   },
-   "widgets_values": [
-    true,
-    "RIFTCAST_AUDITION",
-    1.25,
-    "ULTRA",
-    8,
-    "joyecho"
-   ]
+   "widgets_values": []
   },
   {
    "id": 57,
@@ -613,10 +258,10 @@
    ],
    "size": [
     324.470703125,
-    646
+    718
    ],
    "flags": {},
-   "order": 7,
+   "order": 17,
    "mode": 0,
    "inputs": [
     {
@@ -661,7 +306,7 @@
      "widget": {
       "name": "num_frames"
      },
-     "link": null
+     "link": 145
     },
     {
      "localized_name": "video_height",
@@ -689,7 +334,7 @@
      "widget": {
       "name": "video_fps"
      },
-     "link": null
+     "link": 141
     },
     {
      "localized_name": "v2a_grad_scale",
@@ -738,6 +383,26 @@
      "type": "INT",
      "widget": {
       "name": "audio_memory_window_size"
+     },
+     "link": null
+    },
+    {
+     "localized_name": "memory_video_anchor",
+     "name": "memory_video_anchor",
+     "shape": 7,
+     "type": "COMBO",
+     "widget": {
+      "name": "memory_video_anchor"
+     },
+     "link": null
+    },
+    {
+     "localized_name": "speaker_order",
+     "name": "speaker_order",
+     "shape": 7,
+     "type": "STRING",
+     "widget": {
+      "name": "speaker_order"
      },
      "link": null
     },
@@ -862,20 +527,14 @@
      "link": null
     },
     {
-     "name": "video_fps",
-     "type": "INT",
-     "link": 133,
+     "localized_name": "temporal_upscale",
+     "name": "temporal_upscale",
+     "shape": 7,
+     "type": "COMBO",
      "widget": {
-      "name": "video_fps"
-     }
-    },
-    {
-     "name": "num_frames",
-     "type": "INT",
-     "link": 134,
-     "widget": {
-      "name": "num_frames"
-     }
+      "name": "temporal_upscale"
+     },
+     "link": null
     }
    ],
    "outputs": [
@@ -914,7 +573,7 @@
      "video_height": 544,
      "video_width": 960,
      "video_fps": 24,
-     "v2a_grad_scale": 2.0,
+     "v2a_grad_scale": 2,
      "memory_max_size": 5,
      "num_fix_frames": 3,
      "enable_audio_memory": true,
@@ -931,7 +590,7 @@
      "head_trim_first_shot": 0,
      "reference_zoom": 1.2,
      "resident_blocks": 0,
-     "hires_factor": 1.0,
+     "hires_factor": 1,
      "hires_denoise": "subtle (1 step)",
      "temporal_upscale": "off"
     }
@@ -943,7 +602,7 @@
     544,
     960,
     24,
-    2.0,
+    2,
     5,
     3,
     true,
@@ -960,26 +619,202 @@
     0,
     1.2,
     0,
-    1.0,
+    1,
     "subtle (1 step)",
     "off"
    ]
   },
   {
+   "id": 58,
+   "type": "JoyEcho_AutoFinish",
+   "pos": [
+    4348.9807162534435,
+    65.56473829201445
+   ],
+   "size": [
+    328.24765625,
+    226
+   ],
+   "flags": {},
+   "order": 18,
+   "mode": 0,
+   "inputs": [
+    {
+     "localized_name": "images",
+     "name": "images",
+     "type": "IMAGE",
+     "link": 110
+    },
+    {
+     "localized_name": "enabled",
+     "name": "enabled",
+     "type": "BOOLEAN",
+     "widget": {
+      "name": "enabled"
+     },
+     "link": null
+    },
+    {
+     "localized_name": "master_name",
+     "name": "master_name",
+     "type": "STRING",
+     "widget": {
+      "name": "master_name"
+     },
+     "link": null
+    },
+    {
+     "localized_name": "scale_factor",
+     "name": "scale_factor",
+     "type": "FLOAT",
+     "widget": {
+      "name": "scale_factor"
+     },
+     "link": null
+    },
+    {
+     "localized_name": "quality",
+     "name": "quality",
+     "type": "COMBO",
+     "widget": {
+      "name": "quality"
+     },
+     "link": null
+    },
+    {
+     "localized_name": "batch_size",
+     "name": "batch_size",
+     "type": "INT",
+     "widget": {
+      "name": "batch_size"
+     },
+     "link": null
+    },
+    {
+     "localized_name": "shots_subdir",
+     "name": "shots_subdir",
+     "shape": 7,
+     "type": "STRING",
+     "widget": {
+      "name": "shots_subdir"
+     },
+     "link": null
+    },
+    {
+     "localized_name": "upscale_mode",
+     "name": "upscale_mode",
+     "shape": 7,
+     "type": "COMBO",
+     "widget": {
+      "name": "upscale_mode"
+     },
+     "link": null
+    },
+    {
+     "localized_name": "preview_master",
+     "name": "preview_master",
+     "shape": 7,
+     "type": "BOOLEAN",
+     "widget": {
+      "name": "preview_master"
+     },
+     "link": null
+    }
+   ],
+   "outputs": [
+    {
+     "localized_name": "images",
+     "name": "images",
+     "type": "IMAGE",
+     "links": [
+      113
+     ]
+    }
+   ],
+   "properties": {
+    "aux_id": "RealRebelAI/ComfyUI_JoyAI_Echo_GGUF_Nodes",
+    "ver": "0d9e32fcd2d255a16604368fcaa1875c380c7f3b",
+    "Node name for S&R": "JoyEcho_AutoFinish",
+    "ue_properties": {
+     "widget_ue_connectable": {},
+     "input_ue_unconnectable": {},
+     "version": "7.8"
+    },
+    "je_widget_values": {
+     "enabled": true,
+     "master_name": "RIFTCAST_AUDITION",
+     "scale_factor": 1,
+     "quality": "ULTRA",
+     "batch_size": 8,
+     "shots_subdir": "joyecho",
+     "upscale_mode": "bicubic+cas (deterministic)",
+     "preview_master": true
+    }
+   },
+   "widgets_values": [
+    true,
+    "RIFTCAST_AUDITION",
+    1,
+    "ULTRA",
+    8,
+    "joyecho",
+    "bicubic+cas (deterministic)",
+    true
+   ]
+  },
+  {
+   "id": 73,
+   "type": "Note",
+   "pos": [
+    4717.300275481742,
+    68.59504132233745
+   ],
+   "size": [
+    380,
+    300
+   ],
+   "flags": {},
+   "order": 1,
+   "mode": 0,
+   "inputs": [],
+   "outputs": [],
+   "title": "FINISHING",
+   "properties": {
+    "text": "",
+    "ue_properties": {
+     "widget_ue_connectable": {},
+     "version": "7.8",
+     "input_ue_unconnectable": {}
+    }
+   },
+   "widgets_values": [
+    "FINISHING\n\nAutoFinish builds the master automatically after the queue (RIFTCAST_AUDITION prefix here - rename per project). Judge results from the *_MASTER.mp4, never the in-canvas preview.\n\ntemporal_upscale 2x on Generate = ~48fps masters via the LTX temporal latent upsampler - audio untouched, 24fps render law preserved. Great on motion; skip it for dialogue close-ups and found-footage looks.\n\nnum_frames up to 1441 (60s) single take. 241 = 10s audition."
+   ],
+   "color": "#432",
+   "bgcolor": "#653"
+  },
+  {
    "id": 1,
    "type": "JoyEcho_ModelLoader",
    "pos": [
-    2820,
-    100
+    2811.142195000001,
+    67.52138166666995
    ],
    "size": [
     959.6457021586295,
-    298
+    328
    ],
    "flags": {},
-   "order": 0,
+   "order": 10,
    "mode": 0,
    "inputs": [
+    {
+     "localized_name": "lora_stack",
+     "name": "lora_stack",
+     "shape": 7,
+     "type": "JOYECHO_LORA_STACK",
+     "link": 128
+    },
     {
      "localized_name": "model_file",
      "name": "model_file",
@@ -1089,11 +924,6 @@
       "name": "low_vram"
      },
      "link": null
-    },
-    {
-     "name": "lora_stack",
-     "type": "JOYECHO_LORA_STACK",
-     "link": 128
     }
    ],
    "outputs": [
@@ -1117,50 +947,557 @@
      "input_ue_unconnectable": {}
     },
     "je_widget_values": {
-     "model_file": "diffusion_models: ltx23_echoVid-ltxAud_surgical_fp8.safetensors",
+     "model_file": "diffusion_models: ltx23_echoVid-ltxAud_surgical_bf16.safetensors",
      "checkpoint_path": "",
      "gemma_file": "text_encoders: gemma-3-12b-it-ablit-norms-biproj-fp8mixed.safetensors",
      "gemma_path": "",
      "lora_file": "loras: ltx23/ltx23_accent_american_v1_rank32.safetensors",
      "lora_path": "",
-     "lora_strength": 0.0,
+     "lora_strength": 0,
      "fp8_transformer": false,
-     "fp8_scaled_mm": false,
+     "fp8_scaled_mm": true,
      "encoder_fp8": false,
      "low_vram": true
     }
    },
    "widgets_values": [
-    "diffusion_models: ltx23_echoVid-ltxAud_surgical_fp8.safetensors",
+    "diffusion_models: ltx23_echoVid-ltxAud_surgical_bf16.safetensors",
     "",
     "text_encoders: gemma-3-12b-it-ablit-norms-biproj-fp8mixed.safetensors",
     "",
     "loras: ltx23/ltx23_accent_american_v1_rank32.safetensors",
     "",
-    0.0,
+    0,
     false,
-    false,
+    true,
     false,
     true
+   ]
+  },
+  {
+   "id": 66,
+   "type": "JoyEcho_LoraStacker",
+   "pos": [
+    2904.9939148193885,
+    498.0415560814629
+   ],
+   "size": [
+    340,
+    220
+   ],
+   "flags": {},
+   "order": 2,
+   "mode": 0,
+   "inputs": [
+    {
+     "localized_name": "lora_stack",
+     "name": "lora_stack",
+     "shape": 7,
+     "type": "JOYECHO_LORA_STACK",
+     "link": null
+    },
+    {
+     "localized_name": "lora_1",
+     "name": "lora_1",
+     "shape": 7,
+     "type": "COMBO",
+     "widget": {
+      "name": "lora_1"
+     },
+     "link": null
+    },
+    {
+     "localized_name": "strength_1",
+     "name": "strength_1",
+     "shape": 7,
+     "type": "FLOAT",
+     "widget": {
+      "name": "strength_1"
+     },
+     "link": null
+    },
+    {
+     "localized_name": "lora_2",
+     "name": "lora_2",
+     "shape": 7,
+     "type": "COMBO",
+     "widget": {
+      "name": "lora_2"
+     },
+     "link": null
+    },
+    {
+     "localized_name": "strength_2",
+     "name": "strength_2",
+     "shape": 7,
+     "type": "FLOAT",
+     "widget": {
+      "name": "strength_2"
+     },
+     "link": null
+    },
+    {
+     "localized_name": "lora_3",
+     "name": "lora_3",
+     "shape": 7,
+     "type": "COMBO",
+     "widget": {
+      "name": "lora_3"
+     },
+     "link": null
+    },
+    {
+     "localized_name": "strength_3",
+     "name": "strength_3",
+     "shape": 7,
+     "type": "FLOAT",
+     "widget": {
+      "name": "strength_3"
+     },
+     "link": null
+    }
+   ],
+   "outputs": [
+    {
+     "localized_name": "lora_stack",
+     "name": "lora_stack",
+     "type": "JOYECHO_LORA_STACK",
+     "links": [
+      128
+     ]
+    }
+   ],
+   "properties": {
+    "aux_id": "RealRebelAI/ComfyUI_JoyAI_Echo_GGUF_Nodes",
+    "ver": "0d9e32fcd2d255a16604368fcaa1875c380c7f3b",
+    "Node name for S&R": "JoyEcho_LoraStacker",
+    "je_widget_values": {
+     "lora_1": "loras: ltx23/ltx23_accent_american_v2_rank32.safetensors",
+     "strength_1": 1,
+     "lora_2": "loras: ltx23/ltx23_surfaces_v1.safetensors",
+     "strength_2": 1,
+     "lora_3": "(none)",
+     "strength_3": 1
+    },
+    "ue_properties": {
+     "widget_ue_connectable": {},
+     "version": "7.8",
+     "input_ue_unconnectable": {}
+    }
+   },
+   "widgets_values": [
+    "loras: ltx23/ltx23_accent_american_v2_rank32.safetensors",
+    1,
+    "loras: ltx23/ltx23_surfaces_v1.safetensors",
+    1,
+    "(none)",
+    1
+   ]
+  },
+  {
+   "id": 72,
+   "type": "Note",
+   "pos": [
+    3341.275602589252,
+    469.16478451020714
+   ],
+   "size": [
+    380,
+    260
+   ],
+   "flags": {},
+   "order": 3,
+   "mode": 0,
+   "inputs": [],
+   "outputs": [],
+   "title": "LORA STACK",
+   "properties": {
+    "text": "",
+    "ue_properties": {
+     "widget_ue_connectable": {},
+     "version": "7.8",
+     "input_ue_unconnectable": {}
+    }
+   },
+   "widgets_values": [
+    "LORA STACK\n\nltx23_accent_american_v2 @ 1.0 - makes accent wording obeyable in the young-voice registers the base model ignores. Load-bearing; leave it at 1.0.\n\nltx23_surfaces_v1 @ 1.0 - always-on material realism (no trigger word). Grounds, walls, fabric, wear.\n\nChain another LoRA Stacker into this stacker's lora_stack input for character/style LoRAs. Everything fuses at load on safetensors DiT paths."
+   ],
+   "color": "#432",
+   "bgcolor": "#653"
+  },
+  {
+   "id": 71,
+   "type": "Note",
+   "pos": [
+    2262.328310777947,
+    1310.1877945666092
+   ],
+   "size": [
+    400,
+    300
+   ],
+   "flags": {},
+   "order": 4,
+   "mode": 0,
+   "inputs": [],
+   "outputs": [],
+   "title": "VOICES + REFERENCES",
+   "properties": {
+    "text": "",
+    "ue_properties": {
+     "widget_ue_connectable": {},
+     "version": "7.8",
+     "input_ue_unconnectable": {}
+    }
+   },
+   "widgets_values": [
+    "VOICES + REFERENCES\n\nVoice casting: a clip in input/joyecho_voices/<tag>/ makes every script with that speaker tag use that voice. RiftCast cartridges install these for you.\n\nRefPicker scans the ACTIVE script text for names matching folders under your refs root and injects identity stills at shot 1 (no_reference = silently skip when nothing matches). In designer mode this means a PACKED character's re-auditions inherit their own face - continuity for free.\n\nThe LoadImage is only a manual fallback; leave it on example.png unless you want to force a specific reference."
+   ],
+   "color": "#432",
+   "bgcolor": "#653"
+  },
+  {
+   "id": 67,
+   "type": "LoadImage",
+   "pos": [
+    2952.8010142185917,
+    804.4267943038271
+   ],
+   "size": [
+    260,
+    320
+   ],
+   "flags": {},
+   "order": 5,
+   "mode": 0,
+   "inputs": [
+    {
+     "localized_name": "image",
+     "name": "image",
+     "type": "COMBO",
+     "widget": {
+      "name": "image"
+     },
+     "link": null
+    },
+    {
+     "localized_name": "choose file to upload",
+     "name": "upload",
+     "type": "IMAGEUPLOAD",
+     "widget": {
+      "name": "upload"
+     },
+     "link": null
+    }
+   ],
+   "outputs": [
+    {
+     "localized_name": "IMAGE",
+     "name": "IMAGE",
+     "type": "IMAGE",
+     "links": null
+    },
+    {
+     "localized_name": "MASK",
+     "name": "MASK",
+     "type": "MASK",
+     "links": null
+    }
+   ],
+   "properties": {
+    "cnr_id": "comfy-core",
+    "ver": "0.26.2",
+    "Node name for S&R": "LoadImage",
+    "ue_properties": {
+     "widget_ue_connectable": {},
+     "version": "7.8",
+     "input_ue_unconnectable": {}
+    }
+   },
+   "widgets_values": [
+    "example.png",
+    "image"
+   ]
+  },
+  {
+   "id": 68,
+   "type": "JoyEcho_RefPicker",
+   "pos": [
+    3367.0196259870845,
+    835.3642189048235
+   ],
+   "size": [
+    343.8873046875,
+    260
+   ],
+   "flags": {},
+   "order": 14,
+   "mode": 0,
+   "inputs": [
+    {
+     "localized_name": "prompt_text",
+     "name": "prompt_text",
+     "shape": 7,
+     "type": "STRING",
+     "link": 130
+    },
+    {
+     "localized_name": "fallback_image",
+     "name": "fallback_image",
+     "shape": 7,
+     "type": "IMAGE",
+     "link": null
+    },
+    {
+     "localized_name": "pick",
+     "name": "pick",
+     "type": "COMBO",
+     "widget": {
+      "name": "pick"
+     },
+     "link": null
+    },
+    {
+     "localized_name": "seed",
+     "name": "seed",
+     "type": "INT",
+     "widget": {
+      "name": "seed"
+     },
+     "link": null
+    },
+    {
+     "localized_name": "refs_root",
+     "name": "refs_root",
+     "shape": 7,
+     "type": "STRING",
+     "widget": {
+      "name": "refs_root"
+     },
+     "link": null
+    },
+    {
+     "localized_name": "on_no_match",
+     "name": "on_no_match",
+     "shape": 7,
+     "type": "COMBO",
+     "widget": {
+      "name": "on_no_match"
+     },
+     "link": null
+    },
+    {
+     "localized_name": "character",
+     "name": "character",
+     "shape": 7,
+     "type": "STRING",
+     "widget": {
+      "name": "character"
+     },
+     "link": null
+    },
+    {
+     "localized_name": "character_pick",
+     "name": "character_pick",
+     "shape": 7,
+     "type": "COMBO",
+     "widget": {
+      "name": "character_pick"
+     },
+     "link": null
+    }
+   ],
+   "outputs": [
+    {
+     "localized_name": "reference_image",
+     "name": "reference_image",
+     "type": "IMAGE",
+     "links": [
+      131
+     ]
+    },
+    {
+     "localized_name": "picked_path",
+     "name": "picked_path",
+     "type": "STRING",
+     "links": null
+    },
+    {
+     "localized_name": "ref_shots",
+     "name": "ref_shots",
+     "type": "STRING",
+     "links": [
+      132
+     ]
+    }
+   ],
+   "properties": {
+    "aux_id": "RealRebelAI/ComfyUI_JoyAI_Echo_GGUF_Nodes",
+    "ver": "0d9e32fcd2d255a16604368fcaa1875c380c7f3b",
+    "Node name for S&R": "JoyEcho_RefPicker",
+    "je_widget_values": {
+     "pick": "by_seed",
+     "seed": 4242,
+     "control_after_generate": "randomize",
+     "refs_root": "",
+     "on_no_match": "no_reference",
+     "character": "(from character input / prompt scan)",
+     "character_pick": "(from character input / prompt scan)"
+    },
+    "ue_properties": {
+     "widget_ue_connectable": {
+      "character": true
+     },
+     "version": "7.8",
+     "input_ue_unconnectable": {}
+    }
+   },
+   "widgets_values": [
+    "by_seed",
+    4242,
+    "randomize",
+    "",
+    "no_reference",
+    "(from character input / prompt scan)",
+    "(from character input / prompt scan)"
    ]
   },
   {
    "id": 60,
    "type": "RiftCast_CharacterDesigner",
    "pos": [
-    -620,
-    200
+    454.5454545453457,
+    77.27272727274003
    ],
    "size": [
     360,
     400
    ],
    "flags": {},
-   "order": 0,
+   "order": 6,
    "mode": 0,
-   "inputs": [],
+   "inputs": [
+    {
+     "localized_name": "name",
+     "name": "name",
+     "type": "STRING",
+     "widget": {
+      "name": "name"
+     },
+     "link": null
+    },
+    {
+     "localized_name": "gender",
+     "name": "gender",
+     "type": "COMBO",
+     "widget": {
+      "name": "gender"
+     },
+     "link": null
+    },
+    {
+     "localized_name": "age",
+     "name": "age",
+     "type": "COMBO",
+     "widget": {
+      "name": "age"
+     },
+     "link": null
+    },
+    {
+     "localized_name": "ethnicity",
+     "name": "ethnicity",
+     "type": "COMBO",
+     "widget": {
+      "name": "ethnicity"
+     },
+     "link": null
+    },
+    {
+     "localized_name": "skin",
+     "name": "skin",
+     "type": "COMBO",
+     "widget": {
+      "name": "skin"
+     },
+     "link": null
+    },
+    {
+     "localized_name": "hair_color",
+     "name": "hair_color",
+     "type": "COMBO",
+     "widget": {
+      "name": "hair_color"
+     },
+     "link": null
+    },
+    {
+     "localized_name": "hair_style",
+     "name": "hair_style",
+     "type": "COMBO",
+     "widget": {
+      "name": "hair_style"
+     },
+     "link": null
+    },
+    {
+     "localized_name": "height",
+     "name": "height",
+     "type": "COMBO",
+     "widget": {
+      "name": "height"
+     },
+     "link": null
+    },
+    {
+     "localized_name": "build",
+     "name": "build",
+     "type": "COMBO",
+     "widget": {
+      "name": "build"
+     },
+     "link": null
+    },
+    {
+     "localized_name": "voice",
+     "name": "voice",
+     "type": "COMBO",
+     "widget": {
+      "name": "voice"
+     },
+     "link": null
+    },
+    {
+     "localized_name": "accent",
+     "name": "accent",
+     "type": "COMBO",
+     "widget": {
+      "name": "accent"
+     },
+     "link": null
+    },
+    {
+     "localized_name": "wardrobe",
+     "name": "wardrobe",
+     "type": "STRING",
+     "widget": {
+      "name": "wardrobe"
+     },
+     "link": null
+    },
+    {
+     "localized_name": "distinguishing",
+     "name": "distinguishing",
+     "type": "STRING",
+     "widget": {
+      "name": "distinguishing"
+     },
+     "link": null
+    }
+   ],
    "outputs": [
     {
+     "localized_name": "audition_script",
      "name": "audition_script",
      "type": "STRING",
      "links": [
@@ -1168,6 +1505,7 @@
      ]
     },
     {
+     "localized_name": "dna_text",
      "name": "dna_text",
      "type": "STRING",
      "links": [
@@ -1175,6 +1513,7 @@
      ]
     },
     {
+     "localized_name": "character_name",
      "name": "character_name",
      "type": "STRING",
      "links": [
@@ -1183,6 +1522,9 @@
     }
    ],
    "properties": {
+    "aux_id": "RealRebelAI/ComfyUI_JoyAI_Echo_GGUF_Nodes",
+    "ver": "0d9e32fcd2d255a16604368fcaa1875c380c7f3b",
+    "Node name for S&R": "RiftCast_CharacterDesigner",
     "je_widget_values": {
      "name": "NOVA",
      "gender": "woman",
@@ -1197,6 +1539,11 @@
      "accent": "casual American",
      "wardrobe": "a plain dark crewneck shirt",
      "distinguishing": ""
+    },
+    "ue_properties": {
+     "widget_ue_connectable": {},
+     "version": "7.8",
+     "input_ue_unconnectable": {}
     }
    },
    "widgets_values": [
@@ -1216,51 +1563,381 @@
    ]
   },
   {
+   "id": 62,
+   "type": "ShowText|pysssss",
+   "pos": [
+    464.5525350045244,
+    827.1863517974432
+   ],
+   "size": [
+    334.242424242427,
+    138.78787878788103
+   ],
+   "flags": {},
+   "order": 21,
+   "mode": 0,
+   "inputs": [
+    {
+     "localized_name": "text",
+     "name": "text",
+     "type": "STRING",
+     "link": 123
+    }
+   ],
+   "outputs": [
+    {
+     "localized_name": "STRING",
+     "name": "STRING",
+     "shape": 6,
+     "type": "STRING",
+     "links": null
+    }
+   ],
+   "properties": {
+    "cnr_id": "comfyui-custom-scripts",
+    "ver": "609f3afaa74b2f88ef9ce8d939626065e3247469",
+    "Node name for S&R": "ShowText|pysssss",
+    "ue_properties": {
+     "widget_ue_connectable": {},
+     "version": "7.8",
+     "input_ue_unconnectable": {}
+    }
+   },
+   "widgets_values": []
+  },
+  {
+   "id": 59,
+   "type": "JoyEcho_LLMEnhance",
+   "pos": [
+    900,
+    100
+   ],
+   "size": [
+    1161.0279043079718,
+    736.9512031915835
+   ],
+   "flags": {},
+   "order": 13,
+   "mode": 0,
+   "inputs": [
+    {
+     "localized_name": "story_idea",
+     "name": "story_idea",
+     "type": "STRING",
+     "widget": {
+      "name": "story_idea"
+     },
+     "link": 127
+    },
+    {
+     "localized_name": "mode",
+     "name": "mode",
+     "type": "COMBO",
+     "widget": {
+      "name": "mode"
+     },
+     "link": null
+    },
+    {
+     "localized_name": "api_key",
+     "name": "api_key",
+     "type": "STRING",
+     "widget": {
+      "name": "api_key"
+     },
+     "link": null
+    },
+    {
+     "localized_name": "system_prompt",
+     "name": "system_prompt",
+     "type": "STRING",
+     "widget": {
+      "name": "system_prompt"
+     },
+     "link": null
+    },
+    {
+     "localized_name": "base_url",
+     "name": "base_url",
+     "shape": 7,
+     "type": "STRING",
+     "widget": {
+      "name": "base_url"
+     },
+     "link": null
+    },
+    {
+     "localized_name": "model_name",
+     "name": "model_name",
+     "shape": 7,
+     "type": "STRING",
+     "widget": {
+      "name": "model_name"
+     },
+     "link": null
+    },
+    {
+     "localized_name": "num_shots",
+     "name": "num_shots",
+     "shape": 7,
+     "type": "INT",
+     "widget": {
+      "name": "num_shots"
+     },
+     "link": null
+    },
+    {
+     "localized_name": "temperature",
+     "name": "temperature",
+     "shape": 7,
+     "type": "FLOAT",
+     "widget": {
+      "name": "temperature"
+     },
+     "link": null
+    },
+    {
+     "localized_name": "num_frames",
+     "name": "num_frames",
+     "shape": 7,
+     "type": "INT",
+     "widget": {
+      "name": "num_frames"
+     },
+     "link": 144
+    },
+    {
+     "localized_name": "fps",
+     "name": "fps",
+     "shape": 7,
+     "type": "FLOAT",
+     "widget": {
+      "name": "fps"
+     },
+     "link": 142
+    }
+   ],
+   "outputs": [
+    {
+     "localized_name": "prompts_json",
+     "name": "prompts_json",
+     "type": "STRING",
+     "links": [
+      115,
+      116
+     ]
+    }
+   ],
+   "properties": {
+    "aux_id": "RealRebelAI/ComfyUI_JoyAI_Echo_GGUF_Nodes",
+    "ver": "0d9e32fcd2d255a16604368fcaa1875c380c7f3b",
+    "Node name for S&R": "JoyEcho_LLMEnhance",
+    "ue_properties": {
+     "widget_ue_connectable": {},
+     "input_ue_unconnectable": {},
+     "version": "7.8"
+    },
+    "je_widget_values": {
+     "mode": "passthrough (raw JSON, skip LLM)",
+     "api_key": "",
+     "system_prompt": "",
+     "base_url": "https://api.openai.com/v1",
+     "model_name": "gpt-4o",
+     "num_shots": 0,
+     "temperature": 0.7,
+     "num_frames": 313,
+     "fps": 24
+    }
+   },
+   "widgets_values": [
+    "passthrough (raw JSON, skip LLM)",
+    "",
+    "",
+    "",
+    "https://api.openai.com/v1",
+    "gpt-4o",
+    0,
+    0.7,
+    313,
+    24
+   ]
+  },
+  {
+   "id": 6,
+   "type": "CreateVideo",
+   "pos": [
+    4360,
+    360
+   ],
+   "size": [
+    301.3775449810605,
+    102
+   ],
+   "flags": {},
+   "order": 20,
+   "mode": 0,
+   "inputs": [
+    {
+     "localized_name": "images",
+     "name": "images",
+     "type": "IMAGE",
+     "link": 113
+    },
+    {
+     "localized_name": "audio",
+     "name": "audio",
+     "shape": 7,
+     "type": "AUDIO",
+     "link": 108
+    },
+    {
+     "localized_name": "fps",
+     "name": "fps",
+     "type": "FLOAT",
+     "widget": {
+      "name": "fps"
+     },
+     "link": 143
+    },
+    {
+     "localized_name": "bit_depth",
+     "name": "bit_depth",
+     "shape": 7,
+     "type": "INT",
+     "widget": {
+      "name": "bit_depth"
+     },
+     "link": null
+    }
+   ],
+   "outputs": [
+    {
+     "localized_name": "VIDEO",
+     "name": "VIDEO",
+     "type": "VIDEO",
+     "slot_index": 0,
+     "links": [
+      10
+     ]
+    }
+   ],
+   "title": "Create Video (Merge All Shots)",
+   "properties": {
+    "cnr_id": "comfy-core",
+    "ver": "0.26.2",
+    "Node name for S&R": "CreateVideo",
+    "ue_properties": {
+     "widget_ue_connectable": {},
+     "version": "7.8",
+     "input_ue_unconnectable": {}
+    }
+   },
+   "widgets_values": [
+    24,
+    8
+   ]
+  },
+  {
+   "id": 69,
+   "type": "Note",
+   "pos": [
+    36.82216606318116,
+    790.9960612889926
+   ],
+   "size": [
+    402.5043826696717,
+    217.3553719008354
+   ],
+   "flags": {},
+   "order": 7,
+   "mode": 0,
+   "inputs": [],
+   "outputs": [],
+   "title": "READ ME - THE 24 FPS LAW",
+   "properties": {
+    "text": "",
+    "ue_properties": {
+     "widget_ue_connectable": {},
+     "version": "7.8",
+     "input_ue_unconnectable": {}
+    }
+   },
+   "widgets_values": [
+    "READ ME - THE 24 FPS LAW\n\nvideo_fps stays at 24. Always.\n\nLTX-2.3's joint audio-video prior is 24fps-native and fps is a hidden ACCENT dial: 25fps drifts every voice to southern British, 30fps to broad Australian - and off-24 overrides accent wording in your prompt entirely. Verified by A/B with blind phonetic review.\n\nWant a British/Australian character on purpose? Render THEIR scenes at 25/30. Otherwise: 24, say the accent in the prompt, keep the accent v2 LoRA at 1.0."
+   ],
+   "color": "#432",
+   "bgcolor": "#653"
+  },
+  {
    "id": 61,
    "type": "RiftCast_Packer",
    "pos": [
-    900,
-    620
+    473.37538021086937,
+    535.3666706509212
    ],
    "size": [
     330,
     190
    ],
    "flags": {},
-   "order": 90,
+   "order": 19,
    "mode": 0,
    "inputs": [
     {
+     "localized_name": "images",
      "name": "images",
      "type": "IMAGE",
      "link": 121
     },
     {
+     "localized_name": "audio",
      "name": "audio",
      "type": "AUDIO",
      "link": 122
     },
     {
+     "localized_name": "character_name",
      "name": "character_name",
      "type": "STRING",
      "link": 120
     },
     {
+     "localized_name": "dna_text",
      "name": "dna_text",
      "type": "STRING",
      "link": 119
     },
     {
+     "localized_name": "fps",
      "name": "fps",
      "type": "INT",
-     "link": 138,
      "widget": {
       "name": "fps"
-     }
+     },
+     "link": 140
+    },
+    {
+     "localized_name": "anchor_start_sec",
+     "name": "anchor_start_sec",
+     "type": "FLOAT",
+     "widget": {
+      "name": "anchor_start_sec"
+     },
+     "link": null
+    },
+    {
+     "localized_name": "anchor_dur_sec",
+     "name": "anchor_dur_sec",
+     "type": "FLOAT",
+     "widget": {
+      "name": "anchor_dur_sec"
+     },
+     "link": null
     }
    ],
    "outputs": [
     {
+     "localized_name": "report",
      "name": "report",
      "type": "STRING",
      "links": [
@@ -1269,134 +1946,213 @@
     }
    ],
    "properties": {
+    "aux_id": "RealRebelAI/ComfyUI_JoyAI_Echo_GGUF_Nodes",
+    "ver": "0d9e32fcd2d255a16604368fcaa1875c380c7f3b",
+    "Node name for S&R": "RiftCast_Packer",
     "je_widget_values": {
      "fps": 24,
-     "anchor_start_sec": 1.0,
-     "anchor_dur_sec": 5.0
+     "anchor_start_sec": 1,
+     "anchor_dur_sec": 5
+    },
+    "ue_properties": {
+     "widget_ue_connectable": {},
+     "version": "7.8",
+     "input_ue_unconnectable": {}
     }
    },
    "widgets_values": [
     24,
-    1.0,
-    5.0
+    1,
+    5
    ]
   },
   {
-   "id": 62,
-   "type": "ShowText|pysssss",
+   "id": 76,
+   "type": "JoyEcho_RenderClock",
    "pos": [
-    1260,
-    640
+    43.33382410079271,
+    628.4467745005375
    ],
    "size": [
-    360,
-    160
+    390.5744515304159,
+    122
    ],
    "flags": {},
-   "order": 91,
+   "order": 9,
    "mode": 0,
    "inputs": [
     {
-     "name": "text",
-     "type": "STRING",
-     "link": 123,
+     "localized_name": "fps",
+     "name": "fps",
+     "type": "INT",
      "widget": {
-      "name": "text"
-     }
+      "name": "fps"
+     },
+     "link": null
+    },
+    {
+     "localized_name": "duration_seconds",
+     "name": "duration_seconds",
+     "type": "FLOAT",
+     "widget": {
+      "name": "duration_seconds"
+     },
+     "link": null
     }
    ],
    "outputs": [
     {
-     "name": "STRING",
-     "type": "STRING",
-     "links": null,
-     "shape": 6
-    }
-   ],
-   "properties": {},
-   "widgets_values": [
-    ""
-   ]
-  },
-  {
-   "id": 64,
-   "type": "easy seed",
-   "pos": [
-    -980,
-    60
-   ],
-   "size": [
-    240,
-    90
-   ],
-   "flags": {},
-   "order": 0,
-   "mode": 0,
-   "inputs": [],
-   "outputs": [
-    {
-     "name": "seed",
+     "localized_name": "video_fps",
+     "name": "video_fps",
      "type": "INT",
      "links": [
-      124
+      140,
+      141
+     ]
+    },
+    {
+     "localized_name": "fps_float",
+     "name": "fps_float",
+     "type": "FLOAT",
+     "links": [
+      142,
+      143
+     ]
+    },
+    {
+     "localized_name": "num_frames",
+     "name": "num_frames",
+     "type": "INT",
+     "links": [
+      144,
+      145
      ]
     }
    ],
-   "properties": {},
+   "properties": {
+    "ue_properties": {
+     "widget_ue_connectable": {},
+     "input_ue_unconnectable": {}
+    },
+    "aux_id": "RealRebelAI/ComfyUI_JoyAI_Echo_GGUF_Nodes",
+    "ver": "0d9e32fcd2d255a16604368fcaa1875c380c7f3b",
+    "Node name for S&R": "JoyEcho_RenderClock",
+    "je_widget_values": {
+     "fps": 24,
+     "duration_seconds": 10
+    }
+   },
    "widgets_values": [
-    0,
-    "fixed"
+    24,
+    10
    ]
   },
   {
    "id": 63,
    "type": "JoyEcho_PromptSource",
    "pos": [
-    -700,
-    20
+    48.40468319551595,
+    383.686225895278
    ],
    "size": [
-    340,
-    170
+    365.61875,
+    194
    ],
    "flags": {},
-   "order": 1,
+   "order": 11,
    "mode": 0,
    "inputs": [
     {
-     "name": "start_index",
+     "localized_name": "source_file",
+     "name": "source_file",
+     "type": "COMBO",
+     "widget": {
+      "name": "source_file"
+     },
+     "link": null
+    },
+    {
+     "localized_name": "load_cap",
+     "name": "load_cap",
+     "shape": 7,
      "type": "INT",
-     "link": 124,
+     "widget": {
+      "name": "load_cap"
+     },
+     "link": null
+    },
+    {
+     "localized_name": "start_index",
+     "name": "start_index",
+     "shape": 7,
+     "type": "INT",
      "widget": {
       "name": "start_index"
-     }
+     },
+     "link": 124
+    },
+    {
+     "localized_name": "character_override",
+     "name": "character_override",
+     "shape": 7,
+     "type": "STRING",
+     "widget": {
+      "name": "character_override"
+     },
+     "link": null
+    },
+    {
+     "localized_name": "manual_path",
+     "name": "manual_path",
+     "shape": 7,
+     "type": "STRING",
+     "widget": {
+      "name": "manual_path"
+     },
+     "link": null
     }
    ],
    "outputs": [
     {
+     "localized_name": "story_idea",
      "name": "story_idea",
+     "shape": 6,
      "type": "STRING",
      "links": [
       125
      ]
     },
     {
+     "localized_name": "character",
      "name": "character",
+     "shape": 6,
      "type": "STRING",
      "links": null
     },
     {
+     "localized_name": "count",
      "name": "count",
      "type": "INT",
      "links": null
     }
    ],
    "properties": {
+    "aux_id": "RealRebelAI/ComfyUI_JoyAI_Echo_GGUF_Nodes",
+    "ver": "0d9e32fcd2d255a16604368fcaa1875c380c7f3b",
+    "Node name for S&R": "JoyEcho_PromptSource",
     "je_widget_values": {
      "source_file": "TXT: example\\RIFT PROMPTS\\_SHOWCASE\\SHOWCASE_FUN_5x30s.txt",
      "load_cap": 1,
+     "start_index": 0,
      "character_override": "",
      "manual_path": ""
+    },
+    "ue_properties": {
+     "widget_ue_connectable": {
+      "start_index": true
+     },
+     "version": "7.8",
+     "input_ue_unconnectable": {}
     }
    },
    "widgets_values": [
@@ -1408,33 +2164,98 @@
    ]
   },
   {
+   "id": 64,
+   "type": "easy seed",
+   "pos": [
+    54.33884297510161,
+    224.92479338841176
+   ],
+   "size": [
+    240,
+    106
+   ],
+   "flags": {},
+   "order": 8,
+   "mode": 0,
+   "inputs": [
+    {
+     "localized_name": "seed",
+     "name": "seed",
+     "type": "INT",
+     "widget": {
+      "name": "seed"
+     },
+     "link": null
+    }
+   ],
+   "outputs": [
+    {
+     "localized_name": "seed",
+     "name": "seed",
+     "type": "INT",
+     "links": [
+      124
+     ]
+    }
+   ],
+   "properties": {
+    "cnr_id": "comfyui-easy-use",
+    "ver": "54d080bf6a4f52da287e984f305243c10db097f5",
+    "Node name for S&R": "easy seed",
+    "ue_properties": {
+     "widget_ue_connectable": {},
+     "version": "7.8",
+     "input_ue_unconnectable": {}
+    }
+   },
+   "widgets_values": [
+    0,
+    "fixed",
+    null
+   ]
+  },
+  {
    "id": 65,
    "type": "RiftCast_SourceSwitch",
    "pos": [
-    -260,
-    120
+    52.99194044119486,
+    64.26444118116714
    ],
    "size": [
     300,
     110
    ],
    "flags": {},
-   "order": 2,
+   "order": 12,
    "mode": 0,
    "inputs": [
     {
+     "localized_name": "file_script",
      "name": "file_script",
+     "shape": 7,
      "type": "STRING",
      "link": 125
     },
     {
+     "localized_name": "designer_script",
      "name": "designer_script",
+     "shape": 7,
      "type": "STRING",
      "link": 126
+    },
+    {
+     "localized_name": "source",
+     "name": "source",
+     "type": "COMBO",
+     "widget": {
+      "name": "source"
+     },
+     "link": null
     }
    ],
    "outputs": [
     {
+     "localized_name": "story_idea",
      "name": "story_idea",
      "type": "STRING",
      "links": [
@@ -1444,8 +2265,16 @@
     }
    ],
    "properties": {
+    "aux_id": "RealRebelAI/ComfyUI_JoyAI_Echo_GGUF_Nodes",
+    "ver": "0d9e32fcd2d255a16604368fcaa1875c380c7f3b",
+    "Node name for S&R": "RiftCast_SourceSwitch",
     "je_widget_values": {
      "source": "character designer"
+    },
+    "ue_properties": {
+     "widget_ue_connectable": {},
+     "version": "7.8",
+     "input_ue_unconnectable": {}
     }
    },
    "widgets_values": [
@@ -1453,37 +2282,11 @@
    ]
   },
   {
-   "id": 69,
-   "type": "Note",
-   "pos": [
-    -1420,
-    40
-   ],
-   "size": [
-    400,
-    300
-   ],
-   "flags": {},
-   "order": 0,
-   "mode": 0,
-   "inputs": [],
-   "outputs": [],
-   "properties": {
-    "text": ""
-   },
-   "widgets_values": [
-    "READ ME - THE 24 FPS LAW\n\nvideo_fps stays at 24. Always.\n\nLTX-2.3's joint audio-video prior is 24fps-native and fps is a hidden ACCENT dial: 25fps drifts every voice to southern British, 30fps to broad Australian - and off-24 overrides accent wording in your prompt entirely. Verified by A/B with blind phonetic review.\n\nWant a British/Australian character on purpose? Render THEIR scenes at 25/30. Otherwise: 24, say the accent in the prompt, keep the accent v2 LoRA at 1.0."
-   ],
-   "title": "READ ME - THE 24 FPS LAW",
-   "color": "#432",
-   "bgcolor": "#653"
-  },
-  {
    "id": 70,
    "type": "Note",
    "pos": [
-    -1420,
-    380
+    -386.27583315465733,
+    12.728493748525269
    ],
    "size": [
     400,
@@ -1494,295 +2297,20 @@
    "mode": 0,
    "inputs": [],
    "outputs": [],
+   "title": "TWO MODES - THE SOURCE SWITCH",
    "properties": {
-    "text": ""
+    "text": "",
+    "ue_properties": {
+     "widget_ue_connectable": {},
+     "version": "7.8",
+     "input_ue_unconnectable": {}
+    }
    },
    "widgets_values": [
     "TWO MODES - THE SOURCE SWITCH\n\nThe RiftCast Source Switch picks what drives this queue:\n\nPROMPT FILE - classic batch rendering. Point PromptSource at any LPFF txt or script JSON; easy-seed sets the block index.\n\nCHARACTER DESIGNER - set the dropdowns, queue, and the character records an audition tape. The Packer cuts their voice anchor + 3 reference stills from that render and installs NAME.riftcast automatically. Re-queue with a new seed to recast; delete the file in input/riftcast/ to retire them.\n\nCartridges also auto-install at startup: drop any .riftcast into input/riftcast/ and just mention the character in a script."
    ],
-   "title": "TWO MODES - THE SOURCE SWITCH",
    "color": "#432",
    "bgcolor": "#653"
-  },
-  {
-   "id": 71,
-   "type": "Note",
-   "pos": [
-    -1420,
-    760
-   ],
-   "size": [
-    400,
-    300
-   ],
-   "flags": {},
-   "order": 0,
-   "mode": 0,
-   "inputs": [],
-   "outputs": [],
-   "properties": {
-    "text": ""
-   },
-   "widgets_values": [
-    "VOICES + REFERENCES\n\nVoice casting: a clip in input/joyecho_voices/<tag>/ makes every script with that speaker tag use that voice. RiftCast cartridges install these for you.\n\nRefPicker scans the ACTIVE script text for names matching folders under your refs root and injects identity stills at shot 1 (no_reference = silently skip when nothing matches). In designer mode this means a PACKED character's re-auditions inherit their own face - continuity for free.\n\nThe LoadImage is only a manual fallback; leave it on example.png unless you want to force a specific reference."
-   ],
-   "title": "VOICES + REFERENCES",
-   "color": "#432",
-   "bgcolor": "#653"
-  },
-  {
-   "id": 72,
-   "type": "Note",
-   "pos": [
-    -260,
-    700
-   ],
-   "size": [
-    380,
-    260
-   ],
-   "flags": {},
-   "order": 0,
-   "mode": 0,
-   "inputs": [],
-   "outputs": [],
-   "properties": {
-    "text": ""
-   },
-   "widgets_values": [
-    "LORA STACK\n\nltx23_accent_american_v2 @ 1.0 - makes accent wording obeyable in the young-voice registers the base model ignores. Load-bearing; leave it at 1.0.\n\nltx23_surfaces_v1 @ 1.0 - always-on material realism (no trigger word). Grounds, walls, fabric, wear.\n\nChain another LoRA Stacker into this stacker's lora_stack input for character/style LoRAs. Everything fuses at load on safetensors DiT paths."
-   ],
-   "title": "LORA STACK",
-   "color": "#432",
-   "bgcolor": "#653"
-  },
-  {
-   "id": 73,
-   "type": "Note",
-   "pos": [
-    1260,
-    300
-   ],
-   "size": [
-    380,
-    300
-   ],
-   "flags": {},
-   "order": 0,
-   "mode": 0,
-   "inputs": [],
-   "outputs": [],
-   "properties": {
-    "text": ""
-   },
-   "widgets_values": [
-    "FINISHING\n\nAutoFinish builds the master automatically after the queue (RIFTCAST_AUDITION prefix here - rename per project). Judge results from the *_MASTER.mp4, never the in-canvas preview.\n\ntemporal_upscale 2x on Generate = ~48fps masters via the LTX temporal latent upsampler - audio untouched, 24fps render law preserved. Great on motion; skip it for dialogue close-ups and found-footage looks.\n\nnum_frames up to 1441 (60s) single take. 241 = 10s audition."
-   ],
-   "title": "FINISHING",
-   "color": "#432",
-   "bgcolor": "#653"
-  },
-  {
-   "id": 66,
-   "type": "JoyEcho_LoraStacker",
-   "pos": [
-    -980,
-    460
-   ],
-   "size": [
-    340,
-    220
-   ],
-   "flags": {},
-   "order": 3,
-   "mode": 0,
-   "inputs": [],
-   "outputs": [
-    {
-     "name": "lora_stack",
-     "type": "JOYECHO_LORA_STACK",
-     "links": [
-      128
-     ]
-    }
-   ],
-   "properties": {
-    "je_widget_values": {
-     "lora_1": "loras: ltx23/ltx23_accent_american_v2_rank32.safetensors",
-     "strength_1": 1.0,
-     "lora_2": "loras: ltx23/ltx23_surfaces_v1.safetensors",
-     "strength_2": 1.0,
-     "lora_3": "(none)",
-     "strength_3": 1.0
-    }
-   },
-   "widgets_values": [
-    "loras: ltx23/ltx23_accent_american_v2_rank32.safetensors",
-    1.0,
-    "loras: ltx23/ltx23_surfaces_v1.safetensors",
-    1.0,
-    "(none)",
-    1.0
-   ]
-  },
-  {
-   "id": 67,
-   "type": "LoadImage",
-   "pos": [
-    -980,
-    740
-   ],
-   "size": [
-    260,
-    320
-   ],
-   "flags": {},
-   "order": 4,
-   "mode": 0,
-   "inputs": [],
-   "outputs": [
-    {
-     "name": "IMAGE",
-     "type": "IMAGE",
-     "links": [
-      129
-     ]
-    },
-    {
-     "name": "MASK",
-     "type": "MASK",
-     "links": null
-    }
-   ],
-   "properties": {},
-   "widgets_values": [
-    "example.png",
-    "image"
-   ]
-  },
-  {
-   "id": 68,
-   "type": "JoyEcho_RefPicker",
-   "pos": [
-    -640,
-    740
-   ],
-   "size": [
-    340,
-    260
-   ],
-   "flags": {},
-   "order": 5,
-   "mode": 0,
-   "inputs": [
-    {
-     "name": "prompt_text",
-     "type": "STRING",
-     "link": 130
-    },
-    {
-     "name": "fallback_image",
-     "type": "IMAGE",
-     "link": 129
-    },
-    {
-     "name": "character",
-     "type": "STRING",
-     "link": null
-    }
-   ],
-   "outputs": [
-    {
-     "name": "reference_image",
-     "type": "IMAGE",
-     "links": [
-      131
-     ]
-    },
-    {
-     "name": "picked_path",
-     "type": "STRING",
-     "links": null
-    },
-    {
-     "name": "ref_shots",
-     "type": "STRING",
-     "links": [
-      132
-     ]
-    }
-   ],
-   "properties": {
-    "je_widget_values": {
-     "pick": "by_seed",
-     "seed": 4242,
-     "control_after_generate": "randomize",
-     "refs_root": "",
-     "on_no_match": "no_reference",
-     "character_pick": "(from character input / prompt scan)"
-    }
-   },
-   "widgets_values": [
-    "by_seed",
-    4242,
-    "randomize",
-    "",
-    "no_reference",
-    "(from character input / prompt scan)",
-    "(from character input / prompt scan)"
-   ]
-  },
-  {
-   "id": 74,
-   "type": "JoyEcho_RenderClock",
-   "pos": [
-    -980,
-    300
-   ],
-   "size": [
-    320,
-    120
-   ],
-   "flags": {},
-   "order": 2,
-   "mode": 0,
-   "inputs": [],
-   "outputs": [
-    {
-     "name": "video_fps",
-     "type": "INT",
-     "links": [
-      133,
-      138
-     ]
-    },
-    {
-     "name": "fps_float",
-     "type": "FLOAT",
-     "links": [
-      135,
-      136
-     ]
-    },
-    {
-     "name": "num_frames",
-     "type": "INT",
-     "links": [
-      134,
-      137
-     ]
-    }
-   ],
-   "properties": {
-    "je_widget_values": {
-     "fps": 24,
-     "duration_seconds": 10.0
-    }
-   },
-   "widgets_values": [
-    24,
-    10.0
-   ]
   }
  ],
  "links": [
@@ -1903,7 +2431,7 @@
    64,
    0,
    63,
-   0,
+   2,
    "INT"
   ],
   [
@@ -1935,7 +2463,7 @@
    66,
    0,
    1,
-   11,
+   0,
    "JOYECHO_LORA_STACK"
   ],
   [
@@ -1945,14 +2473,6 @@
    68,
    0,
    "STRING"
-  ],
-  [
-   129,
-   67,
-   0,
-   68,
-   1,
-   "IMAGE"
   ],
   [
    131,
@@ -1971,51 +2491,51 @@
    "STRING"
   ],
   [
-   133,
-   74,
-   0,
-   57,
-   26,
-   "INT"
-  ],
-  [
-   134,
-   74,
-   2,
-   57,
-   27,
-   "INT"
-  ],
-  [
-   135,
-   74,
-   1,
-   6,
-   4,
-   "FLOAT"
-  ],
-  [
-   136,
-   74,
-   1,
-   59,
-   10,
-   "FLOAT"
-  ],
-  [
-   137,
-   74,
-   2,
-   59,
-   11,
-   "INT"
-  ],
-  [
-   138,
-   74,
+   140,
+   76,
    0,
    61,
    4,
+   "INT"
+  ],
+  [
+   141,
+   76,
+   0,
+   57,
+   8,
+   "INT"
+  ],
+  [
+   142,
+   76,
+   1,
+   59,
+   9,
+   "FLOAT"
+  ],
+  [
+   143,
+   76,
+   1,
+   6,
+   2,
+   "FLOAT"
+  ],
+  [
+   144,
+   76,
+   2,
+   59,
+   8,
+   "INT"
+  ],
+  [
+   145,
+   76,
+   2,
+   57,
+   5,
    "INT"
   ]
  ],
@@ -2024,13 +2544,12 @@
    "id": 1,
    "title": "1 - Prompt Source",
    "bounding": [
-    -50,
+    18.333333333326358,
     -20,
-    824.5169729521541,
-    557.6804828065789
+    825.6553287110956,
+    1039.0296620520253
    ],
    "color": "#3f5159",
-   "font_size": 28,
    "flags": {}
   },
   {
@@ -2043,7 +2562,6 @@
     1711.3470203103975
    ],
    "color": "#39604a",
-   "font_size": 28,
    "flags": {}
   },
   {
@@ -2052,11 +2570,10 @@
    "bounding": [
     2770,
     -20,
-    1059.6457021586293,
-    772
+    1072.9790354919614,
+    1193.6666666666215
    ],
    "color": "#5a4a63",
-   "font_size": 28,
    "flags": {}
   },
   {
@@ -2065,11 +2582,10 @@
    "bounding": [
     3850,
     -20,
-    424.470703125,
-    816
+    434.2142886249994,
+    897.1965458333252
    ],
    "color": "#6e5a35",
-   "font_size": 28,
    "flags": {}
   },
   {
@@ -2082,17 +2598,16 @@
     1635.6802482016337
    ],
    "color": "#5a3d3d",
-   "font_size": 28,
    "flags": {}
   }
  ],
  "config": {},
  "extra": {
   "ds": {
-   "scale": 1.0629366000001077,
+   "scale": 0.6600000000000721,
    "offset": [
-    1918.8868219750034,
-    304.29594287360624
+    617.5769294373819,
+    301.20651897025544
    ]
   },
   "frontendVersion": "1.45.15",
