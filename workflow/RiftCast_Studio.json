@@ -1,8 +1,8 @@
 {
  "id": "dabc6ca9-5fa6-414e-9cdd-33077930aa75",
  "revision": 0,
- "last_node_id": 73,
- "last_link_id": 132,
+ "last_node_id": 74,
+ "last_link_id": 138,
  "nodes": [
   {
    "id": 2,
@@ -289,6 +289,14 @@
       "name": "bit_depth"
      },
      "link": null
+    },
+    {
+     "name": "fps",
+     "type": "FLOAT",
+     "link": 135,
+     "widget": {
+      "name": "fps"
+     }
     }
    ],
    "outputs": [
@@ -428,6 +436,22 @@
       "name": "fps"
      },
      "link": null
+    },
+    {
+     "name": "fps",
+     "type": "FLOAT",
+     "link": 136,
+     "widget": {
+      "name": "fps"
+     }
+    },
+    {
+     "name": "num_frames",
+     "type": "INT",
+     "link": 137,
+     "widget": {
+      "name": "num_frames"
+     }
     }
    ],
    "outputs": [
@@ -836,6 +860,22 @@
       "name": "hires_denoise"
      },
      "link": null
+    },
+    {
+     "name": "video_fps",
+     "type": "INT",
+     "link": 133,
+     "widget": {
+      "name": "video_fps"
+     }
+    },
+    {
+     "name": "num_frames",
+     "type": "INT",
+     "link": 134,
+     "widget": {
+      "name": "num_frames"
+     }
     }
    ],
    "outputs": [
@@ -1209,6 +1249,14 @@
      "name": "dna_text",
      "type": "STRING",
      "link": 119
+    },
+    {
+     "name": "fps",
+     "type": "INT",
+     "link": 138,
+     "widget": {
+      "name": "fps"
+     }
     }
    ],
    "outputs": [
@@ -1683,6 +1731,58 @@
     "(from character input / prompt scan)",
     "(from character input / prompt scan)"
    ]
+  },
+  {
+   "id": 74,
+   "type": "JoyEcho_RenderClock",
+   "pos": [
+    -980,
+    300
+   ],
+   "size": [
+    320,
+    120
+   ],
+   "flags": {},
+   "order": 2,
+   "mode": 0,
+   "inputs": [],
+   "outputs": [
+    {
+     "name": "video_fps",
+     "type": "INT",
+     "links": [
+      133,
+      138
+     ]
+    },
+    {
+     "name": "fps_float",
+     "type": "FLOAT",
+     "links": [
+      135,
+      136
+     ]
+    },
+    {
+     "name": "num_frames",
+     "type": "INT",
+     "links": [
+      134,
+      137
+     ]
+    }
+   ],
+   "properties": {
+    "je_widget_values": {
+     "fps": 24,
+     "duration_seconds": 10.0
+    }
+   },
+   "widgets_values": [
+    24,
+    10.0
+   ]
   }
  ],
  "links": [
@@ -1869,6 +1969,54 @@
    57,
    3,
    "STRING"
+  ],
+  [
+   133,
+   74,
+   0,
+   57,
+   26,
+   "INT"
+  ],
+  [
+   134,
+   74,
+   2,
+   57,
+   27,
+   "INT"
+  ],
+  [
+   135,
+   74,
+   1,
+   6,
+   4,
+   "FLOAT"
+  ],
+  [
+   136,
+   74,
+   1,
+   59,
+   10,
+   "FLOAT"
+  ],
+  [
+   137,
+   74,
+   2,
+   59,
+   11,
+   "INT"
+  ],
+  [
+   138,
+   74,
+   0,
+   61,
+   4,
+   "INT"
   ]
  ],
  "groups": [

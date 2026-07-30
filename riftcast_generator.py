@@ -310,3 +310,39 @@ class RiftCast_SourceSwitch:
 
 NODE_CLASS_MAPPINGS["RiftCast_SourceSwitch"] = RiftCast_SourceSwitch
 NODE_DISPLAY_NAME_MAPPINGS["RiftCast_SourceSwitch"] = "RiftCast Source Switch (file / designer)"
+
+
+class JoyEcho_RenderClock:
+    """One source of truth for time: fps + duration in, every fps/frames
+    socket in the graph fed from here. Outputs are typed for their targets
+    (INT for Generate/Packer, FLOAT for CreateVideo/LLMEnhance) because a
+    single primitive type-locks and cannot feed both. num_frames snaps to
+    the nearest valid 8n+1."""
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {"required": {
+            "fps": ("INT", {"default": 24, "min": 1, "max": 60, "tooltip":
+                    "KEEP AT 24 for dialogue - the joint AV prior is "
+                    "24fps-native; other values drift accents (25=British, "
+                    "30=Australian) and override accent wording."}),
+            "duration_seconds": ("FLOAT", {"default": 10.0, "min": 0.5,
+                                           "max": 60.0, "step": 0.5}),
+        }}
+
+    RETURN_TYPES = ("INT", "FLOAT", "INT")
+    RETURN_NAMES = ("video_fps", "fps_float", "num_frames")
+    FUNCTION = "clock"
+    CATEGORY = "JoyAI-Echo"
+
+    def clock(self, fps, duration_seconds):
+        raw = fps * duration_seconds
+        n = max(1, round((raw - 1) / 8.0))
+        frames = int(8 * n + 1)
+        frames = min(frames, 1441)
+        print(f"[JoyEcho] RenderClock: {fps} fps x {duration_seconds:.1f}s "
+              f"-> {frames} frames (8n+1 snapped).", flush=True)
+        return (int(fps), float(fps), frames)
+
+
+NODE_CLASS_MAPPINGS["JoyEcho_RenderClock"] = JoyEcho_RenderClock
+NODE_DISPLAY_NAME_MAPPINGS["JoyEcho_RenderClock"] = "JoyEcho Render Clock (fps + duration -> frames)"
