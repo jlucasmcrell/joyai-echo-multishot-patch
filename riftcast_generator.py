@@ -745,8 +745,18 @@ class RiftCast_CharacterDesigner:
             "age": (AGE, {"default": "mid twenties"}),
             "ethnicity": (ETHNICITY,),
             "skin": (SKIN, {"default": "pale"}),
-            "hair_color": (HAIR_COLOR, {"default": "dark brown"}),
-            "hair_style": (HAIR_STYLE, {"default": "long and loose"}),
+            # FALLBACK FOUR. These four duplicate widgets on the Style node and
+            # are used ONLY when style_block is unwired (Designer used alone).
+            # Wiring a Style node discards them - which was silent, and silent
+            # dead controls are the exact "dropdowns appear to do nothing" trap
+            # called out at AUDITION ISOLATION below. design() now says so out
+            # loud when a wired style overrides one you actually changed.
+            "hair_color": (HAIR_COLOR, {"default": "dark brown", "tooltip":
+                           "FALLBACK - ignored when a Style node is wired to "
+                           "style_block; set hair colour on the Style node."}),
+            "hair_style": (HAIR_STYLE, {"default": "long and loose", "tooltip":
+                           "FALLBACK - ignored when a Style node is wired to "
+                           "style_block; set hair shape on the Style node."}),
             "height": (HEIGHT, {"default": "average height"}),
             "build": (BUILD, {"default": "average build"}),
             "voice": (VOICE, {"default": "a clear voice, natural and unforced"}),
@@ -755,10 +765,14 @@ class RiftCast_CharacterDesigner:
                        "24fps. British/Australian render natively at 25/30fps "
                        "(the fps-accent law) - or at 24fps they lean on the "
                        "wording alone."}),
-            "wardrobe": ("STRING", {"default": "a plain dark crewneck shirt"}),
+            "wardrobe": ("STRING", {"default": "a plain dark crewneck shirt",
+                         "tooltip": "FALLBACK - ignored when a Style node is "
+                         "wired to style_block; set wardrobe on the Style node."}),
             "distinguishing": ("STRING", {"default": "", "tooltip":
                                "optional: thin-framed glasses, a small nose "
-                               "stud, freckles across the nose..."}),
+                               "stud, freckles across the nose... FALLBACK - "
+                               "ignored when a Style node is wired; the Style "
+                               "node has its own distinguishing field."}),
         },
         "optional": {
             "style_block": ("STRING", {"forceInput": True, "tooltip":
@@ -799,6 +813,20 @@ class RiftCast_CharacterDesigner:
                 # makeup would contradict it in the same sentence
                 if _sb.get("has_makeup"):
                     realism = realism.replace(", no makeup", "")
+                # Say it out loud, but only when it MATTERS: a field left at its
+                # default was never a choice, so warning about it would be noise
+                # everyone learns to ignore.
+                _shadowed = [n for n, v, dflt in
+                             (("hair_color", hair_color, "dark brown"),
+                              ("hair_style", hair_style, "long and loose"),
+                              ("wardrobe", wardrobe, "a plain dark crewneck shirt"),
+                              ("distinguishing", distinguishing, ""))
+                             if (v or "").strip() != dflt]
+                if _shadowed:
+                    print(f"[RiftCast] Style node is wired, so the Designer's "
+                          f"{', '.join(_shadowed)} {'is' if len(_shadowed)==1 else 'are'} "
+                          f"IGNORED. Set {'it' if len(_shadowed)==1 else 'them'} "
+                          f"on the Style node instead.", flush=True)
             except Exception as _e:
                 print(f"[RiftCast] style_block unreadable ({_e}); using the "
                       f"Designer's own hair/wardrobe fields.", flush=True)
