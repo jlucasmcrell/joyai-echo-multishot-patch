@@ -12,6 +12,131 @@
 > someone reported something.** You will not be left hanging.
 
 
+## New in 2.2 — LoRAs finally work on a GGUF DiT
+
+Download **`ComfyUI_JoyAI_Echo_v2.2_COMPLETE.zip`**. This one is built from the
+repo tree rather than hand-patched over the 2.0 archive, so the zip, the repo
+and this README agree for the first time since 2.0.
+
+### Runtime LoRA on the GGUF path (`joyecho_gguf_runtime_lora.py`)
+
+**Until now, every LoRA you selected was silently dropped whenever the DiT was a
+GGUF.** The stacker showed three LoRAs, the console printed one warning, and the
+render came out LoRA-free. If you batch overnight on a GGUF, everything you
+rendered ran without them.
+
+The reason was real, not a bug: JoyEcho's only LoRA mechanism was *fusion*
+(`W' = W + s·B·A` baked into the weight tensors at load), and a GGUF keeps its
+weights packed in quantized blocks that are dequantized per layer at compute
+time. Fusing would mean dequantize → add → **re**quantize the whole model, and a
+rank-32 delta often falls below the quantization step anyway.
+
+So this release stops trying to fuse and applies the LoRA **at runtime** with
+forward hooks instead:
+
+```
+y = module(x) + Σᵢ scaleᵢ · (x @ Aᵢᵀ) @ Bᵢᵀ
+```
+
+The GGUF weights are never touched. On a quantized base this is *higher*
+fidelity than fuse-and-requantize, because the delta stays bf16 instead of being
+crushed into the quant grid.
+
+- **Costs about 1–2 % of a hooked layer's FLOPs** (two rank-32 matmuls against
+  hidden 4096).
+- **Key handling is shared with the fused path** — PEFT (`lora_A`/`lora_B`) and
+  kohya (`lora_down`/`lora_up`) naming, `alpha/rank` scaling when `.alpha` keys
+  are present, plain `strength` when they are not (which is the case for every
+  LoRA I ship). The runtime path and the fused path can't disagree about what a
+  LoRA file means.
+- **It reports what it did**, per LoRA: `576/576 pairs attached (N
+  audio-touching)`, and it warns loudly if *zero* pairs matched — the
+  key-naming failure that used to be completely silent.
+- **It is never fatal.** A LoRA that won't load, or an attach that throws, falls
+  back to the old drop-behaviour with a warning; the render continues.
+
+**Verified two ways.** Unit: the hook output matches an explicitly fused
+reference to **9.5e-07** max absolute difference. In situ: on a live Q8_0 GGUF,
+**576/576 pairs attached** for each LoRA in the stack and the render differed
+from the no-LoRA control (a strength-0 attach — hook present, scale zero —
+reproduces the control exactly, which is what proves the hook *math* rather than
+just the skip branch).
+
+#### The VRAM cost, measured
+
+Hooks cache their `A`/`B` on the compute device on first call and keep them
+there, and **the offloader never streams them** — they are deliberately kept off
+`state_dict` and out of `.to()` sweeps, the same way `GGUFLinear` hides
+`_qweight`. So a LoRA stack is a permanent pin on top of your model.
+
+Measured from the actual tensor headers, in bf16:
+
+| LoRA | A/B pairs | pinned on GPU |
+|---|---|---|
+| `ltx23_accent_american_v2_rank32` | 576 | **176 MB** |
+| `ltx23_surfaces_v1` / `_v2_rank32` | 576 | **353 MB** each |
+| `ltx23_text_v1_rank32` | 576 | **353 MB** |
+| **the three-LoRA stack above, together** | 1728 | **881 MB** |
+
+Three *full-size* LoRAs would be **≈1.06 GB**. On a 32 GB card that is noise. On
+a 12 GB card running `sequential_offload` — which gets the DiT itself down to
+2–3 GB — it is roughly a third of your headroom. **Budget for it, run fewer
+LoRAs, or turn the feature off.**
+
+#### Kill switch
+
+```
+JOYECHO_GGUF_LORA=0
+```
+
+Set that environment variable and the loader restores the old behaviour exactly:
+LoRAs are dropped on the GGUF path, nothing is pinned, and it says so in the
+console. Use it if you are VRAM-starved, or to A/B a render against the
+pre-2.2 result.
+
+### JoyEcho Plate Picker (`joyecho_plate_picker.py`) — new node
+
+Ground materials are one of the places the base model reliably disappoints: ask
+for grass and you tend to get a dry wiry mat. Feeding a real Z-Image **surface
+plate** in as `reference_image` fixes it — measured to beat both the stock
+baseline and a retrained surfaces LoRA on vegetation, replicating across 4 seeds
+out of 4. The problem was never the mechanism, it was remembering to do it, and
+picking the right plate.
+
+The Plate Picker reads the **ground/surface phrases only** out of the prompt and
+auto-injects a matching plate from a folder of `<id>.png` + `<id>.txt` pairs. In
+the Studio workflow it is wired to `JoyEcho_RefPicker.fallback_image`, so it only
+fires when no character reference took priority.
+
+- **Matching is deliberately dumb and deterministic** — token overlap between the
+  prompt's surface words and the plate's material clause, with a bonus for exact
+  material hits. No embeddings: a lookup you cannot predict is a lookup you
+  cannot debug. The chosen plate is printed every run.
+- **Use vision-model re-captions, not generation prompts.** Captions written from
+  the prompt lie — Z-Image renders concrete or asphalt about a third of the time
+  regardless of what was asked for, and three of four keyword picks did not show
+  their claimed material at all. Captions written by a model *looking at the
+  image* say what is actually there.
+- **Season and weather conflicts are penalised.** A `reference_image` drags its
+  whole look across, so a frost plate would put winter into a summer scene. Right
+  material, wrong world is still wrong.
+- **`plate_denylist.txt` excludes plates containing people, limbs or cast human
+  shadows** — otherwise the picker will happily put a figure into a scene that
+  asked for an empty one. Ships with the list from the reviewed sheets; it is
+  explicitly incomplete, and the file is plain text so you can add to it.
+- **Below `min_score` it returns nothing** and the render proceeds exactly as it
+  would have without the node. A silent wrong plate is worse than no plate.
+
+### Also in this pack
+
+- **`RiftCast_Studio.json` now carries the Plate Picker**, wired into
+  RefPicker's fallback, and ships with **empty LoRA defaults** (see 2.1 — the
+  trap is much less dangerous now that GGUF LoRAs actually apply, which is
+  exactly why the defaults must stay empty).
+- **The Character Designer widget fix** (`web/js/riftcast_style_shadow.js`) —
+  described under 2.1 below. It reached the 2.1 zip as a late hand-patch; 2.2 is
+  the first build where it is properly part of the package.
+
 ## New in 2.1 — LoRA defaults cleared
 
 Download **`ComfyUI_JoyAI_Echo_v2.1_COMPLETE.zip`**. Same pack as 2.0 with three
@@ -156,6 +281,9 @@ torch 2.8–2.11, with the JoyAI-Echo bf16 release and self-built Q8 GGUFs.
 nodes.py                                     # JoyEcho_TextEncode / _Generate / _ModelLoader / _LLMEnhance
 __init__.py                                  # registrations for the new nodes
 rebels_loaders.py                            # discrete GGUF loaders (text-encoder fixes)
+joyecho_gguf_runtime_lora.py                 # runtime LoRA hooks for the GGUF DiT path (2.2)
+joyecho_plate_picker.py    (new node)        # auto surface-plate reference by ground material (2.2)
+plate_denylist.txt                           # plates with people/limbs/shadows, excluded from auto-injection
 joyecho_prompt_source.py   (new node)        # one dropdown: .txt briefs + .json scripts
 joyecho_ref_picker.py      (new node)        # auto reference-image picker by character name
 joyecho_ref_batch.py       (new node)        # None-tolerant image batcher
@@ -333,17 +461,18 @@ needs the HF `gemma-3-12b-it` folder; GGUF Gemma only works via
 ### 10. LoRA loading hardening (`JoyEcho_ModelLoader` + `libs/.../fuse_loras.py`)
 - A `lora_file` dropdown picks LoRAs from `models/loras` (existing
   `lora_strength` widget applies).
-- **LoRAs do NOT apply on the GGUF DiT path.** Fusion computes
+- **LoRAs on the GGUF DiT path — fixed in 2.2.** Fusion computes
   `W' = W + alpha*B*A` and bakes the delta into the weight tensors at load. That
   needs real bf16/fp8 tensors. A GGUF keeps weights packed in quantized blocks,
   memory-mapped and dequantized per layer at compute time — which is exactly why
   it is fast and RAM-cheap, and exactly why a delta cannot be added without
   dequantizing the whole model into RAM (and a rank-32 delta is often smaller
-  than the quantization step anyway). The loader prints
-  `WARNING: lora_path is ignored on the GGUF DiT path` and renders normally, so
-  the failure is silent in every way that matters mid-batch. **If a LoRA matters,
-  use a safetensors DiT** — or pre-merge the LoRA into the checkpoint and
-  re-quantize once, which keeps GGUF's speed and makes the LoRA permanent.
+  than the quantization step anyway). **Up to 2.1 the loader simply dropped every
+  LoRA** behind one console warning, so a GGUF batch rendered LoRA-free no matter
+  what the stacker showed. **From 2.2 they are applied at RUNTIME instead** via
+  forward hooks, with no change to the GGUF weights — see *New in 2.2* at the top
+  of this README for the mechanism, the validation, the ~881 MB three-LoRA VRAM
+  pin, and the `JOYECHO_GGUF_LORA=0` kill switch.
 - Fusion now supports **kohya naming** (`lora_down`/`lora_up`) in addition to
   PEFT (`lora_A`/`lora_B`), with standard `alpha/rank` scaling — previously a
   kohya-named LoRA silently did NOTHING (zero keys matched, no warning).

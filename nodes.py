@@ -338,7 +338,7 @@ class JoyEcho_ModelLoader:
                     "default": _LORA_FILE_MANUAL,
                     "tooltip": "Pick a LoRA from the models/loras tree instead of typing "
                                "lora_path. Applied at lora_strength on the safetensors DiT "
-                               "path (ignored when a GGUF DiT is selected). Refresh the node "
+                               "path (on a GGUF DiT these are applied at RUNTIME via forward hooks, not fused - see joyecho_gguf_runtime_lora.py). Refresh the node "
                                "list (R) after adding files.",
                 }),
                 "lora_stack": ("JOYECHO_LORA_STACK", {
