@@ -667,9 +667,11 @@ class JoyEcho_ModelLoader:
             if fp8_transformer:
                 print("[JoyEcho] fp8_transformer ignored: GGUF DiT is already quantized.",
                       flush=True)
-            if loras:
-                print("[JoyEcho] WARNING: lora_path is ignored on the GGUF DiT path.",
-                      flush=True)
+            # LoRAs used to be dropped here: fusion bakes W' = W + s*B*A into
+            # the weight tensors, which needs real bf16/fp8 tensors, and a GGUF
+            # keeps them packed and dequantizes per layer at compute time. They
+            # are now applied at RUNTIME instead (see the attach below), so the
+            # old "ignored on the GGUF DiT path" warning no longer applies.
             try:
                 _cfg = _full_config(checkpoint_path)
             except Exception:
@@ -692,6 +694,22 @@ class JoyEcho_ModelLoader:
             _materialize_meta(generator, _entries, _consumed, dtype)
             _rebind_swapped(generator)
             _SWAP_MAP.clear()
+
+            # Runtime LoRA for the GGUF path. Must come AFTER _materialize_meta
+            # and _rebind_swapped so the hooks land on the final module objects
+            # rather than ones that are about to be replaced. Never fatal: a bad
+            # LoRA falls back to the old drop-behaviour with a loud warning.
+            if _lora_entries:
+                try:
+                    try:
+                        from .joyecho_gguf_runtime_lora import attach_runtime_loras
+                    except ImportError:
+                        from joyecho_gguf_runtime_lora import attach_runtime_loras
+                    attach_runtime_loras(generator, _lora_entries, dtype)
+                except Exception as _e_lora:
+                    print(f"[JoyEcho GGUF-LoRA] WARNING: runtime attach failed "
+                          f"({type(_e_lora).__name__}: {_e_lora}) - continuing "
+                          f"WITHOUT LoRAs (old behaviour).", flush=True)
         else:
             quantization = None
             if fp8_scaled_mm:
