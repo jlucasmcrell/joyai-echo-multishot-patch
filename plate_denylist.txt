@@ -1,0 +1,20 @@
+# Plates excluded from auto-injection: people, limbs, or cast human
+# shadows. A reference_image drags its content across, so one of these
+# would put a figure into a scene that asked for an empty one.
+# Generated from the v2b figure pass (11 of 21 sheets reviewed).
+# NOT yet a complete list - 10 sheets remain.
+
+surface_02884
+surface_02910
+surface_02956
+surface_03033
+surface_03045
+surface_03063
+surface_03128
+surface_03196
+surface_03218
+surface_03231
+surface_03265
+
+# ambiguous, excluded to be safe:
+surface_02928

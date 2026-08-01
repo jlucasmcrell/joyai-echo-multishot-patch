@@ -95,6 +95,20 @@ except Exception as e:
 
 # ---------------------------------------------------------------- Rebels staged pipeline (16GB)
 try:
+    # Auto-inject a verified surface plate as reference_image, chosen from the
+    # RE-CAPTIONED plate library by the prompt's ground material. Optional and
+    # fail-open: if the module or the library is missing, nothing else breaks.
+    from .joyecho_plate_picker import (
+        NODE_CLASS_MAPPINGS as _PP_CM,
+        NODE_DISPLAY_NAME_MAPPINGS as _PP_DM,
+    )
+    NODE_CLASS_MAPPINGS.update(_PP_CM)
+    NODE_DISPLAY_NAME_MAPPINGS.update(_PP_DM)
+except Exception as _e_pp:
+    print(f"[JoyEcho] PlatePicker unavailable ({type(_e_pp).__name__}: {_e_pp})",
+          flush=True)
+
+try:
     from .rebels_staged import (
         NODE_CLASS_MAPPINGS as _ST_CM,
         NODE_DISPLAY_NAME_MAPPINGS as _ST_DM,
