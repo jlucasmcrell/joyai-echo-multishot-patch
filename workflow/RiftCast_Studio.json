@@ -335,9 +335,9 @@
     "ver": "0d9e32fcd2d255a16604368fcaa1875c380c7f3b",
     "Node name for S&R": "JoyEcho_LoraStacker",
     "je_widget_values": {
-     "lora_1": "loras: ltx23/ltx23_accent_american_v2_rank32.safetensors",
+     "lora_1": "(none)",
      "strength_1": 1,
-     "lora_2": "loras: ltx23/ltx23_surfaces_v1.safetensors",
+     "lora_2": "(none)",
      "strength_2": 1,
      "lora_3": "(none)",
      "strength_3": 1
@@ -349,9 +349,9 @@
     }
    },
    "widgets_values": [
-    "loras: ltx23/ltx23_accent_american_v2_rank32.safetensors",
+    "(none)",
     1,
-    "loras: ltx23/ltx23_surfaces_v1.safetensors",
+    "(none)",
     1,
     "(none)",
     1
@@ -940,7 +940,7 @@
      "checkpoint_path": "F:\\ComfyUI_windows_portable_nvidia\\ComfyUI_windows_portable\\ComfyUI\\models\\diffusion_models\\merge_lab\\ltx23_e50_GGUF-COMPANION.safetensors",
      "gemma_file": "text_encoders: gemma3-12b-BASE-clean-Q8_0.gguf",
      "gemma_path": "",
-     "lora_file": "loras: ltx23/ltx23_accent_american_v1_rank32.safetensors",
+     "lora_file": "(use lora_path / none)",
      "lora_path": "",
      "lora_strength": 0,
      "fp8_transformer": false,
@@ -954,7 +954,7 @@
     "F:\\ComfyUI_windows_portable_nvidia\\ComfyUI_windows_portable\\ComfyUI\\models\\diffusion_models\\merge_lab\\ltx23_e50_GGUF-COMPANION.safetensors",
     "text_encoders: gemma3-12b-BASE-clean-Q8_0.gguf",
     "",
-    "loras: ltx23/ltx23_accent_american_v1_rank32.safetensors",
+    "(use lora_path / none)",
     "",
     0,
     false,
