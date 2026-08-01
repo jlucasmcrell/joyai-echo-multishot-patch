@@ -12,6 +12,24 @@
 > someone reported something.** You will not be left hanging.
 
 
+## New in 2.1 — LoRA defaults cleared
+
+Download **`ComfyUI_JoyAI_Echo_v2.1_COMPLETE.zip`**. Same pack as 2.0 with three
+corrections:
+
+- **The RiftCast Studio workflow shipped with three LoRAs enabled by default,
+  two of which were the same LoRA at different versions** — `accent_american_v2`
+  in the stacker and `accent_american_v1` on the loader's own `lora_file`, both
+  fusing at once, plus `surfaces_v1`. That was never intended. All defaults are
+  now empty; pick LoRAs deliberately.
+- **LoRAs are silently ignored on a GGUF DiT** — see section 10. Empty defaults
+  make that trap much harder to fall into.
+- **Character Designer's duplicate widgets now hide themselves.** `hair_color`,
+  `hair_style`, `wardrobe` and `distinguishing` exist on both the Designer and
+  the Style node; when a Style node is wired the Designer's copies are discarded,
+  which used to happen invisibly. They now disappear on connect and return, with
+  their values, on disconnect.
+
 ## New in 2.0 — RiftCast
 
 Characters are now portable files. A `.riftcast` cartridge carries a
@@ -315,6 +333,17 @@ needs the HF `gemma-3-12b-it` folder; GGUF Gemma only works via
 ### 10. LoRA loading hardening (`JoyEcho_ModelLoader` + `libs/.../fuse_loras.py`)
 - A `lora_file` dropdown picks LoRAs from `models/loras` (existing
   `lora_strength` widget applies).
+- **LoRAs do NOT apply on the GGUF DiT path.** Fusion computes
+  `W' = W + alpha*B*A` and bakes the delta into the weight tensors at load. That
+  needs real bf16/fp8 tensors. A GGUF keeps weights packed in quantized blocks,
+  memory-mapped and dequantized per layer at compute time — which is exactly why
+  it is fast and RAM-cheap, and exactly why a delta cannot be added without
+  dequantizing the whole model into RAM (and a rank-32 delta is often smaller
+  than the quantization step anyway). The loader prints
+  `WARNING: lora_path is ignored on the GGUF DiT path` and renders normally, so
+  the failure is silent in every way that matters mid-batch. **If a LoRA matters,
+  use a safetensors DiT** — or pre-merge the LoRA into the checkpoint and
+  re-quantize once, which keeps GGUF's speed and makes the LoRA permanent.
 - Fusion now supports **kohya naming** (`lora_down`/`lora_up`) in addition to
   PEFT (`lora_A`/`lora_B`), with standard `alpha/rank` scaling — previously a
   kohya-named LoRA silently did NOTHING (zero keys matched, no warning).
