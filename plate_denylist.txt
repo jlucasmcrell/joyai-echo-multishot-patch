@@ -1,12 +1,18 @@
-# Plates excluded from auto-injection by JoyEcho_PlatePicker: people,
-# limbs, or cast human shadows. A reference_image drags its content
-# across, so injecting one puts a figure into a scene that asked for an
-# empty one - the exact failure v2b was meant to fix.
-# From the v2b figure pass, 13 of 21 sheets reviewed. NOT complete.
-
+# Surface plates containing human figures - excluded from the Plate Picker.
+# A reference_image drags its content across, so injecting one puts a figure
+# into a scene that asked for an empty one.
+#
+# Regenerated 2026-08-02 00:32 from the COMPLETED output-gate
+# FIGURES sweep: 510/510 plates scored, 0 uncertain, 0 errors, 28 flagged.
+# Supersedes the partial manual pass (13 of 21 contact sheets); the gate
+# found every plate that pass had found, plus 14 more.
+# IDs are stored normalised (no trailing underscore), matching _norm_id().
 surface_02884
 surface_02910
+surface_02928
 surface_02956
+surface_02986
+surface_02992
 surface_03033
 surface_03045
 surface_03063
@@ -17,6 +23,15 @@ surface_03196
 surface_03218
 surface_03231
 surface_03265
-
-# ambiguous, excluded to be safe:
-surface_02928
+surface_03338
+surface_03376
+surface_03392
+surface_03404
+surface_03410
+surface_03412
+surface_03414
+surface_03578
+surface_03672
+surface_03704
+surface_03712
+surface_03721
